@@ -1,0 +1,13 @@
+<Project Sdk="Godot.NET.Sdk/4.1.3">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <LangVersion>10.0</LangVersion>
+    <RootNamespace>GDTask.Tests</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../GDTask/GDTask.csproj" />
+    <PackageReference Include="Chickensoft.GoDotTest" Version="1.2.3" />
+    <PackageReference Include="Shouldly" Version="4.2.1" />
+  </ItemGroup>
+</Project>
