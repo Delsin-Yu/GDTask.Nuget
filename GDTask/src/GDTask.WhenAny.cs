@@ -7,16 +7,23 @@ namespace Fractural.Tasks
 {
     public partial struct GDTask
     {
+        /// <summary>
+        /// Creates a task that will complete when any of the supplied tasks have completed.
+        /// </summary>
+        /// <typeparam name="T">The type of the result returned by the task.</typeparam>
+        /// <returns>A task that represents the info for the first completed task.</returns>
         public static GDTask<(bool hasResultLeft, T result)> WhenAny<T>(GDTask<T> leftTask, GDTask rightTask)
         {
             return new GDTask<(bool, T)>(new WhenAnyLRPromise<T>(leftTask, rightTask), 0);
         }
 
+        /// <inheritdoc cref="WhenAny{T}(Fractural.Tasks.GDTask{T},Fractural.Tasks.GDTask)"/>
         public static GDTask<(int winArgumentIndex, T result)> WhenAny<T>(params GDTask<T>[] tasks)
         {
             return new GDTask<(int, T)>(new WhenAnyPromise<T>(tasks, tasks.Length), 0);
         }
 
+        /// <inheritdoc cref="WhenAny{T}(Fractural.Tasks.GDTask{T},Fractural.Tasks.GDTask)"/>
         public static GDTask<(int winArgumentIndex, T result)> WhenAny<T>(IEnumerable<GDTask<T>> tasks)
         {
             using (var span = ArrayPoolUtil.Materialize(tasks))
@@ -25,13 +32,16 @@ namespace Fractural.Tasks
             }
         }
 
-        /// <summary>Return value is winArgumentIndex</summary>
+        /// <summary>
+        /// Creates a task that will complete when any of the supplied tasks have completed.
+        /// </summary>
+        /// <returns>A task that evaluates the index of the first completed task.</returns>
         public static GDTask<int> WhenAny(params GDTask[] tasks)
         {
             return new GDTask<int>(new WhenAnyPromise(tasks, tasks.Length), 0);
         }
 
-        /// <summary>Return value is winArgumentIndex</summary>
+        /// <inheritdoc cref="WhenAny(Fractural.Tasks.GDTask[])"/>
         public static GDTask<int> WhenAny(IEnumerable<GDTask> tasks)
         {
             using (var span = ArrayPoolUtil.Materialize(tasks))

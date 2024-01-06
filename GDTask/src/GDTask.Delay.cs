@@ -9,38 +9,50 @@ namespace Fractural.Tasks
 {
     public enum DelayType
     {
-        /// <summary>use Time.deltaTime.</summary>
+        /// <summary>Use time provided from <see cref="Time.DeltaTime"/></summary>
         DeltaTime,
-        /// <summary>use Stopwatch.GetTimestamp().</summary>
+        /// <summary>Use time provided from <see cref="System.Diagnostics.Stopwatch.GetTimestamp()"/></summary>
         Realtime
     }
 
     public partial struct GDTask
     {
+        /// <summary>
+        /// Delay the execution until the next <see cref="PlayerLoopTiming.Process"/>.
+        /// </summary>
         public static YieldAwaitable Yield()
         {
             // optimized for single continuation
             return new YieldAwaitable(PlayerLoopTiming.Process);
         }
 
+        /// <summary>
+        /// Delay the execution until the next provided <see cref="PlayerLoopTiming"/>.
+        /// </summary>
         public static YieldAwaitable Yield(PlayerLoopTiming timing)
         {
             // optimized for single continuation
             return new YieldAwaitable(timing);
         }
 
+        /// <summary>
+        /// Delay the execution until the next <see cref="PlayerLoopTiming.Process"/>, with specified <see cref="CancellationToken"/>.
+        /// </summary>
         public static GDTask Yield(CancellationToken cancellationToken)
         {
             return new GDTask(YieldPromise.Create(PlayerLoopTiming.Process, cancellationToken, out var token), token);
         }
 
+        /// <summary>
+        /// Delay the execution until the next provided <see cref="PlayerLoopTiming"/>, with specified <see cref="CancellationToken"/>.
+        /// </summary>   
         public static GDTask Yield(PlayerLoopTiming timing, CancellationToken cancellationToken)
         {
             return new GDTask(YieldPromise.Create(timing, cancellationToken, out var token), token);
         }
 
         /// <summary>
-        /// Similar as GDTask.Yield but guaranteed run on next frame.
+        /// Delay the execution until the next frame of <see cref="PlayerLoopTiming.Process"/>.
         /// </summary>
         public static GDTask NextFrame()
         {
@@ -48,7 +60,7 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Similar as GDTask.Yield but guaranteed run on next frame.
+        /// Delay the execution until the next frame of the provided <see cref="PlayerLoopTiming"/>.
         /// </summary>
         public static GDTask NextFrame(PlayerLoopTiming timing)
         {
@@ -56,7 +68,7 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Similar as GDTask.Yield but guaranteed run on next frame.
+        /// Delay the execution until the next frame of <see cref="PlayerLoopTiming.Process"/>, with specified <see cref="CancellationToken"/>.
         /// </summary>
         public static GDTask NextFrame(CancellationToken cancellationToken)
         {
@@ -64,25 +76,27 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Similar as GDTask.Yield but guaranteed run on next frame.
+        /// Delay the execution until the next frame of the provided <see cref="PlayerLoopTiming"/>, with specified <see cref="CancellationToken"/>.
         /// </summary>
         public static GDTask NextFrame(PlayerLoopTiming timing, CancellationToken cancellationToken)
         {
             return new GDTask(NextFramePromise.Create(timing, cancellationToken, out var token), token);
         }
 
+        /// <inheritdoc cref="Yield()"/>
         public static YieldAwaitable WaitForEndOfFrame()
         {
             return GDTask.Yield(PlayerLoopTiming.Process);
         }
 
+        /// <inheritdoc cref="Yield(CancellationToken)"/>
         public static GDTask WaitForEndOfFrame(CancellationToken cancellationToken)
         {
             return GDTask.Yield(PlayerLoopTiming.Process, cancellationToken);
         }
 
         /// <summary>
-        /// Same as GDTask.Yield(PlayerLoopTiming.LastPhysicsProcess).
+        /// Delay the execution until the next <see cref="PlayerLoopTiming.PhysicsProcess"/>.
         /// </summary>
         public static YieldAwaitable WaitForPhysicsProcess()
         {
@@ -90,13 +104,17 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Same as GDTask.Yield(PlayerLoopTiming.LastPhysicsProcess, cancellationToken).
+        /// Delay the execution until the next <see cref="PlayerLoopTiming.PhysicsProcess"/>, with specified <see cref="CancellationToken"/>.
         /// </summary>
         public static GDTask WaitForPhysicsProcess(CancellationToken cancellationToken)
         {
             return GDTask.Yield(PlayerLoopTiming.PhysicsProcess, cancellationToken);
         }
 
+        /// <summary>
+        /// Delay the execution after frame(s) of the provided <see cref="PlayerLoopTiming"/>, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="delayFrameCount"/> is less than 0.</exception>
         public static GDTask DelayFrame(int delayFrameCount, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (delayFrameCount < 0)
@@ -107,23 +125,39 @@ namespace Fractural.Tasks
             return new GDTask(DelayFramePromise.Create(delayFrameCount, delayTiming, cancellationToken, out var token), token);
         }
 
+        /// <summary>
+        /// Delay the execution after <paramref name="millisecondsDelay"/> of the provided <see cref="PlayerLoopTiming"/> on <see cref="DelayType.DeltaTime"/>, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="millisecondsDelay"/> is less than 0.</exception>
         public static GDTask Delay(int millisecondsDelay, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
             var delayTimeSpan = TimeSpan.FromMilliseconds(millisecondsDelay);
             return Delay(delayTimeSpan, delayTiming, cancellationToken);
         }
 
+        /// <summary>
+        /// Delay the execution after <paramref name="delayTimeSpan"/> of the provided <see cref="PlayerLoopTiming"/> on <see cref="DelayType.DeltaTime"/>, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="delayTimeSpan"/> is less than <see cref="TimeSpan.Zero"/>.</exception>
         public static GDTask Delay(TimeSpan delayTimeSpan, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Delay(delayTimeSpan, DelayType.DeltaTime, delayTiming, cancellationToken);
         }
 
+        /// <summary>
+        /// Delay the execution after <paramref name="millisecondsDelay"/> of the provided <see cref="PlayerLoopTiming"/>, with specified <see cref="DelayType"/>, and <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="millisecondsDelay"/> is less than 0.</exception>
         public static GDTask Delay(int millisecondsDelay, DelayType delayType, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
             var delayTimeSpan = TimeSpan.FromMilliseconds(millisecondsDelay);
             return Delay(delayTimeSpan, delayType, delayTiming, cancellationToken);
         }
 
+        /// <summary>
+        /// Delay the execution after <paramref name="delayTimeSpan"/> of the provided <see cref="PlayerLoopTiming"/>, with specified <see cref="DelayType"/>, and <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="delayTimeSpan"/> is less than <see cref="TimeSpan.Zero"/>.</exception>
         public static GDTask Delay(TimeSpan delayTimeSpan, DelayType delayType, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (delayTimeSpan < TimeSpan.Zero)
@@ -135,6 +169,10 @@ namespace Fractural.Tasks
             // force use Realtime.
             if (GDTaskPlayerLoopAutoload.IsMainThread && Engine.IsEditorHint())
             {
+                if (delayType != DelayType.Realtime)
+                {
+                    GD.Print("When running by the editor's main thread, delayType must be DelayType.Realtime!");
+                }
                 delayType = DelayType.Realtime;
             }
 #endif

@@ -3,6 +3,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fractural.Tasks
 {
@@ -23,8 +24,16 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Gets a <see cref="GDTask"/> that has already completed successfully.
+        /// </summary>
         public static readonly GDTask CompletedTask = new GDTask();
 
+        /// <summary>
+        /// Creates a <see cref="GDTask"/> that has completed with the specified exception.
+        /// </summary>
+        /// <param name="ex">The exception with which to fault the task.</param>
+        /// <returns>The faulted task.</returns>
         public static GDTask FromException(Exception ex)
         {
             if (ex is OperationCanceledException oce)
@@ -35,6 +44,7 @@ namespace Fractural.Tasks
             return new GDTask(new ExceptionResultSource(ex), 0);
         }
 
+        /// <inheritdoc cref="FromException"/>
         public static GDTask<T> FromException<T>(Exception ex)
         {
             if (ex is OperationCanceledException oce)
@@ -45,11 +55,23 @@ namespace Fractural.Tasks
             return new GDTask<T>(new ExceptionResultSource<T>(ex), 0);
         }
 
+        /// <summary>
+        /// Creates a <see cref="GDTask{TResult}"/> that's completed successfully with the specified result.
+        /// </summary>
+        /// <typeparam name="T">The type of the result returned by the task.</typeparam>
+        /// <param name="value">The result to store into the completed task.</param>
+        /// <returns>The successfully completed task.</returns>
         public static GDTask<T> FromResult<T>(T value)
         {
             return new GDTask<T>(value);
         }
 
+
+        /// <summary>
+        /// Creates a <see cref="GDTask"/> that has completed due to cancellation with the specified cancellation token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token with which to cancel the task.</param>
+        /// <returns>The canceled task.</returns>
         public static GDTask FromCanceled(CancellationToken cancellationToken = default)
         {
             if (cancellationToken == CancellationToken.None)
@@ -62,6 +84,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="FromCanceled"/>
         public static GDTask<T> FromCanceled<T>(CancellationToken cancellationToken = default)
         {
             if (cancellationToken == CancellationToken.None)
@@ -74,28 +97,40 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Create the specified asynchronous work to run and returns a <see cref="GDTask"/> handle for that work.
+        /// </summary>
+        /// <param name="factory">The work to execute asynchronously</param>
+        /// <returns>A <see cref="GDTask"/> that represents the work to execute.</returns>
         public static GDTask Create(Func<GDTask> factory)
         {
             return factory();
         }
 
+        /// <inheritdoc cref="Create"/>
         public static GDTask<T> Create<T>(Func<GDTask<T>> factory)
         {
             return factory();
         }
 
+        /// <summary>
+        /// Defers the creation of a specified asynchronous work when it's required.
+        /// </summary>
+        /// <param name="factory">The work to execute asynchronously</param>
+        /// <returns>An <see cref="AsyncLazy"/> that represents the work for lazy initialization.</returns>
         public static AsyncLazy Lazy(Func<GDTask> factory)
         {
             return new AsyncLazy(factory);
         }
 
+        /// <inheritdoc cref="Lazy"/>
         public static AsyncLazy<T> Lazy<T>(Func<GDTask<T>> factory)
         {
             return new AsyncLazy<T>(factory);
         }
 
         /// <summary>
-        /// helper of fire and forget void action.
+        /// Execute a lightweight task that does not have awaitable completion.
         /// </summary>
         public static void Void(Func<GDTaskVoid> asyncAction)
         {
@@ -103,7 +138,7 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// helper of fire and forget void action.
+        /// Execute a lightweight task that does not have awaitable completion, with specified <see cref="CancellationToken"/>.
         /// </summary>
         public static void Void(Func<CancellationToken, GDTaskVoid> asyncAction, CancellationToken cancellationToken)
         {
@@ -111,7 +146,7 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// helper of fire and forget void action.
+        /// Execute a lightweight task that does not have awaitable completion, with specified input value <typeparamref name="T"/>.
         /// </summary>
         public static void Void<T>(Func<T, GDTaskVoid> asyncAction, T state)
         {
@@ -119,8 +154,7 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// helper of create add GDTaskVoid to delegate.
-        /// For example: FooAction = GDTask.Action(async () => { /* */ })
+        /// Creates a delegate that execute a lightweight task that does not have awaitable completion.
         /// </summary>
         public static Action Action(Func<GDTaskVoid> asyncAction)
         {
@@ -128,7 +162,7 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// helper of create add GDTaskVoid to delegate.
+        /// Creates a delegate that execute a lightweight task that does not have awaitable completion, with specified <see cref="CancellationToken"/>.
         /// </summary>
         public static Action Action(Func<CancellationToken, GDTaskVoid> asyncAction, CancellationToken cancellationToken)
         {
@@ -136,32 +170,28 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Defer the task creation just before call await.
+        /// Defers the creation of a specified asynchronous work when it's awaited.
         /// </summary>
         public static GDTask Defer(Func<GDTask> factory)
         {
             return new GDTask(new DeferPromise(factory), 0);
         }
 
-        /// <summary>
-        /// Defer the task creation just before call await.
-        /// </summary>
+        /// <inheritdoc cref="Defer"/>
         public static GDTask<T> Defer<T>(Func<GDTask<T>> factory)
         {
             return new GDTask<T>(new DeferPromise<T>(factory), 0);
         }
 
         /// <summary>
-        /// Never complete.
+        /// Creates a task that never completes, with specified <see cref="CancellationToken"/>.
         /// </summary>
         public static GDTask Never(CancellationToken cancellationToken)
         {
             return new GDTask<AsyncUnit>(new NeverPromise<AsyncUnit>(cancellationToken), 0);
         }
 
-        /// <summary>
-        /// Never complete.
-        /// </summary>
+        /// <inheritdoc cref="Never"/>
         public static GDTask<T> Never<T>(CancellationToken cancellationToken)
         {
             return new GDTask<T>(new NeverPromise<T>(cancellationToken), 0);

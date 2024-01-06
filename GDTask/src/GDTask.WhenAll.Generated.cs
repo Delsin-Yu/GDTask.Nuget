@@ -8,7 +8,10 @@ namespace Fractural.Tasks
 {
     public partial struct GDTask
     {
-
+        /// <summary>
+        /// Creates a task that will complete when all of the supplied tasks have completed.
+        /// </summary>
+        /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
         public static GDTask<(T1, T2)> WhenAll<T1, T2>(GDTask<T1> task1, GDTask<T2> task2)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully())
@@ -132,6 +135,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3)> WhenAll<T1, T2, T3>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully())
@@ -291,6 +295,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4)> WhenAll<T1, T2, T3, T4>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully())
@@ -486,6 +491,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4, T5)> WhenAll<T1, T2, T3, T4, T5>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully() && task5.Status.IsCompletedSuccessfully())
@@ -717,6 +723,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4, T5, T6)> WhenAll<T1, T2, T3, T4, T5, T6>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully() && task5.Status.IsCompletedSuccessfully() && task6.Status.IsCompletedSuccessfully())
@@ -984,6 +991,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4, T5, T6, T7)> WhenAll<T1, T2, T3, T4, T5, T6, T7>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully() && task5.Status.IsCompletedSuccessfully() && task6.Status.IsCompletedSuccessfully() && task7.Status.IsCompletedSuccessfully())
@@ -1287,6 +1295,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4, T5, T6, T7, T8)> WhenAll<T1, T2, T3, T4, T5, T6, T7, T8>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully() && task5.Status.IsCompletedSuccessfully() && task6.Status.IsCompletedSuccessfully() && task7.Status.IsCompletedSuccessfully() && task8.Status.IsCompletedSuccessfully())
@@ -1626,6 +1635,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4, T5, T6, T7, T8, T9)> WhenAll<T1, T2, T3, T4, T5, T6, T7, T8, T9>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully() && task5.Status.IsCompletedSuccessfully() && task6.Status.IsCompletedSuccessfully() && task7.Status.IsCompletedSuccessfully() && task8.Status.IsCompletedSuccessfully() && task9.Status.IsCompletedSuccessfully())
@@ -2001,6 +2011,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)> WhenAll<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully() && task5.Status.IsCompletedSuccessfully() && task6.Status.IsCompletedSuccessfully() && task7.Status.IsCompletedSuccessfully() && task8.Status.IsCompletedSuccessfully() && task9.Status.IsCompletedSuccessfully() && task10.Status.IsCompletedSuccessfully())
@@ -2412,6 +2423,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)> WhenAll<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully() && task5.Status.IsCompletedSuccessfully() && task6.Status.IsCompletedSuccessfully() && task7.Status.IsCompletedSuccessfully() && task8.Status.IsCompletedSuccessfully() && task9.Status.IsCompletedSuccessfully() && task10.Status.IsCompletedSuccessfully() && task11.Status.IsCompletedSuccessfully())
@@ -2859,6 +2871,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)> WhenAll<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully() && task5.Status.IsCompletedSuccessfully() && task6.Status.IsCompletedSuccessfully() && task7.Status.IsCompletedSuccessfully() && task8.Status.IsCompletedSuccessfully() && task9.Status.IsCompletedSuccessfully() && task10.Status.IsCompletedSuccessfully() && task11.Status.IsCompletedSuccessfully() && task12.Status.IsCompletedSuccessfully())
@@ -3342,6 +3355,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13)> WhenAll<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12, GDTask<T13> task13)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully() && task5.Status.IsCompletedSuccessfully() && task6.Status.IsCompletedSuccessfully() && task7.Status.IsCompletedSuccessfully() && task8.Status.IsCompletedSuccessfully() && task9.Status.IsCompletedSuccessfully() && task10.Status.IsCompletedSuccessfully() && task11.Status.IsCompletedSuccessfully() && task12.Status.IsCompletedSuccessfully() && task13.Status.IsCompletedSuccessfully())
@@ -3861,6 +3875,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14)> WhenAll<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12, GDTask<T13> task13, GDTask<T14> task14)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully() && task5.Status.IsCompletedSuccessfully() && task6.Status.IsCompletedSuccessfully() && task7.Status.IsCompletedSuccessfully() && task8.Status.IsCompletedSuccessfully() && task9.Status.IsCompletedSuccessfully() && task10.Status.IsCompletedSuccessfully() && task11.Status.IsCompletedSuccessfully() && task12.Status.IsCompletedSuccessfully() && task13.Status.IsCompletedSuccessfully() && task14.Status.IsCompletedSuccessfully())
@@ -4416,6 +4431,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="WhenAll{T1,T2}"/>
         public static GDTask<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15)> WhenAll<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12, GDTask<T13> task13, GDTask<T14> task14, GDTask<T15> task15)
         {
             if (task1.Status.IsCompletedSuccessfully() && task2.Status.IsCompletedSuccessfully() && task3.Status.IsCompletedSuccessfully() && task4.Status.IsCompletedSuccessfully() && task5.Status.IsCompletedSuccessfully() && task6.Status.IsCompletedSuccessfully() && task7.Status.IsCompletedSuccessfully() && task8.Status.IsCompletedSuccessfully() && task9.Status.IsCompletedSuccessfully() && task10.Status.IsCompletedSuccessfully() && task11.Status.IsCompletedSuccessfully() && task12.Status.IsCompletedSuccessfully() && task13.Status.IsCompletedSuccessfully() && task14.Status.IsCompletedSuccessfully() && task15.Status.IsCompletedSuccessfully())

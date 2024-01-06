@@ -5,59 +5,12 @@ namespace Fractural.Tasks
 {
     public partial struct GDTask
     {
-        #region OBSOLETE_RUN
-
-        [Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-        public static GDTask Run(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
-        {
-            return RunOnThreadPool(action, configureAwait, cancellationToken);
-        }
-
-        [Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-        public static GDTask Run(Action<object> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
-        {
-            return RunOnThreadPool(action, state, configureAwait, cancellationToken);
-        }
-
-        [Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-        public static GDTask Run(Func<GDTask> action, bool configureAwait = true, CancellationToken cancellationToken = default)
-        {
-            return RunOnThreadPool(action, configureAwait, cancellationToken);
-        }
-
-        [Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-        public static GDTask Run(Func<object, GDTask> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
-        {
-            return RunOnThreadPool(action, state, configureAwait, cancellationToken);
-        }
-
-        [Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-        public static GDTask<T> Run<T>(Func<T> func, bool configureAwait = true, CancellationToken cancellationToken = default)
-        {
-            return RunOnThreadPool(func, configureAwait, cancellationToken);
-        }
-
-        [Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-        public static GDTask<T> Run<T>(Func<GDTask<T>> func, bool configureAwait = true, CancellationToken cancellationToken = default)
-        {
-            return RunOnThreadPool(func, configureAwait, cancellationToken);
-        }
-
-        [Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-        public static GDTask<T> Run<T>(Func<object, T> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
-        {
-            return RunOnThreadPool(func, state, configureAwait, cancellationToken);
-        }
-
-        [Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-        public static GDTask<T> Run<T>(Func<object, GDTask<T>> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
-        {
-            return RunOnThreadPool(func, state, configureAwait, cancellationToken);
-        }
-
-        #endregion
-
-        /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
+        /// <summary>
+        /// Queues the specified work to run on the ThreadPool and returns a <see cref="GDTask"/> handle for that work.
+        /// </summary>
+        /// <param name="action">The work to execute asynchronously</param>
+        /// <param name="configureAwait">Returns to main thread after await if set to true</param>
+        /// <param name="cancellationToken">A cancellation token that should be used to cancel the work</param>
         public static async GDTask RunOnThreadPool(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -85,7 +38,13 @@ namespace Fractural.Tasks
             cancellationToken.ThrowIfCancellationRequested();
         }
 
-        /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
+        /// <summary>
+        /// Queues the specified work to run on the ThreadPool and returns a <see cref="GDTask"/> handle for that work.
+        /// </summary>
+        /// <param name="action">The work to execute asynchronously</param>
+        /// <param name="state">Object to which to pass to action (may be null)</param>
+        /// <param name="configureAwait">Returns to main thread after await if set to true</param>
+        /// <param name="cancellationToken">A cancellation token that should be used to cancel the work</param>
         public static async GDTask RunOnThreadPool(Action<object> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -113,7 +72,12 @@ namespace Fractural.Tasks
             cancellationToken.ThrowIfCancellationRequested();
         }
 
-        /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
+        /// <summary>
+        /// Create and queues the specified task to run on the ThreadPool and returns a <see cref="GDTask"/> handle for that work.
+        /// </summary>
+        /// <param name="action">The delegate which create the task</param>
+        /// <param name="configureAwait">Returns to main thread after await if set to true</param>
+        /// <param name="cancellationToken">A cancellation token that should be used to cancel the work</param>
         public static async GDTask RunOnThreadPool(Func<GDTask> action, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -141,7 +105,13 @@ namespace Fractural.Tasks
             cancellationToken.ThrowIfCancellationRequested();
         }
 
-        /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
+        /// <summary>
+        /// Create and queues the specified task to run on the ThreadPool and returns a <see cref="GDTask"/> handle for that work.
+        /// </summary>
+        /// <param name="action">The delegate which create the task</param>
+        /// <param name="state">Object to which to pass to action (may be null)</param>
+        /// <param name="configureAwait">Returns to main thread after await if set to true</param>
+        /// <param name="cancellationToken">A cancellation token that should be used to cancel the work</param>
         public static async GDTask RunOnThreadPool(Func<object, GDTask> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -169,7 +139,13 @@ namespace Fractural.Tasks
             cancellationToken.ThrowIfCancellationRequested();
         }
 
-        /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
+        /// <summary>
+        /// Queues the specified work to run on the ThreadPool and returns a <see cref="GDTask"/> handle for that work.
+        /// </summary>
+        /// <typeparam name="T">The type of the result returned by the task.</typeparam>
+        /// <param name="func">The work to execute asynchronously</param>
+        /// <param name="configureAwait">Returns to main thread after await if set to true</param>
+        /// <param name="cancellationToken">A cancellation token that should be used to cancel the work</param>
         public static async GDTask<T> RunOnThreadPool<T>(Func<T> func, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -196,7 +172,13 @@ namespace Fractural.Tasks
             }
         }
 
-        /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
+        /// <summary>
+        /// Create and queues the specified task to run on the ThreadPool and returns a <see cref="GDTask"/> handle for that work.
+        /// </summary>
+        /// <typeparam name="T">The type of the result returned by the task.</typeparam>
+        /// <param name="func">The delegate which create the task</param>
+        /// <param name="configureAwait">Returns to main thread after await if set to true</param>
+        /// <param name="cancellationToken">A cancellation token that should be used to cancel the work</param>
         public static async GDTask<T> RunOnThreadPool<T>(Func<GDTask<T>> func, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -226,7 +208,14 @@ namespace Fractural.Tasks
             }
         }
 
-        /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
+        /// <summary>
+        /// Create and queues the specified task to run on the ThreadPool and returns a <see cref="GDTask"/> handle for that work.
+        /// </summary>
+        /// <typeparam name="T">The type of the result returned by the task.</typeparam>
+        /// <param name="func">The work to execute asynchronously</param>
+        /// <param name="state">Object to which to pass to action (may be null)</param>
+        /// <param name="configureAwait">Returns to main thread after await if set to true</param>
+        /// <param name="cancellationToken">A cancellation token that should be used to cancel the work</param>
         public static async GDTask<T> RunOnThreadPool<T>(Func<object, T> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -253,7 +242,14 @@ namespace Fractural.Tasks
             }
         }
 
-        /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
+        /// <summary>
+        /// Create and queues the specified task to run on the ThreadPool and returns a <see cref="GDTask"/> handle for that work.
+        /// </summary>
+        /// <typeparam name="T">The type of the result returned by the task.</typeparam>
+        /// <param name="func">The delegate which create the task</param>
+        /// <param name="state">Object to which to pass to action (may be null)</param>
+        /// <param name="configureAwait">Returns to main thread after await if set to true</param>
+        /// <param name="cancellationToken">A cancellation token that should be used to cancel the work</param>
         public static async GDTask<T> RunOnThreadPool<T>(Func<object, GDTask<T>> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();

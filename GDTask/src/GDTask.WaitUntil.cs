@@ -7,21 +7,33 @@ namespace Fractural.Tasks
 {
     public partial struct GDTask
     {
+        /// <summary>
+        /// Creates a task that will complete at the next provided <see cref="PlayerLoopTiming"/> when the supplied <paramref name="predicate"/> evaluates to true, with specified <see cref="CancellationToken"/>.
+        /// </summary>
         public static GDTask WaitUntil(Func<bool> predicate, PlayerLoopTiming timing = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
             return new GDTask(WaitUntilPromise.Create(predicate, timing, cancellationToken, out var token), token);
         }
 
+        /// <summary>
+        /// Creates a task that will complete at the next provided <see cref="PlayerLoopTiming"/> when the supplied <paramref name="predicate"/> evaluates to false, with specified <see cref="CancellationToken"/>.
+        /// </summary>
         public static GDTask WaitWhile(Func<bool> predicate, PlayerLoopTiming timing = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
             return new GDTask(WaitWhilePromise.Create(predicate, timing, cancellationToken, out var token), token);
         }
 
+        /// <summary>
+        /// Creates a task that will complete at the next provided <see cref="PlayerLoopTiming"/> when the supplied <see cref="CancellationToken"/> is canceled.
+        /// </summary>
         public static GDTask WaitUntilCanceled(CancellationToken cancellationToken, PlayerLoopTiming timing = PlayerLoopTiming.Process)
         {
             return new GDTask(WaitUntilCanceledPromise.Create(cancellationToken, timing, out var token), token);
         }
 
+        /// <summary>
+        /// Creates a task that will complete at the next provided <see cref="PlayerLoopTiming"/> when the provided <paramref name="monitorFunction"/> returns a different value, with specified <see cref="CancellationToken"/>.
+        /// </summary>
         public static GDTask<U> WaitUntilValueChanged<T, U>(T target, Func<T, U> monitorFunction, PlayerLoopTiming monitorTiming = PlayerLoopTiming.Process, IEqualityComparer<U> equalityComparer = null, CancellationToken cancellationToken = default(CancellationToken))
           where T : class
         {

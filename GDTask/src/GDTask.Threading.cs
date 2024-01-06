@@ -10,70 +10,97 @@ namespace Fractural.Tasks
     {
 
         /// <summary>
-        /// If running on mainthread, do nothing. Otherwise, same as GDTask.Yield(PlayerLoopTiming.Update).
+        /// Creates an awaitable that asynchronously yields back to the next <see cref="PlayerLoopTiming.Process"/> from the main thread when awaited, with specified <see cref="CancellationToken"/>.
         /// </summary>
+        /// <returns>
+        /// A context that, when awaited, will asynchronously transition back into the next <see cref="PlayerLoopTiming.Process"/> from the main thread at the time of the await. This awaitable behaves identically as <see cref="Yield(CancellationToken)"/> in case the call site is from the main thread. 
+        /// </returns>
         public static SwitchToMainThreadAwaitable SwitchToMainThread(CancellationToken cancellationToken = default)
         {
             return new SwitchToMainThreadAwaitable(PlayerLoopTiming.Process, cancellationToken);
         }
 
         /// <summary>
-        /// If running on mainthread, do nothing. Otherwise, same as GDTask.Yield(timing).
+        /// Creates an awaitable that asynchronously yields back to the next provided <see cref="PlayerLoopTiming"/> from the main thread when awaited, with specified <see cref="CancellationToken"/>.
         /// </summary>
+        /// <returns>
+        /// A context that, when awaited, will asynchronously transition back into the next provided <see cref="PlayerLoopTiming"/> from the main thread at the time of the await. This awaitable behaves identically as <see cref="Yield(PlayerLoopTiming, CancellationToken)"/> in case the call site is from the main thread. 
+        /// </returns>
         public static SwitchToMainThreadAwaitable SwitchToMainThread(PlayerLoopTiming timing, CancellationToken cancellationToken = default)
         {
             return new SwitchToMainThreadAwaitable(timing, cancellationToken);
         }
 
         /// <summary>
-        /// Return to mainthread(same as await SwitchToMainThread) after using scope is closed.
+        /// Creates an asynchronously disposable that asynchronously yields back to the next <see cref="PlayerLoopTiming.Process"/> from the main thread after using scope is closed, with specified <see cref="CancellationToken"/>.
         /// </summary>
+        /// <returns>
+        /// A context that, when disposed, will asynchronously transition back into the next <see cref="PlayerLoopTiming.Process"/> from the main thread at the time of the dispose. This behaves identically as <see cref="Yield(CancellationToken)"/> in case the call site is from the main thread. 
+        /// </returns>
         public static ReturnToMainThread ReturnToMainThread(CancellationToken cancellationToken = default)
         {
             return new ReturnToMainThread(PlayerLoopTiming.Process, cancellationToken);
         }
 
         /// <summary>
-        /// Return to mainthread(same as await SwitchToMainThread) after using scope is closed.
+        /// Creates an asynchronously disposable that asynchronously yields back to the next provided <see cref="PlayerLoopTiming"/> from the main thread after using scope is closed, with specified <see cref="CancellationToken"/>.
         /// </summary>
+        /// <returns>
+        /// A context that, when disposed, will asynchronously transition back into the next provided <see cref="PlayerLoopTiming"/> from the main thread at the time of the dispose. This behaves identically as <see cref="Yield(PlayerLoopTiming, CancellationToken)"/> in case the call site is from the main thread. 
+        /// </returns>
         public static ReturnToMainThread ReturnToMainThread(PlayerLoopTiming timing, CancellationToken cancellationToken = default)
         {
             return new ReturnToMainThread(timing, cancellationToken);
         }
 
         /// <summary>
-        /// Queue the action to PlayerLoop.
+        /// Queue the action execution to the next specified <see cref="PlayerLoopTiming"/>.
         /// </summary>
         public static void Post(Action action, PlayerLoopTiming timing = PlayerLoopTiming.Process)
         {
             GDTaskPlayerLoopAutoload.AddContinuation(timing, action);
         }
 
-
+        /// <summary>
+        /// Creates an awaitable that asynchronously yields to <see cref="ThreadPool"/> when awaited.
+        /// </summary>
+        /// <returns>
+        /// A context that, when awaited, will asynchronously transition to <see cref="ThreadPool"/> at the time of the await.
+        /// </returns>
         public static SwitchToThreadPoolAwaitable SwitchToThreadPool()
         {
             return new SwitchToThreadPoolAwaitable();
         }
 
         /// <summary>
-        /// Note: use SwitchToThreadPool is recommended.
+        /// Creates an awaitable that asynchronously yields to the provided <see cref="SynchronizationContext"/> when awaited, with specified <see cref="CancellationToken"/>.
         /// </summary>
-        public static SwitchToTaskPoolAwaitable SwitchToTaskPool()
-        {
-            return new SwitchToTaskPoolAwaitable();
-        }
-
+        /// <returns>
+        /// A context that, when awaited, will asynchronously transition to the provided <see cref="SynchronizationContext"/> at the time of the await.
+        /// </returns>
         public static SwitchToSynchronizationContextAwaitable SwitchToSynchronizationContext(SynchronizationContext synchronizationContext, CancellationToken cancellationToken = default)
         {
             Error.ThrowArgumentNullException(synchronizationContext, nameof(synchronizationContext));
             return new SwitchToSynchronizationContextAwaitable(synchronizationContext, cancellationToken);
         }
 
+        /// <summary>
+        /// Creates an asynchronously disposable that asynchronously yields back to the provided <see cref="SynchronizationContext"/> after using scope is closed, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <returns>
+        /// A context that, when disposed, will asynchronously transition back into the provided <see cref="SynchronizationContext"/> at the time of the dispose.
+        /// </returns>
         public static ReturnToSynchronizationContext ReturnToSynchronizationContext(SynchronizationContext synchronizationContext, CancellationToken cancellationToken = default)
         {
             return new ReturnToSynchronizationContext(synchronizationContext, false, cancellationToken);
         }
 
+        /// <summary>
+        /// Creates an asynchronously disposable that asynchronously yields back to the <see cref="SynchronizationContext.Current"/> after using scope is closed, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <returns>
+        /// A context that, when disposed, will asynchronously transition back into the provided <see cref="SynchronizationContext.Current"/> at the time of the dispose.
+        /// </returns>
         public static ReturnToSynchronizationContext ReturnToCurrentSynchronizationContext(bool dontPostWhenSameContext = true, CancellationToken cancellationToken = default)
         {
             return new ReturnToSynchronizationContext(SynchronizationContext.Current, dontPostWhenSameContext, cancellationToken);
@@ -199,35 +226,6 @@ namespace Fractural.Tasks
             public void UnsafeOnCompleted(Action continuation)
             {
                 ThreadPool.UnsafeQueueUserWorkItem(switchToCallback, continuation);
-            }
-
-            static void Callback(object state)
-            {
-                var continuation = (Action)state;
-                continuation();
-            }
-        }
-    }
-
-    public struct SwitchToTaskPoolAwaitable
-    {
-        public Awaiter GetAwaiter() => new Awaiter();
-
-        public struct Awaiter : ICriticalNotifyCompletion
-        {
-            static readonly Action<object> switchToCallback = Callback;
-
-            public bool IsCompleted => false;
-            public void GetResult() { }
-
-            public void OnCompleted(Action continuation)
-            {
-                Task.Factory.StartNew(switchToCallback, continuation, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
-            }
-
-            public void UnsafeOnCompleted(Action continuation)
-            {
-                Task.Factory.StartNew(switchToCallback, continuation, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
             }
 
             static void Callback(object state)

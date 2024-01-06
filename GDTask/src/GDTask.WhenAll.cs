@@ -7,6 +7,12 @@ namespace Fractural.Tasks
 {
     public partial struct GDTask
     {
+        /// <summary>
+        /// Creates a task that will complete when all of the supplied tasks have completed.
+        /// </summary>
+        /// <param name="tasks">The tasks to wait on for completion.</param>
+        /// <typeparam name="T">The type of the result returned by the task.</typeparam>
+        /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
         public static GDTask<T[]> WhenAll<T>(params GDTask<T>[] tasks)
         {
             if (tasks.Length == 0)
@@ -17,6 +23,7 @@ namespace Fractural.Tasks
             return new GDTask<T[]>(new WhenAllPromise<T>(tasks, tasks.Length), 0);
         }
 
+        /// <inheritdoc cref="WhenAll{T}(Fractural.Tasks.GDTask{T}[])"/>
         public static GDTask<T[]> WhenAll<T>(IEnumerable<GDTask<T>> tasks)
         {
             using (var span = ArrayPoolUtil.Materialize(tasks))
@@ -26,6 +33,11 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Creates a task that will complete when all of the supplied tasks have completed.
+        /// </summary>
+        /// <param name="tasks">The tasks to wait on for completion.</param>
+        /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
         public static GDTask WhenAll(params GDTask[] tasks)
         {
             if (tasks.Length == 0)
@@ -36,6 +48,7 @@ namespace Fractural.Tasks
             return new GDTask(new WhenAllPromise(tasks, tasks.Length), 0);
         }
 
+        /// <inheritdoc cref="WhenAll(Fractural.Tasks.GDTask[])"/>
         public static GDTask WhenAll(IEnumerable<GDTask> tasks)
         {
             using (var span = ArrayPoolUtil.Materialize(tasks))
