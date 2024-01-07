@@ -3,9 +3,10 @@ using Godot;
 
 namespace Fractural.Tasks.Triggers
 {
+    /// Provides async extensions methods for <see cref="Node"/>.
     public static partial class AsyncTriggerExtensions
     {
-        public static AsyncEnterTreeTrigger GetAsyncAwakeTrigger(this Node node)
+        public static AsyncEnterTreeTrigger GetAsyncEnterTreeTrigger(this Node node)
         {
             return node.GetOrAddImmediateChild<AsyncEnterTreeTrigger>();
         }
@@ -13,7 +14,7 @@ namespace Fractural.Tasks.Triggers
 
     public sealed partial class AsyncEnterTreeTrigger : AsyncTriggerBase<AsyncUnit>
     {
-        public GDTask AwakeAsync()
+        public GDTask OnEnterTreeAsync()
         {
             if (calledEnterTree) return GDTask.CompletedTask;
 

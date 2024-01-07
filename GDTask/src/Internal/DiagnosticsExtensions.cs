@@ -14,11 +14,28 @@ using System.Threading.Tasks;
 
 namespace Fractural.Tasks.Internal
 {
-    internal static class DiagnosticsExtensions
+    internal static partial class DiagnosticsExtensions
     {
         static bool displayFilenames = true;
 
-        static readonly Regex typeBeautifyRegex = new Regex("`.+$", RegexOptions.Compiled);
+#if !NET7_0_OR_GREATER
+        private static readonly Regex typeBeautifyRegex = new Regex("`.+$", RegexOptions.Compiled);
+#else
+        [GeneratedRegex("`.+$")]
+        private static partial Regex GetTypeBeautifyRegex();
+#endif
+
+        private static Regex TypeBeautifyRegex
+        {
+            get
+            {
+#if NET7_0_OR_GREATER
+                return GetTypeBeautifyRegex();
+#else
+                return typeBeautifyRegex;
+#endif
+            }
+        }
 
         static readonly Dictionary<Type, string> builtInTypeNames = new Dictionary<Type, string>
         {
@@ -190,7 +207,7 @@ namespace Fractural.Tasks.Internal
                 genericType = "Task";
             }
 
-            return typeBeautifyRegex.Replace(genericType, "").Replace("GDTask.Triggers.", "").Replace("GDTask.Internal.", "").Replace("GDTask.", "") + "<" + innerFormat + ">";
+            return TypeBeautifyRegex.Replace(genericType, "").Replace("GDTask.Triggers.", "").Replace("GDTask.Internal.", "").Replace("GDTask.", "") + "<" + innerFormat + ">";
         }
 
         static bool IgnoreLine(MethodBase methodInfo)

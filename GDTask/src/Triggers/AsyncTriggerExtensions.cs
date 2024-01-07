@@ -10,7 +10,7 @@ namespace Fractural.Tasks
         /// <summary>This CancellationToken is canceled when the Node will be destroyed.</summary>
         public static CancellationToken GetCancellationTokenOnDestroy(this Node node)
         {
-            return node.GetAsyncDestroyTrigger().CancellationToken;
+            return node.GetAsyncPredeleteTrigger().CancellationToken;
         }
     }
 }
@@ -19,8 +19,7 @@ namespace Fractural.Tasks.Triggers
 {
     public static partial class AsyncTriggerExtensions
     {
-        // Special for single operation.
-		public static T GetImmediateChild<T>(this Node node, bool includeRoot = true)
+		internal static T GetImmediateChild<T>(this Node node, bool includeRoot = true)
 		{
 			if (node == null) throw new ArgumentNullException(nameof(node));
 			if (includeRoot && node is T castedRoot)
@@ -33,14 +32,14 @@ namespace Fractural.Tasks.Triggers
 			return default(T);
 		}
 
-		public static T AddImmediateChild<T>(this Node node) where T : Node, new()
+		internal static T AddImmediateChild<T>(this Node node) where T : Node, new()
 		{
 			T child = new T();
 			node.AddChild(child);
 			return child;
 		}
 
-		public static T GetOrAddImmediateChild<T>(this Node node) where T : Node, new()
+		internal static T GetOrAddImmediateChild<T>(this Node node) where T : Node, new()
 		{
 			T child = GetImmediateChild<T>(node);
 			if (child == null)
@@ -48,20 +47,28 @@ namespace Fractural.Tasks.Triggers
 			return child;
 		}
 
-        /// <summary>This function is called when the Node will be destroyed.</summary>
-        public static GDTask OnDestroyAsync(this Node node)
+		/// <summary>
+		/// Creates a task that will complete when the <see cref="Node"/> is receiving <see cref="Node.NotificationPredelete"/>
+		/// </summary>
+		public static GDTask OnDestroyAsync(this Node node)
         {
-            return node.GetAsyncDestroyTrigger().OnDestroyAsync();
+            return node.GetAsyncPredeleteTrigger().OnPredeleteAsync();
         }
 
-        public static GDTask StartAsync(this Node node)
+		/// <summary>
+		/// Creates a task that will complete when the <see cref="Node._Ready"/> is called
+		/// </summary>
+        public static GDTask OnReadyAsync(this Node node)
         {
-            return node.GetAsyncStartTrigger().StartAsync();
+            return node.GetAsyncStartTrigger().OnReadyAsync();
         }
 
-        public static GDTask AwakeAsync(this Node node)
+        /// <summary>
+        /// Creates a task that will complete when the <see cref="Node._EnterTree"/> is called
+        /// </summary>
+        public static GDTask OnEnterTreeAsync(this Node node)
         {
-            return node.GetAsyncAwakeTrigger().AwakeAsync();
+            return node.GetAsyncEnterTreeTrigger().OnEnterTreeAsync();
         }
     }
 }

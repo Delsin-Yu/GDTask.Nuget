@@ -104,16 +104,17 @@ namespace Fractural.Tasks.Internal
             {
                 var j = tail - 1;
 
-                for (int i = 0; i < loopItems.Length; i++)
+                var loopItemSpan = loopItems.AsSpan();
+                for (int i = 0; i < loopItemSpan.Length; i++)
                 {
-                    var action = loopItems[i];
+                    var action = loopItemSpan[i];
                     if (action != null)
                     {
                         try
                         {
                             if (!action.MoveNext())
                             {
-                                loopItems[i] = null;
+                                loopItemSpan[i] = null;
                             }
                             else
                             {
@@ -122,7 +123,7 @@ namespace Fractural.Tasks.Internal
                         }
                         catch (Exception ex)
                         {
-                            loopItems[i] = null;
+                            loopItemSpan[i] = null;
                             try
                             {
                                 unhandledExceptionCallback(ex);
@@ -134,29 +135,29 @@ namespace Fractural.Tasks.Internal
                     // find null, loop from tail
                     while (i < j)
                     {
-                        var fromTail = loopItems[j];
+                        var fromTail = loopItemSpan[j];
                         if (fromTail != null)
                         {
                             try
                             {
                                 if (!fromTail.MoveNext())
                                 {
-                                    loopItems[j] = null;
+                                    loopItemSpan[j] = null;
                                     j--;
                                     continue; // next j
                                 }
                                 else
                                 {
                                     // swap
-                                    loopItems[i] = fromTail;
-                                    loopItems[j] = null;
+                                    loopItemSpan[i] = fromTail;
+                                    loopItemSpan[j] = null;
                                     j--;
                                     goto NEXT_LOOP; // next i
                                 }
                             }
                             catch (Exception ex)
                             {
-                                loopItems[j] = null;
+                                loopItemSpan[j] = null;
                                 j--;
                                 try
                                 {

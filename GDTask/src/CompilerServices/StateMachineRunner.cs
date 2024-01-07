@@ -1,4 +1,4 @@
-﻿#pragma warning disable CS1591
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 using System;
 using System.Linq;
@@ -11,8 +11,6 @@ namespace Fractural.Tasks.CompilerServices
     {
         Action MoveNext { get; }
         void Return();
-
-        Action ReturnAction { get; }
     }
 
     internal interface IStateMachineRunnerPromise : IGDTaskSource
@@ -31,23 +29,10 @@ namespace Fractural.Tasks.CompilerServices
         void SetException(Exception exception);
     }
 
-    internal static class StateMachineUtility
-    {
-        // Get AsyncStateMachine internal state to check IL2CPP bug
-        public static int GetState(IAsyncStateMachine stateMachine)
-        {
-            var info = stateMachine.GetType().GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                .First(x => x.Name.EndsWith("__state"));
-            return (int)info.GetValue(stateMachine);
-        }
-    }
-
     internal sealed class AsyncGDTaskVoid<TStateMachine> : IStateMachineRunner, ITaskPoolNode<AsyncGDTaskVoid<TStateMachine>>, IGDTaskSource
         where TStateMachine : IAsyncStateMachine
     {
         static TaskPool<AsyncGDTaskVoid<TStateMachine>> pool;
-
-        public Action ReturnAction { get; }
 
         TStateMachine stateMachine;
 
@@ -56,9 +41,6 @@ namespace Fractural.Tasks.CompilerServices
         public AsyncGDTaskVoid()
         {
             MoveNext = Run;
-#if ENABLE_IL2CPP
-            ReturnAction = Return;
-#endif
         }
 
         public static void SetStateMachine(ref TStateMachine stateMachine, ref IStateMachineRunner runnerFieldRef)
@@ -121,9 +103,6 @@ namespace Fractural.Tasks.CompilerServices
     {
         static TaskPool<AsyncGDTask<TStateMachine>> pool;
 
-#if ENABLE_IL2CPP
-        readonly Action returnDelegate;  
-#endif
         public Action MoveNext { get; }
 
         TStateMachine stateMachine;
@@ -132,9 +111,6 @@ namespace Fractural.Tasks.CompilerServices
         AsyncGDTask()
         {
             MoveNext = Run;
-#if ENABLE_IL2CPP
-            returnDelegate = Return;
-#endif
         }
 
         public static void SetStateMachine(ref TStateMachine stateMachine, ref IStateMachineRunnerPromise runnerPromiseFieldRef)
@@ -210,12 +186,7 @@ namespace Fractural.Tasks.CompilerServices
             }
             finally
             {
-#if ENABLE_IL2CPP
-                // workaround for IL2CPP bug.
-                PlayerLoopHelper.AddContinuation(PlayerLoopTiming.LastPostLateUpdate, returnDelegate);
-#else
                 TryReturn();
-#endif
             }
         }
 
@@ -243,10 +214,6 @@ namespace Fractural.Tasks.CompilerServices
     {
         static TaskPool<AsyncGDTask<TStateMachine, T>> pool;
 
-#if ENABLE_IL2CPP
-        readonly Action returnDelegate;  
-#endif
-
         public Action MoveNext { get; }
 
         TStateMachine stateMachine;
@@ -255,9 +222,6 @@ namespace Fractural.Tasks.CompilerServices
         AsyncGDTask()
         {
             MoveNext = Run;
-#if ENABLE_IL2CPP
-            returnDelegate = Return;
-#endif
         }
 
         public static void SetStateMachine(ref TStateMachine stateMachine, ref IStateMachineRunnerPromise<T> runnerPromiseFieldRef)
@@ -333,12 +297,7 @@ namespace Fractural.Tasks.CompilerServices
             }
             finally
             {
-#if ENABLE_IL2CPP
-                // workaround for IL2CPP bug.
-                PlayerLoopHelper.AddContinuation(PlayerLoopTiming.LastPostLateUpdate, returnDelegate);
-#else
                 TryReturn();
-#endif
             }
         }
 

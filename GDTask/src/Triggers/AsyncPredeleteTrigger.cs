@@ -5,13 +5,13 @@ namespace Fractural.Tasks.Triggers
 {
     public static partial class AsyncTriggerExtensions
     {
-        public static AsyncDestroyTrigger GetAsyncDestroyTrigger(this Node node)
+        public static AsyncPredeleteTrigger GetAsyncPredeleteTrigger(this Node node)
         {
-            return node.GetOrAddImmediateChild<AsyncDestroyTrigger>();
+            return node.GetOrAddImmediateChild<AsyncPredeleteTrigger>();
         }
     }
 
-    public sealed partial class AsyncDestroyTrigger : Node
+    public sealed partial class AsyncPredeleteTrigger : Node
     {
         bool awakeCalled = false;
         bool called = false;
@@ -43,10 +43,10 @@ namespace Fractural.Tasks.Triggers
         public override void _Notification(int what)
         {
             if (what == NotificationPredelete)
-                OnDestroy();
+                OnPredelete();
         }
 
-        void OnDestroy()
+        void OnPredelete()
         {
             called = true;
 
@@ -54,13 +54,13 @@ namespace Fractural.Tasks.Triggers
             cancellationTokenSource?.Dispose();
         }
 
-        public GDTask OnDestroyAsync()
+        public GDTask OnPredeleteAsync()
         {
             if (called) return GDTask.CompletedTask;
 
             var tcs = new GDTaskCompletionSource();
 
-            // OnDestroy = Called Cancel.
+            // OnPredelete = Called Cancel.
             CancellationToken.RegisterWithoutCaptureExecutionContext(state =>
             {
                 var tcs2 = (GDTaskCompletionSource)state;
@@ -72,9 +72,9 @@ namespace Fractural.Tasks.Triggers
 
         class AwakeMonitor : IPlayerLoopItem
         {
-            readonly AsyncDestroyTrigger trigger;
+            readonly AsyncPredeleteTrigger trigger;
 
-            public AwakeMonitor(AsyncDestroyTrigger trigger)
+            public AwakeMonitor(AsyncPredeleteTrigger trigger)
             {
                 this.trigger = trigger;
             }
@@ -84,7 +84,7 @@ namespace Fractural.Tasks.Triggers
                 if (trigger.called) return false;
                 if (trigger == null)
                 {
-                    trigger.OnDestroy();
+                    trigger.OnPredelete();
                     return false;
                 }
                 return true;

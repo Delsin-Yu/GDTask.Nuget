@@ -7,11 +7,11 @@ using Fractural.Tasks.Internal;
 
 namespace Fractural.Tasks
 {
-    // public for add user custom.
-
+    /// <summary>
+    /// TODO: Tracking active tasks
+    /// </summary>
     public static class TaskTracker
     {
-        // TODO: Work on task tracker after getting tasks functioning
 #if DEBUG
 
         static int trackingId = 0;

@@ -21,7 +21,7 @@ namespace Fractural.Tasks.Triggers
             RaiseEvent(AsyncUnit.Default);
         }
 
-        public GDTask StartAsync()
+        public GDTask OnReadyAsync()
         {
             if (called) return GDTask.CompletedTask;
 

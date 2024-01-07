@@ -29,7 +29,7 @@ namespace Fractural.Tasks
 
         public static void RegisterRaiseCancelOnDestroy(this CancellationTokenSource cts, Node node)
         {
-            var trigger = node.GetAsyncDestroyTrigger();
+            var trigger = node.GetAsyncPredeleteTrigger();
             trigger.CancellationToken.RegisterWithoutCaptureExecutionContext(CancelCancellationTokenSourceStateDelegate, cts);
         }
     }

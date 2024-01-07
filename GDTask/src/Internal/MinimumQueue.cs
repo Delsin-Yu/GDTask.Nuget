@@ -16,7 +16,7 @@ namespace Fractural.Tasks.Internal
 
         public MinimumQueue(int capacity)
         {
-            if (capacity < 0) throw new ArgumentOutOfRangeException("capacity");
+            if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
             array = new T[capacity];
             head = tail = size = 0;
         }
