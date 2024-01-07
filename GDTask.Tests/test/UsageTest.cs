@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
@@ -15,7 +17,11 @@ public class UsageTest : TestClass
 		// ReSharper disable RedundantAssignment
 		// ReSharper disable once NotAccessedVariable
 		// ReSharper disable once JoinDeclarationAndInitializer
+		// ReSharper disable NotAccessedVariable
+		
 		int result;
+
+		#region GDTask.Delay
 
 		await GDTask.Yield();
 		await GDTask.Yield(PlayerLoopTiming.Process);
@@ -34,6 +40,11 @@ public class UsageTest : TestClass
 		await GDTask.Delay(1000, DelayType.Realtime, PlayerLoopTiming.PhysicsProcess, CancellationToken.None);
 		await GDTask.Delay(TimeSpan.FromSeconds(1), DelayType.Realtime, PlayerLoopTiming.PhysicsProcess);
 		await GDTask.Delay(TimeSpan.FromSeconds(1), DelayType.Realtime, PlayerLoopTiming.PhysicsProcess, CancellationToken.None);
+
+		#endregion
+
+
+		#region GDTasl.Factory
 
 		await GDTask.FromException(new());
 		await GDTask.FromException<int>(new());
@@ -57,6 +68,11 @@ public class UsageTest : TestClass
 		result = await deferred2;
 		await GDTask.Never(CancellationToken.None);
 		await GDTask.Never<int>(CancellationToken.None);
+
+		#endregion
+
+		
+		#region GDTask.Threading
 
 		await GDTask.RunOnThreadPool(() => GD.Print("Run"), true, CancellationToken.None);
 		await GDTask.RunOnThreadPool(obj => GD.Print((string)obj), "Run", true, CancellationToken.None);
@@ -104,11 +120,20 @@ public class UsageTest : TestClass
 			GD.Print("ThreadPool: ThreadId =" + Environment.CurrentManagedThreadId);
 		}
 
+		#endregion
+
+		
+		#region GDTask.Wait
+
 		await GDTask.WaitUntil(() => true, PlayerLoopTiming.Process, CancellationToken.None);
 		await GDTask.WaitWhile(() => false, PlayerLoopTiming.Process, CancellationToken.None);
 		await GDTask.WaitUntilCanceled(CancellationToken.None, PlayerLoopTiming.Process);
 		GDTask.WaitUntilValueChanged((object)null, obj => Time.GetTicksMsec(), PlayerLoopTiming.Process, null, CancellationToken.None);
 
+		#endregion
+
+		
+		#region GDTask.WhenAll
 
 		int[] resultArray;
 		await GDTask.WhenAll(GDTask.CompletedTask);
@@ -117,11 +142,21 @@ public class UsageTest : TestClass
 		resultArray = await GDTask.WhenAll(Enumerable.Range(0, 20).Select(GDTask.FromResult));
 		(result, result) = await GDTask.WhenAll(GDTask.FromResult(1), GDTask.FromResult(2));
 
+		#endregion
+
+		
+		#region GDTask.WhenAny
+
 		result = await GDTask.WhenAny(GDTask.CompletedTask);
 		result = await GDTask.WhenAny(Enumerable.Repeat(GDTask.CompletedTask, 20));
 		(result, result) = await GDTask.WhenAny(GDTask.FromResult(1));
 		(result, result) = await GDTask.WhenAny(Enumerable.Range(0, 20).Select(GDTask.FromResult));
 		(result, result, result) = await GDTask.WhenAny(GDTask.FromResult(1), GDTask.FromResult(2));
+
+		#endregion
+
+		
+		#region GDTask.Extensions.Conversion
 
 		await Task.Delay(5).AsGDTask(true);
 		result = await Task.FromResult(5).AsGDTask(true);
@@ -132,11 +167,94 @@ public class UsageTest : TestClass
 		await GDTask.Delay(5).AttachExternalCancellation(CancellationToken.None);
 		result = await GDTask.FromResult(5).AttachExternalCancellation(CancellationToken.None);
 
+		#endregion
+
+		
+		#region GDTask.Extensions.Shorthand
+
 		await new[] { GDTask.CompletedTask };
 		await Enumerable.Repeat(GDTask.CompletedTask, 20);
-		await new[] {GDTask.FromResult(1)};
+		await new[] { GDTask.FromResult(1) };
 		await Enumerable.Range(0, 20).Select(GDTask.FromResult);
 		await (GDTask.FromResult(1), GDTask.FromResult(2));
+
+		#endregion
+
+		
+		#region GDTask.Extensions.Observable
+
+		var observable = new IntObservable();
+		GDTask.Delay(100).ContinueWith(() => observable.UpdateValueAndFinish(5)).Forget();
+		result = await observable.ToGDTask(true, CancellationToken.None);
+
+		var asyncUnitObserver = new AsyncUnitObserver();
+		var asyncUnitObservable = GDTask.Delay(1).ToObservable();
+		using (asyncUnitObservable.Subscribe(asyncUnitObserver)) 
+			await asyncUnitObserver;
+
+		var unitObserver = new UnitObserver();
+		var unitObservable = GDTask.Delay(1).ToObservable<Unit>();
+		using (unitObservable.Subscribe(unitObserver)) 
+			await asyncUnitObserver;
+
+		var gdTaskObserver = new IntObserver();
+		var gdTaskObservable = GDTask.Delay(1).ContinueWith(() => 5).ToObservable();
+		using (gdTaskObservable.Subscribe(gdTaskObserver)) 
+			await gdTaskObserver;
+
+		#endregion
+	}
+
+	private class AsyncUnitObserver : AwaitableObserver<AsyncUnit> { }
+	private class UnitObserver : AwaitableObserver<Unit> { }
+	private class IntObserver : AwaitableObserver<int> { }
+
+	
+	private class AwaitableObserver<T> : IObserver<T> where T : struct
+	{
+		private T? value;
+		private bool _isCompleted;
+		void IObserver<T>.OnError(Exception error) { }
+		void IObserver<T>.OnNext(T newValue) => value = newValue;
+		void IObserver<T>.OnCompleted() => _isCompleted = true;
+		public GDTask.Awaiter GetAwaiter() => GDTask.WaitUntil(() => _isCompleted).GetAwaiter();
+	}
+	
+	private class IntObservable : IObservable<int>
+	{
+		private readonly List<IObserver<int>> _observers = new();
+
+		public IDisposable Subscribe(IObserver<int> observer)
+		{
+			if (!_observers.Contains(observer))
+				_observers.Add(observer);
+			return new UnSubscriber(_observers, observer);
+		}
+
+		public void UpdateValueAndFinish(int newValue)
+		{
+			foreach (var observer in _observers) observer.OnNext(newValue);
+			foreach (var observer in _observers.ToArray()) observer.OnCompleted();
+			_observers.Clear();
+		}
+
+		private class UnSubscriber : IDisposable
+		{
+			private readonly List<IObserver<int>>_observers;
+			private readonly IObserver<int> _observer;
+
+			public UnSubscriber(List<IObserver<int>> observers, IObserver<int> observer)
+			{
+				_observers = observers;
+				_observer = observer;
+			}
+
+			public void Dispose()
+			{
+				if (_observer != null && _observers.Contains(_observer))
+					_observers.Remove(_observer);
+			}
+		}
 	}
 
 	public UsageTest(Node testScene) : base(testScene) { }

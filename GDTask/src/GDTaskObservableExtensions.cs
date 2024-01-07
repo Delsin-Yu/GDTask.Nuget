@@ -5,8 +5,18 @@ using Fractural.Tasks.Internal;
 
 namespace Fractural.Tasks
 {
+    /// <summary>
+    /// Provides extensions methods for <see cref="GDTask"/> on <see cref="IObservable{T}"/> related use cases.
+    /// </summary>
     public static class GDTaskObservableExtensions
     {
+        /// <summary>
+        /// Create task that completes when the <see cref="IObservable{T}"/> it subscribes to fires.
+        /// </summary>
+        /// <param name="source">The source <see cref="IObservable{T}"/> to subscribe to.</param>
+        /// <param name="useFirstValue">If set to true, <see cref="IObserver{T}.OnNext"/> is used, otherwise <see cref="IObserver{T}.OnCompleted"/> is used.</param>
+        /// <param name="cancellationToken">The cancellation token with which to cancel the task.</param>
+        /// <typeparam name="T">The object that provides notification information.</typeparam>
         public static GDTask<T> ToGDTask<T>(this IObservable<T> source, bool useFirstValue = false, CancellationToken cancellationToken = default)
         {
             var promise = new GDTaskCompletionSource<T>();
@@ -28,6 +38,11 @@ namespace Fractural.Tasks
             return promise.Task;
         }
 
+        /// <summary>
+        /// Create an <see cref="IObservable{T}"/> that fires when the supplied <see cref="GDTask{T}"/> completes.
+        /// </summary>
+        /// <param name="task">The source <see cref="GDTask{T}"/> to watch for.</param>
+        /// <typeparam name="T">The object that provides notification information.</typeparam>
         public static IObservable<T> ToObservable<T>(this GDTask<T> task)
         {
             if (task.Status.IsCompleted())
@@ -48,24 +63,32 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Ideally returns IObservabl[Unit] is best but GDTask does not have Unit so return AsyncUnit instead.
+        /// Create an <see cref="IObservable{AsyncUnit}"/> that fires when the supplied <see cref="GDTask"/> completes.
         /// </summary>
-        public static IObservable<AsyncUnit> ToObservable(this GDTask task)
+        /// <param name="task">The source <see cref="GDTask"/> to watch for.</param>
+        public static IObservable<AsyncUnit> ToObservable(this GDTask task) => task.ToObservable<AsyncUnit>();
+
+        /// <summary>
+        /// Create an <see cref="IObservable{TUnit}"/> that fires when the supplied <see cref="GDTask"/> completes.
+        /// </summary>
+        /// <param name="task">The source <see cref="GDTask"/> to watch for.</param>
+        /// <typeparam name="TUnit">A type with a single value, used to denote the successful completion of a void-returning action, such as <see cref="AsyncUnit"/>.</typeparam>
+        public static IObservable<TUnit> ToObservable<TUnit>(this GDTask task)
         {
             if (task.Status.IsCompleted())
             {
                 try
                 {
                     task.GetAwaiter().GetResult();
-                    return new ReturnObservable<AsyncUnit>(AsyncUnit.Default);
+                    return new ReturnObservable<TUnit>(default);
                 }
                 catch (Exception ex)
                 {
-                    return new ThrowObservable<AsyncUnit>(ex);
+                    return new ThrowObservable<TUnit>(ex);
                 }
             }
 
-            var subject = new AsyncSubject<AsyncUnit>();
+            var subject = new AsyncSubject<TUnit>();
             Fire(subject, task).Forget();
             return subject;
         }
@@ -87,7 +110,7 @@ namespace Fractural.Tasks
             subject.OnCompleted();
         }
 
-        static async GDTaskVoid Fire(AsyncSubject<AsyncUnit> subject, GDTask task)
+        static async GDTaskVoid Fire<TUnit>(AsyncSubject<TUnit> subject, GDTask task)
         {
             try
             {
@@ -99,7 +122,7 @@ namespace Fractural.Tasks
                 return;
             }
 
-            subject.OnNext(AsyncUnit.Default);
+            subject.OnNext(default);
             subject.OnCompleted();
         }
 

@@ -9,5 +9,6 @@
     <ProjectReference Include="../GDTask/GDTask.csproj" />
     <PackageReference Include="Chickensoft.GoDotTest" Version="1.2.3" />
     <PackageReference Include="Shouldly" Version="4.2.1" />
+    <PackageReference Include="System.Reactive" Version="*" />
   </ItemGroup>
 </Project>
