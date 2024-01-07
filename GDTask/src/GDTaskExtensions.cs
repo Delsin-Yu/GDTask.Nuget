@@ -7,10 +7,13 @@ using Fractural.Tasks.Internal;
 
 namespace Fractural.Tasks
 {
+    /// <summary>
+    /// Provides extensions methods for <see cref="GDTask"/>.
+    /// </summary>
     public static partial class GDTaskExtensions
     {
         /// <summary>
-        /// Convert Task[T] -> GDTask[T].
+        /// Create a <see cref="GDTask"/> that wraps around this task.
         /// </summary>
         public static GDTask<T> AsGDTask<T>(this Task<T> task, bool useCurrentSynchronizationContext = true)
         {
@@ -39,9 +42,7 @@ namespace Fractural.Tasks
             return promise.Task;
         }
 
-        /// <summary>
-        /// Convert Task -> GDTask.
-        /// </summary>
+        /// <inheritdoc cref="AsGDTask{T}"/>
         public static GDTask AsGDTask(this Task task, bool useCurrentSynchronizationContext = true)
         {
             var promise = new GDTaskCompletionSource();
@@ -69,6 +70,9 @@ namespace Fractural.Tasks
             return promise.Task;
         }
 
+        /// <summary>
+        /// Create a <see cref="Task"/> that wraps around this task.
+        /// </summary>
         public static Task<T> AsTask<T>(this GDTask<T> task)
         {
             try
@@ -123,6 +127,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="AsTask{T}"/>
         public static Task AsTask(this GDTask task)
         {
             try
@@ -177,18 +182,22 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Create a <see cref="AsyncLazy"/> that wraps around this task.
+        /// </summary>
         public static AsyncLazy ToAsyncLazy(this GDTask task)
         {
             return new AsyncLazy(task);
         }
 
+        /// <inheritdoc cref="ToAsyncLazy"/>
         public static AsyncLazy<T> ToAsyncLazy<T>(this GDTask<T> task)
         {
             return new AsyncLazy<T>(task);
         }
 
         /// <summary>
-        /// Ignore task result when cancel raised first.
+        /// Attach a <see cref="CancellationToken"/> to the given task, result is ignored when cancel is raised first.
         /// </summary>
         public static GDTask AttachExternalCancellation(this GDTask task, CancellationToken cancellationToken)
         {
@@ -210,9 +219,7 @@ namespace Fractural.Tasks
             return new GDTask(new AttachExternalCancellationSource(task, cancellationToken), 0);
         }
 
-        /// <summary>
-        /// Ignore task result when cancel raised first.
-        /// </summary>
+        /// <inheritdoc cref="AttachExternalCancellation"/>
         public static GDTask<T> AttachExternalCancellation<T>(this GDTask<T> task, CancellationToken cancellationToken)
         {
             if (!cancellationToken.CanBeCanceled)

@@ -114,7 +114,7 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Defers the creation of a specified asynchronous work when it's required.
+        /// Defers the creation of a specified asynchronous work until it's acquired.
         /// </summary>
         /// <param name="factory">The work to execute asynchronously</param>
         /// <returns>An <see cref="AsyncLazy"/> that represents the work for lazy initialization.</returns>

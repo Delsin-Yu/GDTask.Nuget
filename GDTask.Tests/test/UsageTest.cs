@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
 using Godot;
 using Environment = System.Environment;
@@ -11,6 +12,9 @@ public class UsageTest : TestClass
 {
 	public static async GDTask UsageDemo()
 	{
+		// ReSharper disable RedundantAssignment
+		// ReSharper disable once NotAccessedVariable
+		// ReSharper disable once JoinDeclarationAndInitializer
 		int result;
 
 		await GDTask.Yield();
@@ -116,8 +120,15 @@ public class UsageTest : TestClass
 		(result, result) = await GDTask.WhenAny(GDTask.FromResult(1));
 		(result, result) = await GDTask.WhenAny(Enumerable.Range(0, 20).Select(GDTask.FromResult));	
 		(result, result, result) = await GDTask.WhenAny(GDTask.FromResult(1), GDTask.FromResult(2));
-		
-		
+
+		await Task.Delay(5).AsGDTask(true);
+		result = await Task.FromResult(5).AsGDTask(true);
+		await GDTask.Delay(5).AsTask();
+		result = await GDTask.FromResult(5).AsTask();
+		await GDTask.Delay(5).ToAsyncLazy();
+		result = await GDTask.FromResult(5).ToAsyncLazy();
+		await GDTask.Delay(5).AttachExternalCancellation(CancellationToken.None);
+		result = await GDTask.FromResult(5).AttachExternalCancellation(CancellationToken.None);
 	}
 
 	public UsageTest(Node testScene) : base(testScene) { }

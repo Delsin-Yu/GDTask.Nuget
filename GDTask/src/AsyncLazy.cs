@@ -3,6 +3,9 @@ using System.Threading;
 
 namespace Fractural.Tasks
 {
+    /// <summary>
+    /// Provides support for lazy initialization of an asynchronous work.
+    /// </summary>
     public partial class AsyncLazy
     {
         static Action<object> continuation = SetCompletionSource;
