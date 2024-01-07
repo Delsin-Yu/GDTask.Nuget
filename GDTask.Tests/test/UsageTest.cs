@@ -80,6 +80,7 @@ public class UsageTest : TestClass
 			await GDTask.SwitchToThreadPool();
 			GD.Print("ThreadPool: ThreadId =" + Environment.CurrentManagedThreadId);
 		}
+
 		GD.Print("MainThread: ThreadId =" + Environment.CurrentManagedThreadId);
 		await using (GDTask.ReturnToMainThread(PlayerLoopTiming.Process, CancellationToken.None))
 		{
@@ -87,6 +88,7 @@ public class UsageTest : TestClass
 			GD.Print("ThreadPool: ThreadId =" + Environment.CurrentManagedThreadId);
 			GDTask.Post(() => GD.Print("ThreadPool Post: ThreadId =" + Environment.CurrentManagedThreadId), PlayerLoopTiming.Process);
 		}
+
 		GD.Print("MainThread: ThreadId =" + Environment.CurrentManagedThreadId);
 		await GDTask.SwitchToSynchronizationContext(SynchronizationContext.Current, CancellationToken.None);
 		GD.Print("SynchronizationContext: ThreadId =" + Environment.CurrentManagedThreadId);
@@ -101,7 +103,7 @@ public class UsageTest : TestClass
 			await GDTask.SwitchToThreadPool();
 			GD.Print("ThreadPool: ThreadId =" + Environment.CurrentManagedThreadId);
 		}
-		
+
 		await GDTask.WaitUntil(() => true, PlayerLoopTiming.Process, CancellationToken.None);
 		await GDTask.WaitWhile(() => false, PlayerLoopTiming.Process, CancellationToken.None);
 		await GDTask.WaitUntilCanceled(CancellationToken.None, PlayerLoopTiming.Process);
@@ -112,13 +114,13 @@ public class UsageTest : TestClass
 		await GDTask.WhenAll(GDTask.CompletedTask);
 		await GDTask.WhenAll(Enumerable.Repeat(GDTask.CompletedTask, 20));
 		resultArray = await GDTask.WhenAll(GDTask.FromResult(1));
-		resultArray = await GDTask.WhenAll(Enumerable.Range(0, 20).Select(GDTask.FromResult));	
+		resultArray = await GDTask.WhenAll(Enumerable.Range(0, 20).Select(GDTask.FromResult));
 		(result, result) = await GDTask.WhenAll(GDTask.FromResult(1), GDTask.FromResult(2));
-		
+
 		result = await GDTask.WhenAny(GDTask.CompletedTask);
 		result = await GDTask.WhenAny(Enumerable.Repeat(GDTask.CompletedTask, 20));
 		(result, result) = await GDTask.WhenAny(GDTask.FromResult(1));
-		(result, result) = await GDTask.WhenAny(Enumerable.Range(0, 20).Select(GDTask.FromResult));	
+		(result, result) = await GDTask.WhenAny(Enumerable.Range(0, 20).Select(GDTask.FromResult));
 		(result, result, result) = await GDTask.WhenAny(GDTask.FromResult(1), GDTask.FromResult(2));
 
 		await Task.Delay(5).AsGDTask(true);
@@ -129,6 +131,12 @@ public class UsageTest : TestClass
 		result = await GDTask.FromResult(5).ToAsyncLazy();
 		await GDTask.Delay(5).AttachExternalCancellation(CancellationToken.None);
 		result = await GDTask.FromResult(5).AttachExternalCancellation(CancellationToken.None);
+
+		await new[] { GDTask.CompletedTask };
+		await Enumerable.Repeat(GDTask.CompletedTask, 20);
+		await new[] {GDTask.FromResult(1)};
+		await Enumerable.Range(0, 20).Select(GDTask.FromResult);
+		await (GDTask.FromResult(1), GDTask.FromResult(2));
 	}
 
 	public UsageTest(Node testScene) : base(testScene) { }
