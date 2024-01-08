@@ -8,19 +8,16 @@ namespace Fractural.Tasks
     {
         public static readonly AsyncUnit Default = new AsyncUnit();
 
-        public override int GetHashCode()
-        {
-            return 0;
-        }
+        public override int GetHashCode() => 0;
 
-        public bool Equals(AsyncUnit other)
-        {
-            return true;
-        }
+        public bool Equals(AsyncUnit other) => true;
 
-        public override string ToString()
-        {
-            return "()";
-        }
+        public override string ToString() => "()";
+
+        public override bool Equals(object obj) => obj is AsyncUnit;
+
+        public static bool operator ==(AsyncUnit left, AsyncUnit right) => true;
+
+        public static bool operator !=(AsyncUnit left, AsyncUnit right) => false;
     }
 }

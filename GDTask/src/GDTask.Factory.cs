@@ -118,13 +118,13 @@ namespace Fractural.Tasks
         /// </summary>
         /// <param name="factory">The work to execute asynchronously</param>
         /// <returns>An <see cref="AsyncLazy"/> that represents the work for lazy initialization.</returns>
-        public static AsyncLazy Lazy(Func<GDTask> factory)
+        public static IAsyncLazy Lazy(Func<GDTask> factory)
         {
             return new AsyncLazy(factory);
         }
 
         /// <inheritdoc cref="Lazy"/>
-        public static AsyncLazy<T> Lazy<T>(Func<GDTask<T>> factory)
+        public static IAsyncLazy<T> Lazy<T>(Func<GDTask<T>> factory)
         {
             return new AsyncLazy<T>(factory);
         }

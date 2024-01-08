@@ -1,12 +1,36 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fractural.Tasks
 {
     /// <summary>
-    /// Provides support for lazy initialization of an asynchronous work.
+    /// Provides access a lazy initialized of an asynchronous work.
     /// </summary>
-    public partial class AsyncLazy
+    public interface IAsyncLazy
+    {
+        /// <summary>
+        /// Access the initialized task.
+        /// </summary>
+        GDTask Task { get; }
+        
+        /// <summary>
+        /// Gets an awaiter used to await this <see cref="GDTask" />.
+        /// </summary>
+        GDTask.Awaiter GetAwaiter();
+    }
+
+    /// <inheritdoc cref="IAsyncLazy"/>
+    public interface IAsyncLazy<T>
+    {
+        /// <inheritdoc cref="IAsyncLazy.Task"/>
+        GDTask<T> Task { get; }
+        
+        /// <inheritdoc cref="IAsyncLazy.GetAwaiter"/>
+        GDTask<T>.Awaiter GetAwaiter();
+    }
+
+    internal class AsyncLazy : IAsyncLazy
     {
         static Action<object> continuation = SetCompletionSource;
 
@@ -125,7 +149,7 @@ namespace Fractural.Tasks
         }
     }
 
-    public partial class AsyncLazy<T>
+    internal class AsyncLazy<T> : IAsyncLazy<T>
     {
         static Action<object> continuation = SetCompletionSource;
 

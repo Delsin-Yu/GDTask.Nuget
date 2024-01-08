@@ -1,46 +1,23 @@
 ﻿using System;
-using System.Linq;
 using Fractural.Tasks.Internal;
-using System.Threading;
 using Godot;
 
 namespace Fractural.Tasks
 {
-    public static class GDTaskLoopRunners
-    {
-        public struct GDTaskLoopRunnerProcess { };
-        public struct GDTaskLoopRunnerPhysicsProcess { };
-    }
-
+    /// <summary>
+    /// Indicates one of the functions from the player loop.
+    /// </summary>
     public enum PlayerLoopTiming
     {
+        /// <summary>
+        /// The <see cref="Node._Process"/> from the player loop.
+        /// </summary>
         Process = 0,
+        
+        /// <summary>
+        /// The <see cref="Node._PhysicsProcess"/> from the player loop.
+        /// </summary>
         PhysicsProcess = 1,
-    }
-
-    [Flags]
-    public enum InjectPlayerLoopTimings
-    {
-        /// <summary>
-        /// Preset: All loops(default).
-        /// </summary>
-        All = Process | PhysicsProcess,
-
-        /// <summary>
-        /// Preset: All without last except LastPostLateUpdate.
-        /// </summary>
-        Standard = Process | PhysicsProcess,
-
-        /// <summary>
-        /// Preset: Minimum pattern, Update | PhysicsProcess | LastPostLateUpdate
-        /// </summary>
-        Minimum =
-            Process | PhysicsProcess,
-
-        // PlayerLoopTiming
-
-        PhysicsProcess = 1,
-        Process = 2,
     }
 
     public interface IPlayerLoopItem
@@ -51,10 +28,10 @@ namespace Fractural.Tasks
     /// <summary>
     /// Singleton that forwards Godot calls and values to GDTasks.
     /// </summary>
-    public partial class GDTaskPlayerLoopAutoload : Node
+    internal partial class GDTaskPlayerLoopAutoload : Node
     {
         public static int MainThreadId => Global.mainThreadId;
-        public static bool IsMainThread => System.Threading.Thread.CurrentThread.ManagedThreadId == Global.mainThreadId;
+        public static bool IsMainThread => System.Environment.CurrentManagedThreadId == Global.mainThreadId;
         public static void AddAction(PlayerLoopTiming timing, IPlayerLoopItem action) => Global.LocalAddAction(timing, action);
         public static void ThrowInvalidLoopTiming(PlayerLoopTiming playerLoopTiming) => throw new InvalidOperationException("Target playerLoopTiming is not injected. Please check PlayerLoopHelper.Initialize. PlayerLoopTiming:" + playerLoopTiming);
         public static void AddContinuation(PlayerLoopTiming timing, Action continuation) => Global.LocalAddContinuation(timing, continuation);
@@ -66,7 +43,7 @@ namespace Fractural.Tasks
             {
                 ThrowInvalidLoopTiming(timing);
             }
-            runner.AddAction(action);
+            runner!.AddAction(action);
         }
 
         // NOTE: Continuation means a asynchronous task invoked by another task after the other task finishes.
@@ -77,7 +54,7 @@ namespace Fractural.Tasks
             {
                 ThrowInvalidLoopTiming(timing);
             }
-            q.Enqueue(continuation);
+            q!.Enqueue(continuation);
         }
 
         public static GDTaskPlayerLoopAutoload Global
@@ -89,8 +66,8 @@ namespace Fractural.Tasks
                 var newInstance = new GDTaskPlayerLoopAutoload();
                 newInstance.Initialize();
                 var root = ((SceneTree)Engine.GetMainLoop()).Root;
-                root.CallDeferred(MethodName.AddChild, newInstance);
-                root.CallDeferred(MethodName.MoveChild, newInstance, 0);
+                root.CallDeferred(Node.MethodName.AddChild, newInstance);
+                root.CallDeferred(Node.MethodName.MoveChild, newInstance, 0);
                 newInstance.Name = "GDTaskPlayerLoopAutoload";
                 s_Global = newInstance;
 
@@ -122,7 +99,7 @@ namespace Fractural.Tasks
 
         private void Initialize()
         {
-            mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            mainThreadId = System.Environment.CurrentManagedThreadId;
             yielders = new[] {
                 new ContinuationQueue(PlayerLoopTiming.Process),
                 new ContinuationQueue(PlayerLoopTiming.PhysicsProcess),

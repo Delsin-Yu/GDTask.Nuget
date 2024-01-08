@@ -185,13 +185,13 @@ namespace Fractural.Tasks
         /// <summary>
         /// Create a <see cref="AsyncLazy"/> that wraps around this task.
         /// </summary>
-        public static AsyncLazy ToAsyncLazy(this GDTask task)
+        public static IAsyncLazy ToAsyncLazy(this GDTask task)
         {
             return new AsyncLazy(task);
         }
 
         /// <inheritdoc cref="ToAsyncLazy"/>
-        public static AsyncLazy<T> ToAsyncLazy<T>(this GDTask<T> task)
+        public static IAsyncLazy<T> ToAsyncLazy<T>(this GDTask<T> task)
         {
             return new AsyncLazy<T>(task);
         }

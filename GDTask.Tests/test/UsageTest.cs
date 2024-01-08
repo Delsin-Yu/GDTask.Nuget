@@ -226,13 +226,61 @@ public class UsageTest : TestClass
 		await node.OnPredeleteAsync();
 
 		#endregion
+		
+		#region CancellationTokenEqualityComparer
+
+		var isEqual = CancellationTokenEqualityComparer.Default.Equals(CancellationToken.None, CancellationToken.None);
+
+		#endregion
+
+		#region CancellationTokenExtensions
+
+		var oneSecondsToken = GDTask.Delay(1).ToCancellationToken();
+		await GDTask.Delay(5, cancellationToken: oneSecondsToken).SuppressCancellationThrow();
+		oneSecondsToken = GDTask.Delay(5).ToCancellationToken(GDTask.Delay(1).ToCancellationToken());
+		await GDTask.Delay(5, cancellationToken: oneSecondsToken).SuppressCancellationThrow();
+
+		oneSecondsToken = GDTask.Delay(1).ContinueWith(() => 5).ToCancellationToken();
+		await GDTask.Delay(5, cancellationToken: oneSecondsToken).SuppressCancellationThrow();
+		oneSecondsToken = GDTask.Delay(5).ContinueWith(() => 5).ToCancellationToken(GDTask.Delay(1).ToCancellationToken());
+		await GDTask.Delay(5, cancellationToken: oneSecondsToken).SuppressCancellationThrow();
+
+		var cancellationTokenSource = new CancellationTokenSource();
+		var (gdTask, registration) = cancellationTokenSource.Token.ToGDTask();
+		cancellationTokenSource.CancelAfter(20);
+		await gdTask;
+		await registration.DisposeAsync();
+		cancellationTokenSource = new();
+		cancellationTokenSource.CancelAfter(20);
+		await cancellationTokenSource.Token.WaitUntilCanceled();
+
+		var disposable = new AwaitableDisposable();
+		cancellationTokenSource = new();
+		cancellationTokenSource.CancelAfter(20);
+		disposable.AddTo(cancellationTokenSource.Token);
+		await disposable;
+
+		#endregion
+
 	}
 
+	private class AwaitableDisposable : IDisposable
+	{
+		private bool _disposed;
+
+		public GDTask.Awaiter GetAwaiter() => 
+			GDTask.WaitUntil(() => _disposed).GetAwaiter();
+		
+		public void Dispose()
+		{
+			_disposed = true;
+		}
+	}
+	
 	private class AsyncUnitObserver : AwaitableObserver<AsyncUnit> { }
 	private class UnitObserver : AwaitableObserver<Unit> { }
 	private class IntObserver : AwaitableObserver<int> { }
 
-	
 	private class AwaitableObserver<T> : IObserver<T> where T : struct
 	{
 		private T? value;

@@ -47,92 +47,56 @@ namespace Fractural.Tasks.Internal
         {
             var t = type.TypeHandle;
 
-            if (t.Equals(vector2Type)) return (object)GodotEqualityComparer.Vector2;
-            if (t.Equals(vector3Type)) return (object)GodotEqualityComparer.Vector3;
-            if (t.Equals(colorType)) return (object)GodotEqualityComparer.Color;
-            if (t.Equals(rectType)) return (object)GodotEqualityComparer.Rect2;
-            if (t.Equals(AABBType)) return (object)GodotEqualityComparer.AABB;
-            if (t.Equals(quaternionType)) return (object)GodotEqualityComparer.Quaternion;
+            if (t.Equals(vector2Type)) return Vector2;
+            if (t.Equals(vector3Type)) return Vector3;
+            if (t.Equals(colorType)) return Color;
+            if (t.Equals(rectType)) return Rect2;
+            if (t.Equals(AABBType)) return AABB;
+            if (t.Equals(quaternionType)) return Quaternion;
 
             return null;
         }
 
         sealed class Vector2EqualityComparer : IEqualityComparer<Vector2>
         {
-            public bool Equals(Vector2 self, Vector2 vector)
-            {
-                return self.X.Equals(vector.X) && self.Y.Equals(vector.Y);
-            }
+            public bool Equals(Vector2 self, Vector2 vector) => self.Equals(vector);
 
-            public int GetHashCode(Vector2 obj)
-            {
-                return obj.X.GetHashCode() ^ obj.Y.GetHashCode() << 2;
-            }
+            public int GetHashCode(Vector2 obj) => obj.GetHashCode();
         }
 
         sealed class Vector3EqualityComparer : IEqualityComparer<Vector3>
         {
-            public bool Equals(Vector3 self, Vector3 vector)
-            {
-                return self.X.Equals(vector.X) && self.Y.Equals(vector.Y) && self.Z.Equals(vector.Z);
-            }
+            public bool Equals(Vector3 self, Vector3 vector) => self.Equals(vector);
 
-            public int GetHashCode(Vector3 obj)
-            {
-                return obj.X.GetHashCode() ^ obj.Y.GetHashCode() << 2 ^ obj.Z.GetHashCode() >> 2;
-            }
+            public int GetHashCode(Vector3 obj) => obj.GetHashCode();
         }
 
         sealed class ColorEqualityComparer : IEqualityComparer<Color>
         {
-            public bool Equals(Color self, Color other)
-            {
-                return self.R.Equals(other.R) && self.G.Equals(other.G) && self.B.Equals(other.B) && self.A.Equals(other.A);
-            }
+            public bool Equals(Color self, Color other) => self.Equals(other);
 
-            public int GetHashCode(Color obj)
-            {
-                return obj.R.GetHashCode() ^ obj.G.GetHashCode() << 2 ^ obj.B.GetHashCode() >> 2 ^ obj.A.GetHashCode() >> 1;
-            }
+            public int GetHashCode(Color obj) => obj.GetHashCode();
         }
 
         sealed class Rect2EqualityComparer : IEqualityComparer<Rect2>
         {
-            public bool Equals(Rect2 self, Rect2 other)
-            {
-                return self.Size.Equals(other.Size) && self.Position.Equals(other.Position);
-            }
+            public bool Equals(Rect2 self, Rect2 other) => self.Equals(other);
 
-            public int GetHashCode(Rect2 obj)
-            {
-                return obj.Size.GetHashCode() ^ obj.Position.GetHashCode() << 2;
-            }
+            public int GetHashCode(Rect2 obj) => obj.GetHashCode();
         }
 
         sealed class AABBEqualityComparer : IEqualityComparer<Aabb>
         {
-            public bool Equals(Aabb self, Aabb vector)
-            {
-                return self.Position.Equals(vector.Position) && self.Size.Equals(vector.Size);
-            }
+            public bool Equals(Aabb self, Aabb vector) => self.Equals(vector);
 
-            public int GetHashCode(Aabb obj)
-            {
-                return obj.Position.GetHashCode() ^ obj.Size.GetHashCode() << 2;
-            }
+            public int GetHashCode(Aabb obj) => obj.GetHashCode();
         }
 
         sealed class QuatEqualityComparer : IEqualityComparer<Quaternion>
         {
-            public bool Equals(Quaternion self, Quaternion vector)
-            {
-                return self.X.Equals(vector.X) && self.Y.Equals(vector.Y) && self.Z.Equals(vector.Z) && self.W.Equals(vector.W);
-            }
+            public bool Equals(Quaternion self, Quaternion vector) => self.Equals(vector);
 
-            public int GetHashCode(Quaternion obj)
-            {
-                return obj.X.GetHashCode() ^ obj.Y.GetHashCode() << 2 ^ obj.Z.GetHashCode() >> 2 ^ obj.W.GetHashCode() >> 1;
-            }
+            public int GetHashCode(Quaternion obj) => obj.GetHashCode();
         }
     }
 }

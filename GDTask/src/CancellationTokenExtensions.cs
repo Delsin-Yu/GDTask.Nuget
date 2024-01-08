@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fractural.Tasks
 {
+    /// <summary>
+    /// Provides extensions methods for <see cref="GDTask"/> on <see cref="CancellationToken"/> related use cases.
+    /// </summary>
     public static class CancellationTokenExtensions
     {
-        static readonly Action<object> cancellationTokenCallback = Callback;
-        static readonly Action<object> disposeCallback = DisposeCallback;
-
+        /// <summary>
+        /// Creates a <see cref="CancellationToken"/> from the specified <see cref="GDTask"/> that cancels after it completes.
+        /// </summary>
         public static CancellationToken ToCancellationToken(this GDTask task)
         {
             var cts = new CancellationTokenSource();
@@ -16,6 +20,9 @@ namespace Fractural.Tasks
             return cts.Token;
         }
 
+        /// <summary>
+        /// Creates a <see cref="CancellationToken"/> from the specified <see cref="GDTask"/> that cancels after it completes or is canceled by the linked <paramref name="linkToken"/>.
+        /// </summary>
         public static CancellationToken ToCancellationToken(this GDTask task, CancellationToken linkToken)
         {
             if (linkToken.IsCancellationRequested)
@@ -34,11 +41,13 @@ namespace Fractural.Tasks
             return cts.Token;
         }
 
+        /// <inheritdoc cref="ToCancellationToken(GDTask)"/>
         public static CancellationToken ToCancellationToken<T>(this GDTask<T> task)
         {
             return ToCancellationToken(task.AsGDTask());
         }
 
+        /// <inheritdoc cref="ToCancellationToken(GDTask, CancellationToken)"/>
         public static CancellationToken ToCancellationToken<T>(this GDTask<T> task, CancellationToken linkToken)
         {
             return ToCancellationToken(task.AsGDTask(), linkToken);
@@ -58,6 +67,9 @@ namespace Fractural.Tasks
             cts.Dispose();
         }
 
+        /// <summary>
+        /// Creates a task and <see cref="CancellationTokenRegistration"/> that will complete when the specified <see cref="CancellationToken"/> is canceled.
+        /// </summary>
         public static (GDTask, CancellationTokenRegistration) ToGDTask(this CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -66,7 +78,7 @@ namespace Fractural.Tasks
             }
 
             var promise = new GDTaskCompletionSource();
-            return (promise.Task, cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationTokenCallback, promise));
+            return (promise.Task, cancellationToken.RegisterWithoutCaptureExecutionContext(Callback, promise));
         }
 
         static void Callback(object state)
@@ -75,11 +87,20 @@ namespace Fractural.Tasks
             promise.TrySetResult();
         }
 
+        /// <summary>
+        /// Creates a <see cref="CancellationTokenAwaitable"/> that will complete when the specified <see cref="CancellationToken"/> is canceled.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public static CancellationTokenAwaitable WaitUntilCanceled(this CancellationToken cancellationToken)
         {
             return new CancellationTokenAwaitable(cancellationToken);
         }
 
+        /// <summary>
+        /// Register a <see cref="Action"/> to the supplied a <see cref="CancellationToken"/> and returns a <see cref="CancellationTokenRegistration"/>.
+        /// </summary>
+        /// <returns>A <see cref="CancellationTokenRegistration"/> that unregister the <paramref name="callback"/> when disposed.</returns>
         public static CancellationTokenRegistration RegisterWithoutCaptureExecutionContext(this CancellationToken cancellationToken, Action callback)
         {
             var restoreFlow = false;
@@ -102,6 +123,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="RegisterWithoutCaptureExecutionContext(System.Threading.CancellationToken,System.Action)"/>
         public static CancellationTokenRegistration RegisterWithoutCaptureExecutionContext(this CancellationToken cancellationToken, Action<object> callback, object state)
         {
             var restoreFlow = false;
@@ -124,9 +146,12 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Register this <see cref="IDisposable"/> to a <see cref="CancellationToken"/>  that gets disposed when the token is canceled.
+        /// </summary>
         public static CancellationTokenRegistration AddTo(this IDisposable disposable, CancellationToken cancellationToken)
         {
-            return cancellationToken.RegisterWithoutCaptureExecutionContext(disposeCallback, disposable);
+            return cancellationToken.RegisterWithoutCaptureExecutionContext(DisposeCallback, disposable);
         }
 
         static void DisposeCallback(object state)
@@ -136,40 +161,60 @@ namespace Fractural.Tasks
         }
     }
 
+
+    /// <summary>
+    /// A context that will complete when the associated <see cref="CancellationToken"/> is canceled.
+    /// </summary>
     public struct CancellationTokenAwaitable
     {
         CancellationToken cancellationToken;
 
-        public CancellationTokenAwaitable(CancellationToken cancellationToken)
+        internal CancellationTokenAwaitable(CancellationToken cancellationToken)
         {
             this.cancellationToken = cancellationToken;
         }
 
+        /// <summary>
+        /// Gets an awaiter used to await this <see cref="CancellationTokenAwaitable"/>.
+        /// </summary>
         public Awaiter GetAwaiter()
         {
             return new Awaiter(cancellationToken);
         }
 
+        /// <summary>
+        /// Provides an object that waits for the completion of a <see cref="CancellationToken"/>.
+        /// </summary>
         public struct Awaiter : ICriticalNotifyCompletion
         {
             CancellationToken cancellationToken;
 
-            public Awaiter(CancellationToken cancellationToken)
+            internal Awaiter(CancellationToken cancellationToken)
             {
                 this.cancellationToken = cancellationToken;
             }
 
+            /// <summary>
+            /// Gets a value that indicates whether the <see cref="CancellationToken"/> has canceled.
+            /// </summary>
             public bool IsCompleted => !cancellationToken.CanBeCanceled || cancellationToken.IsCancellationRequested;
 
+            /// <summary>
+            /// Do nothing
+            /// </summary>
             public void GetResult()
             {
             }
 
+            /// <summary>
+            /// Sets the action to perform when the <see cref="Awaiter"/> <see cref="CancellationToken"/> has canceled.
+            /// </summary>
             public void OnCompleted(Action continuation)
             {
                 UnsafeOnCompleted(continuation);
             }
 
+            /// <inheritdoc cref="OnCompleted"/>
             public void UnsafeOnCompleted(Action continuation)
             {
                 cancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
