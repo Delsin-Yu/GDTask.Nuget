@@ -4,7 +4,7 @@ using Godot;
 
 namespace Fractural.Tasks.Triggers
 {
-    public abstract partial class AsyncTriggerBase<T> : Node
+    internal abstract partial class AsyncTriggerBase<T> : Node
     {
         TriggerEvent<T> triggerEvent;
 
@@ -82,7 +82,7 @@ namespace Fractural.Tasks.Triggers
         GDTask OneShotAsync();
     }
 
-    public partial class AsyncTriggerHandler<T> : IAsyncOneShotTrigger
+    internal partial class AsyncTriggerHandler<T> : IAsyncOneShotTrigger
     {
         GDTask IAsyncOneShotTrigger.OneShotAsync()
         {
@@ -91,7 +91,7 @@ namespace Fractural.Tasks.Triggers
         }
     }
 
-    public sealed partial class AsyncTriggerHandler<T> : IGDTaskSource<T>, ITriggerHandler<T>, IDisposable
+    internal sealed partial class AsyncTriggerHandler<T> : IGDTaskSource<T>, ITriggerHandler<T>, IDisposable
     {
         static Action<object> cancellationCallback = CancellationCallback;
 

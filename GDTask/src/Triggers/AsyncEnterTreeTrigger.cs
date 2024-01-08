@@ -6,13 +6,34 @@ namespace Fractural.Tasks.Triggers
     /// Provides async extensions methods for <see cref="Node"/>.
     public static partial class AsyncTriggerExtensions
     {
-        public static AsyncEnterTreeTrigger GetAsyncEnterTreeTrigger(this Node node)
+        /// <inheritdoc cref="IAsyncEnterTreeHandler.OnEnterTreeAsync"/>
+        public static GDTask OnEnterTreeAsync(this Node node)
         {
-            return node.GetOrAddImmediateChild<AsyncEnterTreeTrigger>();
+            return node.GetAsyncEnterTreeTrigger().OnEnterTreeAsync();
+        }
+
+        /// <summary>
+        /// Gets an instance of <see cref="IAsyncEnterTreeHandler"/> for making repeatedly calls on <see cref="IAsyncEnterTreeHandler.OnEnterTreeAsync"/>
+        /// </summary>
+        public static IAsyncEnterTreeHandler GetAsyncEnterTreeTrigger(this Node node)
+        {
+            return node.GetOrCreateChild<AsyncEnterTreeTrigger>();
         }
     }
 
-    public sealed partial class AsyncEnterTreeTrigger : AsyncTriggerBase<AsyncUnit>
+    /// <summary>
+    /// Provide access to <see cref="OnEnterTreeAsync"/>
+    /// </summary>
+    public interface IAsyncEnterTreeHandler
+    {
+        /// <summary>
+        /// Creates a task that will complete when the <see cref="Node._EnterTree"/> is called
+        /// </summary>
+        /// <returns></returns>
+        GDTask OnEnterTreeAsync();
+    }
+    
+    internal sealed partial class AsyncEnterTreeTrigger : AsyncTriggerBase<AsyncUnit>, IAsyncEnterTreeHandler
     {
         public GDTask OnEnterTreeAsync()
         {

@@ -4,13 +4,33 @@ namespace Fractural.Tasks.Triggers
 {
     public static partial class AsyncTriggerExtensions
     {
-        public static AsyncReadyTrigger GetAsyncStartTrigger(this Node node)
+        /// <inheritdoc cref="IAsyncReadyHandler.OnReadyAsync"/>
+        public static GDTask OnReadyAsync(this Node node)
         {
-            return node.GetOrAddImmediateChild<AsyncReadyTrigger>();
+            return node.GetAsyncReadyTrigger().OnReadyAsync();
+        }
+
+        /// <summary>
+        /// Gets an instance of <see cref="IAsyncReadyHandler"/> for making repeatedly calls on <see cref="IAsyncReadyHandler.OnReadyAsync"/>
+        /// </summary>
+        public static IAsyncReadyHandler GetAsyncReadyTrigger(this Node node)
+        {
+            return node.GetOrCreateChild<AsyncReadyTrigger>();
         }
     }
 
-    public sealed partial class AsyncReadyTrigger : AsyncTriggerBase<AsyncUnit>
+    /// <summary>
+    /// Provide access to <see cref="OnReadyAsync"/>
+    /// </summary>
+    public interface IAsyncReadyHandler
+    {
+        /// <summary>
+        /// Creates a task that will complete when the <see cref="Node._Ready"/> is called
+        /// </summary>
+        GDTask OnReadyAsync();
+    }
+    
+    internal sealed partial class AsyncReadyTrigger : AsyncTriggerBase<AsyncUnit>, IAsyncReadyHandler
     {
         bool called;
 

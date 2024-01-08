@@ -5,16 +5,48 @@ namespace Fractural.Tasks.Triggers
 {
     public static partial class AsyncTriggerExtensions
     {
-        public static AsyncPredeleteTrigger GetAsyncPredeleteTrigger(this Node node)
+        /// <inheritdoc cref="IAsyncPredeleteHandler.OnPredeleteAsync"/>
+        public static GDTask OnPredeleteAsync(this Node node)
         {
-            return node.GetOrAddImmediateChild<AsyncPredeleteTrigger>();
+            return node.GetAsyncPredeleteTrigger().OnPredeleteAsync();
         }
+        
+        /// <summary>
+        /// Gets a <see cref="CancellationToken"/> that will cancel when the <see cref="Node"/> is receiving <see cref="Node.NotificationPredelete"/>
+        /// </summary>
+        public static CancellationToken GetAsyncPredeleteCancellationToken(this Node node)
+        {
+            return node.GetAsyncPredeleteTrigger().CancellationToken;
+        }
+
+        /// <summary>
+        /// Gets an instance of <see cref="IAsyncPredeleteHandler"/> for making repeatedly calls on <see cref="IAsyncPredeleteHandler.OnPredeleteAsync"/>
+        /// </summary>
+        public static IAsyncPredeleteHandler GetAsyncPredeleteTrigger(this Node node)
+        {
+            return node.GetOrCreateChild<AsyncPredeleteTrigger>();
+        }
+        
     }
 
-    public sealed partial class AsyncPredeleteTrigger : Node
+    /// <summary>
+    /// Provide access to <see cref="OnPredeleteAsync"/>
+    /// </summary>
+    public interface IAsyncPredeleteHandler
     {
-        bool awakeCalled = false;
-        bool called = false;
+        /// <summary>
+        /// Creates a task that will complete when the <see cref="Node"/> is receiving <see cref="Node.NotificationPredelete"/>
+        /// </summary>
+        /// <returns></returns>
+        GDTask OnPredeleteAsync();
+        
+        CancellationToken CancellationToken { get; }
+    }
+
+    internal sealed partial class AsyncPredeleteTrigger : Node, IAsyncPredeleteHandler
+    {
+        bool enterTreeCalled = false;
+        bool predeleteCalled = false;
         CancellationTokenSource cancellationTokenSource;
 
         public CancellationToken CancellationToken
@@ -26,7 +58,7 @@ namespace Fractural.Tasks.Triggers
                     cancellationTokenSource = new CancellationTokenSource();
                 }
 
-                if (!awakeCalled)
+                if (!enterTreeCalled)
                 {
                     GDTaskPlayerLoopAutoload.AddAction(PlayerLoopTiming.Process, new AwakeMonitor(this));
                 }
@@ -37,7 +69,7 @@ namespace Fractural.Tasks.Triggers
 
         public override void _EnterTree()
         {
-            awakeCalled = true;
+            enterTreeCalled = true;
         }
 
         public override void _Notification(int what)
@@ -48,7 +80,7 @@ namespace Fractural.Tasks.Triggers
 
         void OnPredelete()
         {
-            called = true;
+            predeleteCalled = true;
 
             cancellationTokenSource?.Cancel();
             cancellationTokenSource?.Dispose();
@@ -56,7 +88,7 @@ namespace Fractural.Tasks.Triggers
 
         public GDTask OnPredeleteAsync()
         {
-            if (called) return GDTask.CompletedTask;
+            if (predeleteCalled) return GDTask.CompletedTask;
 
             var tcs = new GDTaskCompletionSource();
 
@@ -81,7 +113,7 @@ namespace Fractural.Tasks.Triggers
 
             public bool MoveNext()
             {
-                if (trigger.called) return false;
+                if (trigger.predeleteCalled) return false;
                 if (trigger == null)
                 {
                     trigger.OnPredelete();

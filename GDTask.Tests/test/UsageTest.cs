@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 using Chickensoft.GoDotTest;
+using Fractural.Tasks.Triggers;
 using Godot;
 using Environment = System.Environment;
 
@@ -12,7 +13,10 @@ namespace Fractural.Tasks.Tests;
 
 public class UsageTest : TestClass
 {
-	public static async GDTask UsageDemo()
+	public UsageTest(Node testScene) : base(testScene) { }
+
+	
+	public async GDTask UsageDemo()
 	{
 		// ReSharper disable RedundantAssignment
 		// ReSharper disable once NotAccessedVariable
@@ -203,6 +207,25 @@ public class UsageTest : TestClass
 			await gdTaskObserver;
 
 		#endregion
+
+		#region GDTask.Extensions.Node
+
+		var node = new Node();
+		GDTask.Delay(1).ContinueWith(() => TestScene.AddChild(node)).Forget();
+		await node.OnEnterTreeAsync();
+		await node.OnReadyAsync();
+		await node.GetAsyncProcessTrigger().OnProcessAsync();
+		await node.GetAsyncPhysicsProcessTrigger().OnPhysicsProcessAsync();
+		var predeleteCancellationToken = node.GetAsyncPredeleteCancellationToken();
+		GDTask
+			.Delay(15, cancellationToken: predeleteCancellationToken)
+			.SuppressCancellationThrow()
+			.ContinueWith(isCanceled => GD.Print(isCanceled))
+			.Forget();
+		node.QueueFree();
+		await node.OnPredeleteAsync();
+
+		#endregion
 	}
 
 	private class AsyncUnitObserver : AwaitableObserver<AsyncUnit> { }
@@ -256,6 +279,4 @@ public class UsageTest : TestClass
 			}
 		}
 	}
-
-	public UsageTest(Node testScene) : base(testScene) { }
 }
