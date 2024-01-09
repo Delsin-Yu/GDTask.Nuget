@@ -12,7 +12,7 @@ namespace Fractural.Tasks.Triggers
         }
         
         /// <summary>
-        /// Gets a <see cref="CancellationToken"/> that will cancel when the <see cref="Node"/> is receiving <see cref="Node.NotificationPredelete"/>
+        /// Gets a <see cref="CancellationToken"/> that will cancel when the <see cref="Node"/> is receiving <see cref="GodotObject.NotificationPredelete"/>
         /// </summary>
         public static CancellationToken GetAsyncPredeleteCancellationToken(this Node node)
         {
@@ -35,11 +35,14 @@ namespace Fractural.Tasks.Triggers
     public interface IAsyncPredeleteHandler
     {
         /// <summary>
-        /// Creates a task that will complete when the <see cref="Node"/> is receiving <see cref="Node.NotificationPredelete"/>
+        /// Creates a task that will complete when the <see cref="Node"/> is receiving <see cref="GodotObject.NotificationPredelete"/>
         /// </summary>
         /// <returns></returns>
         GDTask OnPredeleteAsync();
         
+        /// <summary>
+        /// The <see cref="CancellationToken"/> associate with this handler.
+        /// </summary>
         CancellationToken CancellationToken { get; }
     }
 

@@ -38,7 +38,7 @@ namespace Fractural.Tasks
     }
 
     /// <summary>
-    /// GDTaskSource that has a return value of <see cref="T"/>
+    /// GDTaskSource that has a typed return value
     /// </summary>
     /// <typeparam name="T">Return value of the task source</typeparam>
     internal interface IGDTaskSource<out T> : IGDTaskSource

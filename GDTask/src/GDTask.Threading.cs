@@ -107,35 +107,50 @@ namespace Fractural.Tasks
         }
     }
 
+    /// <summary>
+    /// An awaitable that, when awaited, will asynchronously yields back to the next <see cref="PlayerLoopTiming"/>.
+    /// </summary>
     public struct SwitchToMainThreadAwaitable
     {
         readonly PlayerLoopTiming playerLoopTiming;
         readonly CancellationToken cancellationToken;
 
-        public SwitchToMainThreadAwaitable(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
+        internal SwitchToMainThreadAwaitable(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
         {
             this.playerLoopTiming = playerLoopTiming;
             this.cancellationToken = cancellationToken;
         }
 
+        /// <summary>
+        /// Gets an awaiter used to await this <see cref="SwitchToMainThreadAwaitable"/>.
+        /// </summary>
         public Awaiter GetAwaiter() => new Awaiter(playerLoopTiming, cancellationToken);
 
+        /// <summary>
+        /// Provides an awaiter for awaiting a <see cref="SwitchToMainThreadAwaitable"/>.
+        /// </summary>
         public struct Awaiter : ICriticalNotifyCompletion
         {
             readonly PlayerLoopTiming playerLoopTiming;
             readonly CancellationToken cancellationToken;
-
+            
+            /// <summary>
+            /// Initializes the <see cref="Awaiter"/>.
+            /// </summary>
             public Awaiter(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
             {
                 this.playerLoopTiming = playerLoopTiming;
                 this.cancellationToken = cancellationToken;
             }
 
+            /// <summary>
+            /// Gets whether this <see cref="SwitchToMainThreadAwaitable">Task</see> has completed.
+            /// </summary>
             public bool IsCompleted
             {
                 get
                 {
-                    var currentThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                    var currentThreadId = Environment.CurrentManagedThreadId;
                     if (GDTaskPlayerLoopAutoload.MainThreadId == currentThreadId)
                     {
                         return true; // run immediate.
@@ -147,13 +162,22 @@ namespace Fractural.Tasks
                 }
             }
 
+            /// <summary>
+            /// Ends the await on the completed <see cref="SwitchToMainThreadAwaitable"/>.
+            /// </summary>
             public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="SwitchToMainThreadAwaitable"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void OnCompleted(Action continuation)
             {
                 GDTaskPlayerLoopAutoload.AddContinuation(playerLoopTiming, continuation);
             }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="SwitchToMainThreadAwaitable"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
                 GDTaskPlayerLoopAutoload.AddContinuation(playerLoopTiming, continuation);
@@ -161,44 +185,71 @@ namespace Fractural.Tasks
         }
     }
 
+    /// <summary>
+    /// An context that, when disposed, will asynchronously yields back to the next specified <see cref="PlayerLoopTiming"/> on the main thread.
+    /// </summary>
     public struct ReturnToMainThread
     {
         readonly PlayerLoopTiming playerLoopTiming;
         readonly CancellationToken cancellationToken;
 
-        public ReturnToMainThread(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
+        internal ReturnToMainThread(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
         {
             this.playerLoopTiming = playerLoopTiming;
             this.cancellationToken = cancellationToken;
         }
 
+        /// <summary>
+        /// Dispose this context and asynchronously yields back to the next specified <see cref="PlayerLoopTiming"/> on the main thread.
+        /// </summary>
         public Awaiter DisposeAsync()
         {
             return new Awaiter(playerLoopTiming, cancellationToken); // run immediate.
         }
 
+        /// <summary>
+        /// Provides an awaiter for awaiting a <see cref="ReturnToMainThread"/>.
+        /// </summary>
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             readonly PlayerLoopTiming timing;
             readonly CancellationToken cancellationToken;
 
+            /// <summary>
+            /// Initializes the <see cref="Awaiter"/>.
+            /// </summary>
             public Awaiter(PlayerLoopTiming timing, CancellationToken cancellationToken)
             {
                 this.timing = timing;
                 this.cancellationToken = cancellationToken;
             }
 
+            /// <summary>
+            /// Return self
+            /// </summary>
             public Awaiter GetAwaiter() => this;
 
-            public bool IsCompleted => GDTaskPlayerLoopAutoload.MainThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId;
+            /// <summary>
+            /// Gets whether the current <see cref="GDTaskPlayerLoopAutoload.MainThreadId"/> is <see cref="Environment.CurrentManagedThreadId"/>.
+            /// </summary>
+            public bool IsCompleted => GDTaskPlayerLoopAutoload.MainThreadId == Environment.CurrentManagedThreadId;
 
+            /// <summary>
+            /// Ends the await on the completed <see cref="ReturnToMainThread"/>.
+            /// </summary>
             public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="ReturnToMainThread"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void OnCompleted(Action continuation)
             {
                 GDTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
             }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="ReturnToMainThread"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
                 GDTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
@@ -206,23 +257,44 @@ namespace Fractural.Tasks
         }
     }
 
-
+    /// <summary>
+    /// An context that, when disposed, will asynchronously yields to the thread pool.
+    /// </summary>
     public struct SwitchToThreadPoolAwaitable
     {
+        /// <summary>
+        /// Gets an awaiter used to await this <see cref="SwitchToThreadPoolAwaitable"/>.
+        /// </summary>
         public Awaiter GetAwaiter() => new Awaiter();
 
+        /// <summary>
+        /// Provides an awaiter for awaiting a <see cref="SwitchToThreadPoolAwaitable"/>.
+        /// </summary>
         public struct Awaiter : ICriticalNotifyCompletion
         {
             static readonly WaitCallback switchToCallback = Callback;
 
+            /// <summary>
+            /// Gets whether this <see cref="SwitchToThreadPoolAwaitable"/> has completed, always returns false.
+            /// </summary>
             public bool IsCompleted => false;
+            
+            /// <summary>
+            /// Do nothing
+            /// </summary>
             public void GetResult() { }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="SwitchToThreadPoolAwaitable"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void OnCompleted(Action continuation)
             {
                 ThreadPool.QueueUserWorkItem(switchToCallback, continuation);
             }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="SwitchToThreadPoolAwaitable"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
                 ThreadPool.UnsafeQueueUserWorkItem(switchToCallback, continuation);
@@ -236,39 +308,64 @@ namespace Fractural.Tasks
         }
     }
 
+    /// <summary>
+    /// An awaitable that asynchronously yields to the provided <see cref="SynchronizationContext"/> when awaited.
+    /// </summary>
     public struct SwitchToSynchronizationContextAwaitable
     {
         readonly SynchronizationContext synchronizationContext;
         readonly CancellationToken cancellationToken;
 
-        public SwitchToSynchronizationContextAwaitable(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
+        internal SwitchToSynchronizationContextAwaitable(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
         {
             this.synchronizationContext = synchronizationContext;
             this.cancellationToken = cancellationToken;
         }
 
+        /// <summary>
+        /// Gets an awaiter used to await this <see cref="SwitchToSynchronizationContextAwaitable"/>.
+        /// </summary>
         public Awaiter GetAwaiter() => new Awaiter(synchronizationContext, cancellationToken);
 
+        /// <summary>
+        /// Provides an awaiter for awaiting a <see cref="SwitchToSynchronizationContextAwaitable"/>.
+        /// </summary>
         public struct Awaiter : ICriticalNotifyCompletion
         {
             static readonly SendOrPostCallback switchToCallback = Callback;
             readonly SynchronizationContext synchronizationContext;
             readonly CancellationToken cancellationToken;
 
+            /// <summary>
+            /// Initializes the <see cref="Awaiter"/>.
+            /// </summary>
             public Awaiter(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
             {
                 this.synchronizationContext = synchronizationContext;
                 this.cancellationToken = cancellationToken;
             }
 
+            /// <summary>
+            /// Gets whether this <see cref="SwitchToSynchronizationContextAwaitable"/> has completed, always returns false.
+            /// </summary>
             public bool IsCompleted => false;
+            
+            /// <summary>
+            /// Ends the await on the completed <see cref="SwitchToSynchronizationContextAwaitable"/>.
+            /// </summary>
             public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="SwitchToSynchronizationContextAwaitable"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void OnCompleted(Action continuation)
             {
                 synchronizationContext.Post(switchToCallback, continuation);
             }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="SwitchToSynchronizationContextAwaitable"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
                 synchronizationContext.Post(switchToCallback, continuation);
@@ -282,24 +379,33 @@ namespace Fractural.Tasks
         }
     }
 
+    /// <summary>
+    /// An context that, when disposed, will asynchronously yields back to the previous <see cref="SynchronizationContext"/>.
+    /// </summary>
     public struct ReturnToSynchronizationContext
     {
         readonly SynchronizationContext syncContext;
         readonly bool dontPostWhenSameContext;
         readonly CancellationToken cancellationToken;
 
-        public ReturnToSynchronizationContext(SynchronizationContext syncContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
+        internal ReturnToSynchronizationContext(SynchronizationContext syncContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
         {
             this.syncContext = syncContext;
             this.dontPostWhenSameContext = dontPostWhenSameContext;
             this.cancellationToken = cancellationToken;
         }
 
+        /// <summary>
+        /// Dispose this context and asynchronously yields back to the previous <see cref="SynchronizationContext"/>.
+        /// </summary>
         public Awaiter DisposeAsync()
         {
             return new Awaiter(syncContext, dontPostWhenSameContext, cancellationToken);
         }
 
+        /// <summary>
+        /// Provides an awaiter for awaiting a <see cref="ReturnToSynchronizationContext"/>.
+        /// </summary>
         public struct Awaiter : ICriticalNotifyCompletion
         {
             static readonly SendOrPostCallback switchToCallback = Callback;
@@ -308,6 +414,9 @@ namespace Fractural.Tasks
             readonly bool dontPostWhenSameContext;
             readonly CancellationToken cancellationToken;
 
+            /// <summary>
+            /// Initializes the <see cref="Awaiter"/>.
+            /// </summary>
             public Awaiter(SynchronizationContext synchronizationContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
             {
                 this.synchronizationContext = synchronizationContext;
@@ -315,8 +424,14 @@ namespace Fractural.Tasks
                 this.cancellationToken = cancellationToken;
             }
 
+            /// <summary>
+            /// Return self
+            /// </summary>
             public Awaiter GetAwaiter() => this;
 
+            /// <summary>
+            /// Gets whether the <see cref="SynchronizationContext.Current"/> synchronizationContext is the captured one.
+            /// </summary>
             public bool IsCompleted
             {
                 get
@@ -335,13 +450,22 @@ namespace Fractural.Tasks
                 }
             }
 
+            /// <summary>
+            /// Ends the await on the completed <see cref="ReturnToSynchronizationContext"/>.
+            /// </summary>
             public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="ReturnToSynchronizationContext"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void OnCompleted(Action continuation)
             {
                 synchronizationContext.Post(switchToCallback, continuation);
             }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="ReturnToSynchronizationContext"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
                 synchronizationContext.Post(switchToCallback, continuation);

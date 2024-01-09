@@ -70,7 +70,7 @@ namespace Fractural.Tasks
     /// Acts as a linked list for TaskSources.
     /// </summary>
     /// <typeparam name="T">Same type as the class that implements this</typeparam>
-    public interface ITaskPoolNode<T>
+    internal interface ITaskPoolNode<T>
     {
         // Because interfaces cannot have fields, we store a reference to the field as a getter.
         // This is so we can directly set and get the field rather than using a property getter/setter, which might have more overhead.
@@ -85,7 +85,7 @@ namespace Fractural.Tasks
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public struct TaskPool<T>
+    internal struct TaskPool<T>
         where T : class, ITaskPoolNode<T>
     {
         // gate is basically a lock, which controls both popping and pushing to the TaskPool

@@ -9,31 +9,31 @@ using Fractural.Tasks.Internal;
 
 namespace Fractural.Tasks
 {
-    public interface IResolvePromise
+    internal interface IResolvePromise
     {
         bool TrySetResult();
     }
 
-    public interface IResolvePromise<T>
+    internal interface IResolvePromise<T>
     {
         bool TrySetResult(T value);
     }
 
-    public interface IRejectPromise
+    internal interface IRejectPromise
     {
         bool TrySetException(Exception exception);
     }
 
-    public interface ICancelPromise
+    internal interface ICancelPromise
     {
         bool TrySetCanceled(CancellationToken cancellationToken = default);
     }
 
-    public interface IPromise<T> : IResolvePromise<T>, IRejectPromise, ICancelPromise
+    internal interface IPromise<T> : IResolvePromise<T>, IRejectPromise, ICancelPromise
     {
     }
 
-    public interface IPromise : IResolvePromise, IRejectPromise, ICancelPromise
+    internal interface IPromise : IResolvePromise, IRejectPromise, ICancelPromise
     {
     }
 
@@ -67,7 +67,7 @@ namespace Fractural.Tasks
     }
 
     [StructLayout(LayoutKind.Auto)]
-    public struct GDTaskCompletionSourceCore<TResult>
+    internal struct GDTaskCompletionSourceCore<TResult>
     {
         // Struct Size: TResult + (8 + 2 + 1 + 1 + 8 + 8)
 
@@ -314,7 +314,7 @@ namespace Fractural.Tasks
         }
     }
 
-    public partial class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolNode<AutoResetGDTaskCompletionSource>, IPromise
+    internal class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolNode<AutoResetGDTaskCompletionSource>, IPromise
     {
         static TaskPool<AutoResetGDTaskCompletionSource> pool;
         AutoResetGDTaskCompletionSource nextNode;
@@ -437,7 +437,7 @@ namespace Fractural.Tasks
         }
     }
 
-    public partial class AutoResetGDTaskCompletionSource<T> : IGDTaskSource<T>, ITaskPoolNode<AutoResetGDTaskCompletionSource<T>>, IPromise<T>
+    internal class AutoResetGDTaskCompletionSource<T> : IGDTaskSource<T>, ITaskPoolNode<AutoResetGDTaskCompletionSource<T>>, IPromise<T>
     {
         static TaskPool<AutoResetGDTaskCompletionSource<T>> pool;
         AutoResetGDTaskCompletionSource<T> nextNode;
@@ -565,7 +565,7 @@ namespace Fractural.Tasks
         }
     }
 
-    public partial class GDTaskCompletionSource : IGDTaskSource, IPromise
+    internal class GDTaskCompletionSource : IGDTaskSource, IPromise
     {
         CancellationToken cancellationToken;
         ExceptionHolder exception;
@@ -746,7 +746,7 @@ namespace Fractural.Tasks
         }
     }
 
-    public partial class GDTaskCompletionSource<T> : IGDTaskSource<T>, IPromise<T>
+    internal class GDTaskCompletionSource<T> : IGDTaskSource<T>, IPromise<T>
     {
         CancellationToken cancellationToken;
         T result;

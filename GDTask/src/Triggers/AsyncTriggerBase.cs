@@ -77,7 +77,7 @@ namespace Fractural.Tasks.Triggers
         }
     }
 
-    public interface IAsyncOneShotTrigger
+    internal interface IAsyncOneShotTrigger
     {
         GDTask OneShotAsync();
     }

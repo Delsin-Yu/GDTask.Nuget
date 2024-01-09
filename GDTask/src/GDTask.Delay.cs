@@ -7,9 +7,12 @@ using Godot;
 
 namespace Fractural.Tasks
 {
+    /// <summary>
+    /// Indicates the time provider used for Delaying
+    /// </summary>
     public enum DelayType
     {
-        /// <summary>Use time provided from <see cref="Time.DeltaTime"/></summary>
+        /// <summary>Use scaled delta time provided from <see cref="Node._Process"/></summary>
         DeltaTime,
         /// <summary>Use time provided from <see cref="System.Diagnostics.Stopwatch.GetTimestamp()"/></summary>
         Realtime
@@ -126,9 +129,9 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Delay the execution after <paramref name="millisecondsDelay"/> of the provided <see cref="PlayerLoopTiming"/> on <see cref="DelayType.DeltaTime"/>, with specified <see cref="CancellationToken"/>.
+        /// Delay the execution after <paramref name="millisecondsDelay"/> on provided <see cref="PlayerLoopTiming"/> with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException"><see cref="millisecondsDelay"/> is less than 0.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="millisecondsDelay"/> is less than 0.</exception>
         public static GDTask Delay(int millisecondsDelay, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
             var delayTimeSpan = TimeSpan.FromMilliseconds(millisecondsDelay);
@@ -136,18 +139,18 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Delay the execution after <paramref name="delayTimeSpan"/> of the provided <see cref="PlayerLoopTiming"/> on <see cref="DelayType.DeltaTime"/>, with specified <see cref="CancellationToken"/>.
+        /// Delay the execution after <paramref name="delayTimeSpan"/> on provided <see cref="PlayerLoopTiming"/> with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException"><see cref="delayTimeSpan"/> is less than <see cref="TimeSpan.Zero"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="delayTimeSpan"/> is less than 0.</exception>
         public static GDTask Delay(TimeSpan delayTimeSpan, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Delay(delayTimeSpan, DelayType.DeltaTime, delayTiming, cancellationToken);
         }
 
         /// <summary>
-        /// Delay the execution after <paramref name="millisecondsDelay"/> of the provided <see cref="PlayerLoopTiming"/>, with specified <see cref="DelayType"/>, and <see cref="CancellationToken"/>.
+        /// Delay the execution after <paramref name="millisecondsDelay"/> on provided <see cref="PlayerLoopTiming"/> with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException"><see cref="millisecondsDelay"/> is less than 0.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="millisecondsDelay"/> is less than 0.</exception>
         public static GDTask Delay(int millisecondsDelay, DelayType delayType, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
             var delayTimeSpan = TimeSpan.FromMilliseconds(millisecondsDelay);
@@ -155,9 +158,9 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Delay the execution after <paramref name="delayTimeSpan"/> of the provided <see cref="PlayerLoopTiming"/>, with specified <see cref="DelayType"/>, and <see cref="CancellationToken"/>.
+        /// Delay the execution after <paramref name="delayTimeSpan"/> on provided <see cref="PlayerLoopTiming"/> with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException"><see cref="delayTimeSpan"/> is less than <see cref="TimeSpan.Zero"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="delayTimeSpan"/> is less than 0.</exception>
         public static GDTask Delay(TimeSpan delayTimeSpan, DelayType delayType, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (delayTimeSpan < TimeSpan.Zero)
@@ -729,43 +732,70 @@ namespace Fractural.Tasks
         }
     }
 
+    /// <summary>
+    /// An awaitable that when awaited, asynchronously yields back to the next specified <see cref="PlayerLoopTiming"/>.
+    /// </summary>
     public readonly struct YieldAwaitable
     {
         readonly PlayerLoopTiming timing;
 
-        public YieldAwaitable(PlayerLoopTiming timing)
+        internal YieldAwaitable(PlayerLoopTiming timing)
         {
             this.timing = timing;
         }
 
+        /// <summary>
+        /// Gets an awaiter used to await this <see cref="YieldAwaitable"/>.
+        /// </summary>
         public Awaiter GetAwaiter()
         {
             return new Awaiter(timing);
         }
 
+        /// <summary>
+        /// Creates a <see cref="GDTask"/> that represents this <see cref="YieldAwaitable"/>.
+        /// </summary>
         public GDTask ToGDTask()
         {
             return GDTask.Yield(timing, CancellationToken.None);
         }
 
+        /// <summary>
+        /// Provides an awaiter for awaiting a <see cref="YieldAwaitable"/>.
+        /// </summary>
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             readonly PlayerLoopTiming timing;
 
+            /// <summary>
+            /// Initializes the <see cref="Awaiter"/>.
+            /// </summary>
             public Awaiter(PlayerLoopTiming timing)
             {
                 this.timing = timing;
             }
 
+            /// <summary>
+            /// Gets whether this <see cref="YieldAwaitable">Task</see> has completed, always returns false.
+            /// </summary>
             public bool IsCompleted => false;
 
+            /// <summary>
+            /// Do nothing
+            /// </summary>
             public void GetResult() { }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="YieldAwaitable"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void OnCompleted(Action continuation)
             {
                 GDTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
             }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="YieldAwaitable"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
                 GDTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
