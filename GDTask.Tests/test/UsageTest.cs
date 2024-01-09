@@ -171,6 +171,77 @@ public class UsageTest : TestClass
 		await GDTask.Delay(5).AttachExternalCancellation(CancellationToken.None);
 		result = await GDTask.FromResult(5).AttachExternalCancellation(CancellationToken.None);
 
+		var cancellationTokenSource = new CancellationTokenSource();
+		try
+		{
+			await GDTask.Never(CancellationToken.None).Timeout(TimeSpan.FromMilliseconds(5), DelayType.DeltaTime, PlayerLoopTiming.Process, cancellationTokenSource);
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e);
+		}
+		var isCancellationRequested = cancellationTokenSource.IsCancellationRequested;
+		cancellationTokenSource = new();
+		try
+		{
+			_ = await GDTask.Never<int>(CancellationToken.None).Timeout(TimeSpan.FromMilliseconds(5), DelayType.DeltaTime, PlayerLoopTiming.Process, cancellationTokenSource);
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e);
+		}
+		isCancellationRequested = cancellationTokenSource.IsCancellationRequested;
+		
+		cancellationTokenSource = new();
+		var isCanceled = await GDTask.Never(CancellationToken.None).TimeoutWithoutException(TimeSpan.FromMilliseconds(5), DelayType.DeltaTime, PlayerLoopTiming.Process, cancellationTokenSource);
+		isCancellationRequested = cancellationTokenSource.IsCancellationRequested;
+
+		cancellationTokenSource = new();
+		(isCanceled, result) = await GDTask.Never<int>(CancellationToken.None).TimeoutWithoutException(TimeSpan.FromMilliseconds(5), DelayType.DeltaTime, PlayerLoopTiming.Process, cancellationTokenSource);
+		isCancellationRequested = cancellationTokenSource.IsCancellationRequested;
+
+		var continued = false;
+		GDTask.Delay(1).ContinueWith(void () => continued = true).Forget();
+		await GDTask.WaitUntil(() => continued);
+		Exception exception = null;
+		async GDTask ThrowTask()
+		{
+			await GDTask.Yield();
+			throw new();
+		}
+		ThrowTask().Forget(exp => exception = exp);
+		continued = false;
+		GDTask.Delay(1).ContinueWith(() => continued = true).Forget();
+		await GDTask.WaitUntil(() => continued);
+		exception = null;
+		async GDTask<int> ThrowTaskInt()
+		{
+			await GDTask.Yield();
+			throw new();
+		}
+		ThrowTaskInt().Forget(exp => exception = exp);
+		await GDTask.WaitUntil(() => exception != null);
+
+		await GDTask.Delay(1).ContinueWith(() => 5).ContinueWith(val => { result = val; });
+		await GDTask.Delay(1).ContinueWith(() => 5).ContinueWith(_ => GDTask.CompletedTask);
+		var resultStr = await GDTask.Delay(1).ContinueWith(() => 5).ContinueWith(val => val.ToString());
+		resultStr = await GDTask.Delay(1).ContinueWith(() => 5).ContinueWith(val => GDTask.FromResult(val.ToString()));
+		await GDTask.Delay(1).ContinueWith(void () => result = 5);
+		await GDTask.Delay(1).ContinueWith(() => GDTask.CompletedTask);
+		result = await GDTask.Delay(1).ContinueWith(() => 5);
+		result = await GDTask.Delay(1).ContinueWith(() => GDTask.FromResult(5));
+
+		result = await GDTask.FromResult(GDTask.FromResult(5)).Unwrap();
+		await GDTask.FromResult(GDTask.CompletedTask).Unwrap();
+		result = await Task.FromResult(GDTask.FromResult(5)).Unwrap();
+		result = await Task.FromResult(GDTask.FromResult(5)).Unwrap(true);
+		await Task.FromResult(GDTask.CompletedTask).Unwrap();
+		await Task.FromResult(GDTask.CompletedTask).Unwrap(true);
+		result = await GDTask.FromResult(Task.FromResult(5)).Unwrap();
+		result = await GDTask.FromResult(Task.FromResult(5)).Unwrap(true);
+		await GDTask.FromResult(Task.CompletedTask).Unwrap();
+		await GDTask.FromResult(Task.CompletedTask).Unwrap(true);
+
 		#endregion
 
 		
@@ -245,7 +316,7 @@ public class UsageTest : TestClass
 		oneSecondsToken = GDTask.Delay(5).ContinueWith(() => 5).ToCancellationToken(GDTask.Delay(1).ToCancellationToken());
 		await GDTask.Delay(5, cancellationToken: oneSecondsToken).SuppressCancellationThrow();
 
-		var cancellationTokenSource = new CancellationTokenSource();
+		cancellationTokenSource = new CancellationTokenSource();
 		var (gdTask, registration) = cancellationTokenSource.Token.ToGDTask();
 		cancellationTokenSource.CancelAfter(20);
 		await gdTask;

@@ -301,8 +301,6 @@ namespace Fractural.Tasks
 
         sealed class AttachExternalCancellationSource<T> : IGDTaskSource<T>
         {
-            static readonly Action<object> cancellationCallbackDelegate = CancellationCallback;
-
             CancellationToken cancellationToken;
             CancellationTokenRegistration tokenRegistration;
             GDTaskCompletionSourceCore<T> core;
@@ -310,7 +308,7 @@ namespace Fractural.Tasks
             public AttachExternalCancellationSource(GDTask<T> task, CancellationToken cancellationToken)
             {
                 this.cancellationToken = cancellationToken;
-                this.tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallbackDelegate, this);
+                this.tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallback, this);
                 RunTask(task).Forget();
             }
 
@@ -362,6 +360,15 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Associate a time out to the current <see cref="GDTask"/>
+        /// </summary>
+        /// <param name="task">The <see cref="GDTask"/> to associate the time out to</param>
+        /// <param name="timeout">The time out associate to the <see cref="GDTask"/></param>
+        /// <param name="delayType">Timing provide used for calculating time out</param>
+        /// <param name="timeoutCheckTiming">Update method used for checking time out</param>
+        /// <param name="taskCancellationTokenSource">A <see cref="CancellationTokenSource"/> that get canceled when the task is completed by time out</param>
+        /// <exception cref="TimeoutException">Thrown when the time allotted for this task has expired.</exception>
         public static async GDTask Timeout(this GDTask task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
         {
             var delayCancellationTokenSource = new CancellationTokenSource();
@@ -403,6 +410,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="Timeout"/>
         public static async GDTask<T> Timeout<T>(this GDTask<T> task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
         {
             var delayCancellationTokenSource = new CancellationTokenSource();
@@ -447,8 +455,13 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Timeout with suppress OperationCanceledException. Returns (bool, IsCacneled).
+        /// Associate a time out to the current <see cref="GDTask"/>, this overload does not raise <see cref="TimeoutException"/> instead asynchronously returns a <see cref="bool"/> indicating if the operation has timed out.
         /// </summary>
+        /// <param name="task">The <see cref="GDTask"/> to associate the time out to</param>
+        /// <param name="timeout">The time out associate to the <see cref="GDTask"/></param>
+        /// <param name="delayType">Timing provide used for calculating time out</param>
+        /// <param name="timeoutCheckTiming">Update method used for checking time out</param>
+        /// <param name="taskCancellationTokenSource">A <see cref="CancellationTokenSource"/> that get canceled when the task is completed by time out</param>
         public static async GDTask<bool> TimeoutWithoutException(this GDTask task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
         {
             var delayCancellationTokenSource = new CancellationTokenSource();
@@ -492,9 +505,7 @@ namespace Fractural.Tasks
             return false;
         }
 
-        /// <summary>
-        /// Timeout with suppress OperationCanceledException. Returns (bool IsTimeout, T Result).
-        /// </summary>
+        /// <inheritdoc cref="TimeoutWithoutException"/>
         public static async GDTask<(bool IsTimeout, T Result)> TimeoutWithoutException<T>(this GDTask<T> task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
         {
             var delayCancellationTokenSource = new CancellationTokenSource();
@@ -538,6 +549,9 @@ namespace Fractural.Tasks
             return (false, taskResult.Result);
         }
 
+        /// <summary>
+        /// Run this task without asynchronously waiting for it to finish.
+        /// </summary>
         public static void Forget(this GDTask task)
         {
             var awaiter = task.GetAwaiter();
@@ -571,6 +585,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="Forget(Fractural.Tasks.GDTask)"/>
         public static void Forget(this GDTask task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread = true)
         {
             if (exceptionHandler == null)
@@ -606,6 +621,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="Forget(Fractural.Tasks.GDTask)"/>
         public static void Forget<T>(this GDTask<T> task)
         {
             var awaiter = task.GetAwaiter();
@@ -639,6 +655,7 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <inheritdoc cref="Forget(Fractural.Tasks.GDTask)"/>
         public static void Forget<T>(this GDTask<T> task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread = true)
         {
             if (exceptionHandler == null)
@@ -674,95 +691,117 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="GDTask"/> completes.
+        /// </summary>
         public static async GDTask ContinueWith<T>(this GDTask<T> task, Action<T> continuationFunction)
         {
             continuationFunction(await task);
         }
 
+        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
         public static async GDTask ContinueWith<T>(this GDTask<T> task, Func<T, GDTask> continuationFunction)
         {
             await continuationFunction(await task);
         }
 
+        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
         public static async GDTask<TR> ContinueWith<T, TR>(this GDTask<T> task, Func<T, TR> continuationFunction)
         {
             return continuationFunction(await task);
         }
 
+        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
         public static async GDTask<TR> ContinueWith<T, TR>(this GDTask<T> task, Func<T, GDTask<TR>> continuationFunction)
         {
             return await continuationFunction(await task);
         }
 
+        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
         public static async GDTask ContinueWith(this GDTask task, Action continuationFunction)
         {
             await task;
             continuationFunction();
         }
 
+        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
         public static async GDTask ContinueWith(this GDTask task, Func<GDTask> continuationFunction)
         {
             await task;
             await continuationFunction();
         }
 
+        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
         public static async GDTask<T> ContinueWith<T>(this GDTask task, Func<T> continuationFunction)
         {
             await task;
             return continuationFunction();
         }
 
+        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
         public static async GDTask<T> ContinueWith<T>(this GDTask task, Func<GDTask<T>> continuationFunction)
         {
             await task;
             return await continuationFunction();
         }
 
+        /// <summary>
+        /// Creates a proxy <see cref="GDTask"/> that represents the asynchronous operation of a wrapped <see cref="GDTask"/>.
+        /// </summary>
         public static async GDTask<T> Unwrap<T>(this GDTask<GDTask<T>> task)
         {
             return await await task;
         }
 
+        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
         public static async GDTask Unwrap(this GDTask<GDTask> task)
         {
             await await task;
         }
 
+        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
         public static async GDTask<T> Unwrap<T>(this Task<GDTask<T>> task)
         {
             return await await task;
         }
 
+        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
         public static async GDTask<T> Unwrap<T>(this Task<GDTask<T>> task, bool continueOnCapturedContext)
         {
             return await await task.ConfigureAwait(continueOnCapturedContext);
         }
 
+        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
         public static async GDTask Unwrap(this Task<GDTask> task)
         {
             await await task;
         }
 
+        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
         public static async GDTask Unwrap(this Task<GDTask> task, bool continueOnCapturedContext)
         {
             await await task.ConfigureAwait(continueOnCapturedContext);
         }
 
+        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
         public static async GDTask<T> Unwrap<T>(this GDTask<Task<T>> task)
         {
             return await await task;
         }
 
+        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
         public static async GDTask<T> Unwrap<T>(this GDTask<Task<T>> task, bool continueOnCapturedContext)
         {
             return await (await task).ConfigureAwait(continueOnCapturedContext);
         }
 
+        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
         public static async GDTask Unwrap(this GDTask<Task> task)
         {
             await await task;
         }
 
+        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
         public static async GDTask Unwrap(this GDTask<Task> task, bool continueOnCapturedContext)
         {
             await (await task).ConfigureAwait(continueOnCapturedContext);
