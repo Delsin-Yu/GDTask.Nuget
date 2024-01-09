@@ -333,6 +333,24 @@ public class UsageTest : TestClass
 
 		#endregion
 
+		#region CancellationTokenExtensions
+
+		cancellationTokenSource = new();
+		cancellationTokenSource.CancelAfterSlim(1);
+		(gdTask, _) = cancellationTokenSource.Token.ToGDTask();
+		await gdTask;
+		cancellationTokenSource = new();
+		cancellationTokenSource.CancelAfterSlim(TimeSpan.FromMilliseconds(1));
+		(gdTask, _) = cancellationTokenSource.Token.ToGDTask();
+		await gdTask;
+		cancellationTokenSource = new();
+		node = new();
+		cancellationTokenSource.RegisterRaiseCancelOnPredelete(node);
+		node.QueueFree();
+		(gdTask, _) = cancellationTokenSource.Token.ToGDTask();
+		await gdTask;
+
+		#endregion
 	}
 
 	private class AwaitableDisposable : IDisposable
