@@ -174,7 +174,7 @@ public class UsageTest : TestClass
 		await GDTask.WaitUntil(() => true, PlayerLoopTiming.Process, CancellationToken.None);
 		await GDTask.WaitWhile(() => false, PlayerLoopTiming.Process, CancellationToken.None);
 		await GDTask.WaitUntilCanceled(CancellationToken.None, PlayerLoopTiming.Process);
-		GDTask.WaitUntilValueChanged((object)null, obj => Time.GetTicksMsec(), PlayerLoopTiming.Process, null, CancellationToken.None);
+		await GDTask.WaitUntilValueChanged((object)null, obj => Time.GetTicksMsec(), PlayerLoopTiming.Process, null, CancellationToken.None);
 
 		#endregion
 
@@ -400,7 +400,7 @@ public class UsageTest : TestClass
 
 		await using (GDTask.ReturnToMainThread())
 		{
-			GDTask.SwitchToThreadPool();
+			await GDTask.SwitchToThreadPool();
 			currentContext.Send(_ => GD.Print("SynchronizationContext Send: ThreadId =" + Environment.CurrentManagedThreadId), null);
 			currentContext.Post(_ => GD.Print("SynchronizationContext Post: ThreadId =" + Environment.CurrentManagedThreadId), null);
 		}
