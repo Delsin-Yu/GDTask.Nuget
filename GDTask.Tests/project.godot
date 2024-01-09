@@ -12,7 +12,7 @@ config_version=5
 
 config/name="GDTask.Tests"
 run/main_scene="res://test/Test.tscn"
-config/features=PackedStringArray("4.1", "C#")
+config/features=PackedStringArray("4.2", "C#")
 boot_splash/bg_color=Color(0, 0, 0, 1)
 
 [dotnet]
@@ -21,7 +21,7 @@ project/assembly_name="GDTask.Tests"
 
 [editor_plugins]
 
-enabled=PackedStringArray()
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
 
 [gui]
 

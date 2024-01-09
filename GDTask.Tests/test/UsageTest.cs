@@ -4,18 +4,14 @@ using System.Linq;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
-using Chickensoft.GoDotTest;
 using Fractural.Tasks.Triggers;
 using Godot;
 using Environment = System.Environment;
 
 namespace Fractural.Tasks.Tests;
 
-public class UsageTest : TestClass
+public class UsageTest
 {
-	public UsageTest(Node testScene) : base(testScene) { }
-
-	
 	public async GDTask UsageDemo()
 	{
 		// ReSharper disable RedundantAssignment
@@ -324,7 +320,7 @@ public class UsageTest : TestClass
 		#region GDTask.Extensions.Node
 
 		var node = new Node();
-		GDTask.Delay(1).ContinueWith(() => TestScene.AddChild(node)).Forget();
+		// GDTask.Delay(1).ContinueWith(() => TestScene.AddChild(node)).Forget();
 		await node.OnEnterTreeAsync();
 		await node.OnReadyAsync();
 		await node.GetAsyncProcessTrigger().OnProcessAsync();
