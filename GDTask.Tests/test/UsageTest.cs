@@ -25,6 +25,48 @@ public class UsageTest : TestClass
 		
 		int result;
 
+		#region GDTask
+
+		var gdTask = GDTask.Delay(1);
+		GD.Print(gdTask.Status);
+		GD.Print(gdTask.ToString());
+		var completed = false;
+		gdTask.GetAwaiter().OnCompleted(() => completed = true);
+		await GDTask.WaitUntil(() => completed);
+		var cancellationTokenSource = new CancellationTokenSource();
+		cancellationTokenSource.CancelAfter(1);
+		gdTask = GDTask.Delay(10, cancellationToken: cancellationTokenSource.Token).SuppressCancellationThrow();
+		await gdTask;
+		gdTask = GDTask.Delay(1);
+		gdTask = gdTask.Preserve();
+		await gdTask;
+		await gdTask;
+		await gdTask;
+		await gdTask;
+		var asyncUnitGDTask = GDTask.Delay(1).AsAsyncUnitGDTask();
+		await asyncUnitGDTask;
+				
+		var intGDTask = GDTask.Delay(1).ContinueWith(() => 5);
+		GD.Print(intGDTask.Status);
+		GD.Print(intGDTask.ToString());
+		completed = false;
+		intGDTask.GetAwaiter().OnCompleted(() => completed = true);
+		await GDTask.WaitUntil(() => completed);
+		cancellationTokenSource = new();
+		cancellationTokenSource.CancelAfter(1);
+		gdTask = GDTask.Delay(10, cancellationToken: cancellationTokenSource.Token).ContinueWith(() => 5).SuppressCancellationThrow();
+		await intGDTask;
+		intGDTask = GDTask.Delay(1).ContinueWith(() => 5);
+		intGDTask = intGDTask.Preserve();
+		result = await intGDTask;
+		result = await intGDTask;
+		result = await intGDTask;
+		result = await intGDTask;
+		gdTask = GDTask.Delay(1).ContinueWith(() => 5);
+		await gdTask;
+		
+		#endregion
+		
 		#region GDTask.Delay
 
 		await GDTask.Yield();
@@ -171,7 +213,7 @@ public class UsageTest : TestClass
 		await GDTask.Delay(5).AttachExternalCancellation(CancellationToken.None);
 		result = await GDTask.FromResult(5).AttachExternalCancellation(CancellationToken.None);
 
-		var cancellationTokenSource = new CancellationTokenSource();
+		cancellationTokenSource = new CancellationTokenSource();
 		try
 		{
 			await GDTask.Never(CancellationToken.None).Timeout(TimeSpan.FromMilliseconds(5), DelayType.DeltaTime, PlayerLoopTiming.Process, cancellationTokenSource);
@@ -317,7 +359,7 @@ public class UsageTest : TestClass
 		await GDTask.Delay(5, cancellationToken: oneSecondsToken).SuppressCancellationThrow();
 
 		cancellationTokenSource = new CancellationTokenSource();
-		var (gdTask, registration) = cancellationTokenSource.Token.ToGDTask();
+		(gdTask, var registration) = cancellationTokenSource.Token.ToGDTask();
 		cancellationTokenSource.CancelAfter(20);
 		await gdTask;
 		await registration.DisposeAsync();

@@ -11,7 +11,7 @@ namespace Fractural.Tasks
 {
     // Taken from GDTask library
     // Holds static data about all task pools. Right now this is just the size of each pool.
-    public static class TaskPool
+    internal static class TaskPool
     {
         internal static int MaxPoolSize;
 

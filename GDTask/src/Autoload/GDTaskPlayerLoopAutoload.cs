@@ -21,7 +21,7 @@ namespace Fractural.Tasks
         PhysicsProcess = 1,
     }
 
-    public interface IPlayerLoopItem
+    internal interface IPlayerLoopItem
     {
         bool MoveNext();
     }

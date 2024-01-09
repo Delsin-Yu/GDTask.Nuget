@@ -64,7 +64,7 @@ namespace Fractural.Tasks
         static readonly WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)> tracking = new WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>();
 
         [Conditional("DEBUG")]
-        public static void TrackActiveTask(IGDTaskSource task, int skipFrame)
+        internal static void TrackActiveTask(IGDTaskSource task, int skipFrame)
         {
 #if DEBUG
             dirty = true;
@@ -87,7 +87,7 @@ namespace Fractural.Tasks
         }
 
         [Conditional("DEBUG")]
-        public static void RemoveTracking(IGDTaskSource task)
+        internal static void RemoveTracking(IGDTaskSource task)
         {
 #if DEBUG
             dirty = true;

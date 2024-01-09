@@ -5,7 +5,7 @@ using Godot;
 
 namespace Fractural.Tasks
 {
-    public abstract class PlayerLoopTimer : IDisposable, IPlayerLoopItem
+    internal abstract class PlayerLoopTimer : IDisposable, IPlayerLoopItem
     {
         readonly CancellationToken cancellationToken;
         readonly Action<object> timerCallback;

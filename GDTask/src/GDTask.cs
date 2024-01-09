@@ -32,12 +32,15 @@ namespace Fractural.Tasks
 
         [DebuggerHidden]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public GDTask(IGDTaskSource source, short token)
+        internal GDTask(IGDTaskSource source, short token)
         {
             this.source = source;
             this.token = token;
         }
 
+        /// <summary>
+        /// Gets the <see cref="GDTaskStatus"/> of this task.
+        /// </summary>
         public GDTaskStatus Status
         {
             [DebuggerHidden]
@@ -49,6 +52,9 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Gets an awaiter used to await this <see cref="GDTask"/>.
+        /// </summary>
         [DebuggerHidden]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Awaiter GetAwaiter()
@@ -66,6 +72,11 @@ namespace Fractural.Tasks
             if (status == GDTaskStatus.Canceled) return CompletedTasks.True;
             return new GDTask<bool>(new IsCanceledSource(source), token);
         }
+        
+        /// <summary>
+        /// Returns a string representation of the internal status for this <see cref="GDTask"/>.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             if (source == null) return "()";
@@ -73,7 +84,7 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Memoizing inner IValueTaskSource. The result GDTask can await multiple.
+        /// Creates a <see cref="GDTask"/> allows to await multiple times.
         /// </summary>
         public GDTask Preserve()
         {
@@ -87,6 +98,10 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Creates a <see cref="GDTask{AsyncUnit}"/> that represents this <see cref="GDTask"/>.
+        /// </summary>
+        /// <returns></returns>
         public GDTask<AsyncUnit> AsAsyncUnitGDTask()
         {
             if (this.source == null) return CompletedTasks.AsyncUnit;
@@ -262,10 +277,16 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Provides an awaiter for awaiting a <see cref="GDTask"/>.
+        /// </summary>
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             readonly GDTask task;
 
+            /// <summary>
+            /// Initializes the <see cref="Awaiter"/>.
+            /// </summary>
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public Awaiter(in GDTask task)
@@ -273,6 +294,9 @@ namespace Fractural.Tasks
                 this.task = task;
             }
 
+            /// <summary>
+            /// Gets whether this <see cref="GDTask">Task</see> has completed.
+            /// </summary>
             public bool IsCompleted
             {
                 [DebuggerHidden]
@@ -283,6 +307,9 @@ namespace Fractural.Tasks
                 }
             }
 
+            /// <summary>
+            /// Ends the await on the completed <see cref="GDTask"/>.
+            /// </summary>
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void GetResult()
@@ -291,6 +318,9 @@ namespace Fractural.Tasks
                 task.source.GetResult(task.token);
             }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="GDTask"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted(Action continuation)
@@ -305,6 +335,9 @@ namespace Fractural.Tasks
                 }
             }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="GDTask"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void UnsafeOnCompleted(Action continuation)
@@ -352,7 +385,7 @@ namespace Fractural.Tasks
 
         [DebuggerHidden]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public GDTask(T result)
+        internal GDTask(T result)
         {
             this.source = default;
             this.token = default;
@@ -361,13 +394,16 @@ namespace Fractural.Tasks
 
         [DebuggerHidden]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public GDTask(IGDTaskSource<T> source, short token)
+        internal GDTask(IGDTaskSource<T> source, short token)
         {
             this.source = source;
             this.token = token;
             this.result = default;
         }
 
+        /// <summary>
+        /// Gets the <see cref="GDTaskStatus"/> of this task.
+        /// </summary>
         public GDTaskStatus Status
         {
             [DebuggerHidden]
@@ -378,6 +414,9 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Gets an awaiter used to await this <see cref="GDTask{T}"/>.
+        /// </summary>
         [DebuggerHidden]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Awaiter GetAwaiter()
@@ -386,7 +425,7 @@ namespace Fractural.Tasks
         }
 
         /// <summary>
-        /// Memoizing inner IValueTaskSource. The result GDTask can await multiple.
+        /// Creates a <see cref="GDTask{T}"/> allows to await multiple times.
         /// </summary>
         public GDTask<T> Preserve()
         {
@@ -400,6 +439,9 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Creates a <see cref="GDTask"/> that represents this <see cref="GDTask{T}"/>.
+        /// </summary>
         public GDTask AsGDTask()
         {
             if (this.source == null) return GDTask.CompletedTask;
@@ -415,6 +457,9 @@ namespace Fractural.Tasks
             return new GDTask(this.source, this.token);
         }
 
+        /// <summary>
+        /// Implicit operator for covert from <see cref="GDTask{T}"/> to <see cref="GDTask"/>.
+        /// </summary>
         public static implicit operator GDTask(GDTask<T> self)
         {
             return self.AsGDTask();
@@ -433,6 +478,9 @@ namespace Fractural.Tasks
             return new GDTask<(bool, T)>(new IsCanceledSource(source), token);
         }
 
+        /// <summary>
+        /// Returns a string representation of the internal status for this <see cref="GDTask{T}"/>.
+        /// </summary>
         public override string ToString()
         {
             return (this.source == null) ? result?.ToString()
@@ -580,10 +628,16 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Provides an awaiter for awaiting a <see cref="GDTask{T}"/>.
+        /// </summary>
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             readonly GDTask<T> task;
 
+            /// <summary>
+            /// Initializes the <see cref="Awaiter"/>.
+            /// </summary>
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public Awaiter(in GDTask<T> task)
@@ -591,6 +645,9 @@ namespace Fractural.Tasks
                 this.task = task;
             }
 
+            /// <summary>
+            /// Gets whether this <see cref="GDTask{T}">Task</see> has completed.
+            /// </summary>
             public bool IsCompleted
             {
                 [DebuggerHidden]
@@ -601,6 +658,9 @@ namespace Fractural.Tasks
                 }
             }
 
+            /// <summary>
+            /// Ends the await on the completed <see cref="GDTask{T}"/>.
+            /// </summary>
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public T GetResult()
@@ -616,6 +676,9 @@ namespace Fractural.Tasks
                 }
             }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="GDTask{T}"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted(Action continuation)
@@ -631,6 +694,9 @@ namespace Fractural.Tasks
                 }
             }
 
+            /// <summary>
+            /// Schedules the continuation onto the <see cref="GDTask{T}"/> associated with this <see cref="Awaiter"/>.
+            /// </summary>
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void UnsafeOnCompleted(Action continuation)
