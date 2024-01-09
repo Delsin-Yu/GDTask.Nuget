@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Fractural.Tasks.Internal;
 using Godot;
 
@@ -57,12 +58,15 @@ namespace Fractural.Tasks
             q!.Enqueue(continuation);
         }
 
+        private GDTaskPlayerLoopAutoload() { }
+
         public static GDTaskPlayerLoopAutoload Global
         {
             get
             {
                 if (s_Global != null) return s_Global;
 
+                SynchronizationContext.SetSynchronizationContext(new GDTaskSynchronizationContext());
                 var newInstance = new GDTaskPlayerLoopAutoload();
                 newInstance.Initialize();
                 var root = ((SceneTree)Engine.GetMainLoop()).Root;
@@ -130,6 +134,7 @@ namespace Fractural.Tasks
         {
             yielders[(int)PlayerLoopTiming.Process].Run();
             runners[(int)PlayerLoopTiming.Process].Run();
+            GDTaskSynchronizationContext.Run();
         }
 
         public override void _PhysicsProcess(double delta)

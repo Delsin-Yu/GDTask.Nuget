@@ -5,7 +5,10 @@ using System.Threading;
 
 namespace Fractural.Tasks
 {
-    public partial class GDTaskSynchronizationContext : SynchronizationContext
+    /// <summary>
+    /// Provides the functionality for propagating a synchronization context in <see cref="GDTask"/> synchronization models.
+    /// </summary>
+    public sealed class GDTaskSynchronizationContext : SynchronizationContext
     {
         const int MaxArrayLength = 0X7FEFFFFF;
         const int InitialSize = 16;
@@ -21,11 +24,19 @@ namespace Fractural.Tasks
 
         static int opCount;
 
+        internal GDTaskSynchronizationContext() { }
+        
+        /// <summary>
+        /// Dispatches a synchronous message to a synchronization context.
+        /// </summary>
         public override void Send(SendOrPostCallback d, object state)
         {
             d(state);
         }
 
+        /// <summary>
+        /// Dispatches an asynchronous message to a synchronization context.
+        /// </summary>
         public override void Post(SendOrPostCallback d, object state)
         {
             bool lockTaken = false;
@@ -70,16 +81,25 @@ namespace Fractural.Tasks
             }
         }
 
+        /// <summary>
+        /// Responds to the notification that an operation has started.
+        /// </summary>
         public override void OperationStarted()
         {
             Interlocked.Increment(ref opCount);
         }
 
+        /// <summary>
+        /// Responds to the notification that an operation has completed.
+        /// </summary>
         public override void OperationCompleted()
         {
             Interlocked.Decrement(ref opCount);
         }
 
+        /// <summary>
+        /// Returns the current <see cref="GodotSynchronizationContext"/>
+        /// </summary>
         public override SynchronizationContext CreateCopy()
         {
             return this;

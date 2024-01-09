@@ -351,6 +351,19 @@ public class UsageTest : TestClass
 		await gdTask;
 
 		#endregion
+
+		#region GDTask Synchornization Context
+
+		var currentContext = (GDTaskSynchronizationContext)SynchronizationContext.Current!;
+
+		await using (GDTask.ReturnToMainThread())
+		{
+			GDTask.SwitchToThreadPool();
+			currentContext.Send(_ => GD.Print("SynchronizationContext Send: ThreadId =" + Environment.CurrentManagedThreadId), null);
+			currentContext.Post(_ => GD.Print("SynchronizationContext Post: ThreadId =" + Environment.CurrentManagedThreadId), null);
+		}
+		
+		#endregion
 	}
 
 	private class AwaitableDisposable : IDisposable
