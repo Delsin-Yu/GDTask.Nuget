@@ -43,7 +43,7 @@ namespace Fractural.Tasks.CompilerServices
                 runner = null;
             }
 
-            GDTaskScheduler.PublishUnobservedTaskException(exception);
+            GDTaskExceptionHandler.PublishUnobservedTaskException(exception);
         }
 
         // 4. SetResult

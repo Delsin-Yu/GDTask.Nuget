@@ -61,7 +61,7 @@ namespace Fractural.Tasks
         {
             if (!calledGet)
             {
-                GDTaskScheduler.PublishUnobservedTaskException(exception.SourceException);
+                GDTaskExceptionHandler.PublishUnobservedTaskException(exception.SourceException);
             }
         }
     }
@@ -104,11 +104,11 @@ namespace Fractural.Tasks
                 {
                     if (error is OperationCanceledException oc)
                     {
-                        GDTaskScheduler.PublishUnobservedTaskException(oc);
+                        GDTaskExceptionHandler.PublishUnobservedTaskException(oc);
                     }
                     else if (error is ExceptionHolder e)
                     {
-                        GDTaskScheduler.PublishUnobservedTaskException(e.GetException().SourceException);
+                        GDTaskExceptionHandler.PublishUnobservedTaskException(e.GetException().SourceException);
                     }
                 }
                 catch
@@ -717,7 +717,7 @@ namespace Fractural.Tasks
                         }
                         catch (Exception ex)
                         {
-                            GDTaskScheduler.PublishUnobservedTaskException(ex);
+                            GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
                         }
                     }
 
@@ -731,7 +731,7 @@ namespace Fractural.Tasks
                             }
                             catch (Exception ex)
                             {
-                                GDTaskScheduler.PublishUnobservedTaskException(ex);
+                                GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
                             }
                         }
                     }
@@ -908,7 +908,7 @@ namespace Fractural.Tasks
                         }
                         catch (Exception ex)
                         {
-                            GDTaskScheduler.PublishUnobservedTaskException(ex);
+                            GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
                         }
                     }
 
@@ -922,7 +922,7 @@ namespace Fractural.Tasks
                             }
                             catch (Exception ex)
                             {
-                                GDTaskScheduler.PublishUnobservedTaskException(ex);
+                                GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
                             }
                         }
                     }

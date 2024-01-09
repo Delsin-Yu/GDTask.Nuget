@@ -236,7 +236,7 @@ namespace Fractural.Tasks
             {
                 if (!calledGet)
                 {
-                    GDTaskScheduler.PublishUnobservedTaskException(exception.SourceException);
+                    GDTaskExceptionHandler.PublishUnobservedTaskException(exception.SourceException);
                 }
             }
         }
@@ -291,7 +291,7 @@ namespace Fractural.Tasks
             {
                 if (!calledGet)
                 {
-                    GDTaskScheduler.PublishUnobservedTaskException(exception.SourceException);
+                    GDTaskExceptionHandler.PublishUnobservedTaskException(exception.SourceException);
                 }
             }
         }

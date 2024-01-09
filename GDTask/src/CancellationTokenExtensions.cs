@@ -61,7 +61,7 @@ namespace Fractural.Tasks
             }
             catch (Exception ex)
             {
-                GDTaskScheduler.PublishUnobservedTaskException(ex);
+                GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
             }
             cts.Cancel();
             cts.Dispose();

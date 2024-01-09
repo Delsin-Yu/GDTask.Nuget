@@ -4,17 +4,21 @@ using Godot;
 
 namespace Fractural.Tasks
 {
-    // GDTask has no scheduler like TaskScheduler.
-    // Only handle unobserved exception.
 
-    public static class GDTaskScheduler
+    /// <summary>
+    /// Class for handling exceptions in tasks
+    /// </summary>
+    public static class GDTaskExceptionHandler
     {
+        /// <summary>
+        /// Occurs when a faulted <see cref="GDTask"/>'s unobserved exception is about to trigger exception escalation policy.
+        /// </summary>
         public static event Action<Exception> UnobservedTaskException;
 
         /// <summary>
-        /// Propagate OperationCanceledException to UnobservedTaskException when true. Default is false.
+        /// Propagate <see cref="OperationCanceledException"/> to <see cref="UnobservedTaskException"/> when true. Default is false.
         /// </summary>
-        public static bool PropagateOperationCanceledException = false;
+        public static bool PropagateOperationCanceledException { get; set; } = false;
 
         internal static void PublishUnobservedTaskException(Exception ex)
         {

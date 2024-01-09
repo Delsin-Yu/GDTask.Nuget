@@ -563,7 +563,7 @@ namespace Fractural.Tasks
                 }
                 catch (Exception ex)
                 {
-                    GDTaskScheduler.PublishUnobservedTaskException(ex);
+                    GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
                 }
             }
             else
@@ -578,7 +578,7 @@ namespace Fractural.Tasks
                         }
                         catch (Exception ex)
                         {
-                            GDTaskScheduler.PublishUnobservedTaskException(ex);
+                            GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
                         }
                     }
                 }, StateTuple.Create(awaiter));
@@ -616,7 +616,7 @@ namespace Fractural.Tasks
                 }
                 catch (Exception ex2)
                 {
-                    GDTaskScheduler.PublishUnobservedTaskException(ex2);
+                    GDTaskExceptionHandler.PublishUnobservedTaskException(ex2);
                 }
             }
         }
@@ -633,7 +633,7 @@ namespace Fractural.Tasks
                 }
                 catch (Exception ex)
                 {
-                    GDTaskScheduler.PublishUnobservedTaskException(ex);
+                    GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
                 }
             }
             else
@@ -648,7 +648,7 @@ namespace Fractural.Tasks
                         }
                         catch (Exception ex)
                         {
-                            GDTaskScheduler.PublishUnobservedTaskException(ex);
+                            GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
                         }
                     }
                 }, StateTuple.Create(awaiter));
@@ -686,7 +686,7 @@ namespace Fractural.Tasks
                 }
                 catch (Exception ex2)
                 {
-                    GDTaskScheduler.PublishUnobservedTaskException(ex2);
+                    GDTaskExceptionHandler.PublishUnobservedTaskException(ex2);
                 }
             }
         }
