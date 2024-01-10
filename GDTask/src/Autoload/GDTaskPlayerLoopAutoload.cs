@@ -4,6 +4,7 @@ using System.Threading;
 using Fractural.Tasks.Internal;
 using Godot;
 
+[assembly: InternalsVisibleTo("GDTask.Tests")]
 namespace Fractural.Tasks
 {
     /// <summary>
