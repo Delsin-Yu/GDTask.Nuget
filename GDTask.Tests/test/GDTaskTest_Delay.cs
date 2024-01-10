@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
 using Godot;
-using Timer = Godot.Timer;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -15,25 +13,39 @@ namespace Fractural.Tasks.Tests;
 [TestSuite]
 public class GDTaskTest_Delay
 {
-    private const int DelayFrames = 5;
-    private static readonly TimeSpan DelayTimeSpan = TimeSpan.FromSeconds(2);
-    private static readonly TimeSpan DelayDownToleranceSpan = TimeSpan.FromSeconds(1);
-    private static readonly TimeSpan DelayUpToleranceSpan = TimeSpan.FromSeconds(3);
+
 
     [TestCase]
-    public static async Task GDTask_Yield()
+    public static async Task GDTask_Yield_Process()
     {
         await GDTask.Yield();
     }
 
     [TestCase]
-    public static async Task GDTask_Yield_WithParam()
+    public static async Task GDTask_Yield_PhysicsProcess()
     {
         await GDTask.Yield(PlayerLoopTiming.PhysicsProcess);
     }
 
     [TestCase]
-    public static async Task GDTask_Yield_WithToken()
+    public static async Task GDTask_Yield_Process_CancellationToken()
+    {
+        var source = new CancellationTokenSource();
+        await source.CancelAsync();
+        try
+        {
+            await GDTask.Yield(PlayerLoopTiming.Process, source.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        throw new GdUnit4.Exceptions.TestFailedException("Yield Instructions not canceled");
+    }
+
+    [TestCase]
+    public static async Task GDTask_Yield_PhysicsProcess_CancellationToken()
     {
         var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -53,18 +65,20 @@ public class GDTaskTest_Delay
     public static async Task GDTask_NextFrame_Process()
     {
         await GDTask.NextFrame(PlayerLoopTiming.Process);
-        var processFrames = Engine.GetProcessFrames();
-        await GDTask.NextFrame(PlayerLoopTiming.Process);
-        Assertions.AssertThat(Engine.GetProcessFrames()).IsEqual(processFrames + 1);
+        using (new ScopedFrameCount(1, PlayerLoopTiming.Process))
+        {
+            await GDTask.NextFrame(PlayerLoopTiming.Process);
+        }
     }
 
     [TestCase]
     public static async Task GDTask_NextFrame_PhysicsProcess()
     {
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
-        var processFrames = Engine.GetPhysicsFrames();
-        await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
-        Assertions.AssertThat(Engine.GetPhysicsFrames()).IsEqual(processFrames + 1);
+        using (new ScopedFrameCount(1, PlayerLoopTiming.PhysicsProcess))
+        {
+            await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
+        }
     }
 
     [TestCase]
@@ -105,20 +119,21 @@ public class GDTaskTest_Delay
     public static async Task GDTask_DelayFrame_Process()
     {
         await GDTask.NextFrame(PlayerLoopTiming.Process);
-        var processFrames = Engine.GetProcessFrames();
-        await GDTask.DelayFrame(DelayFrames);
-        Assertions.AssertThat(processFrames + DelayFrames).IsEqual(Engine.GetProcessFrames());
+        using (new ScopedFrameCount(Constants.DelayFrames, PlayerLoopTiming.Process))
+        {
+            await GDTask.DelayFrame(Constants.DelayFrames);
+        }
     }
 
     [TestCase]
     public static async Task GDTask_DelayFrame_PhysicsProcess()
     {
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
-        var physicsFrames = Engine.GetPhysicsFrames();
-        await GDTask.DelayFrame(DelayFrames, PlayerLoopTiming.PhysicsProcess);
-        Assertions.AssertThat(physicsFrames + DelayFrames).IsEqual(Engine.GetPhysicsFrames());
+        using (new ScopedFrameCount(Constants.DelayFrames, PlayerLoopTiming.PhysicsProcess))
+        {
+            await GDTask.DelayFrame(Constants.DelayFrames, PlayerLoopTiming.PhysicsProcess);
+        }
     }
-
 
     [TestCase]
     public static async Task GDTask_DelayFrame_Process_CancellationToken()
@@ -127,7 +142,7 @@ public class GDTaskTest_Delay
         await source.CancelAsync();
         try
         {
-            await GDTask.DelayFrame(DelayFrames, PlayerLoopTiming.Process, source.Token);
+            await GDTask.DelayFrame(Constants.DelayFrames, PlayerLoopTiming.Process, source.Token);
         }
         catch (OperationCanceledException)
         {
@@ -144,7 +159,7 @@ public class GDTaskTest_Delay
         await source.CancelAsync();
         try
         {
-            await GDTask.DelayFrame(DelayFrames, PlayerLoopTiming.Process, source.Token);
+            await GDTask.DelayFrame(Constants.DelayFrames, PlayerLoopTiming.Process, source.Token);
         }
         catch (OperationCanceledException)
         {
@@ -155,62 +170,102 @@ public class GDTaskTest_Delay
     }
 
     [TestCase]
-    public static async Task GDTask_Delay_Process()
+    public static async Task GDTask_Delay_DeltaTime_Process()
     {
         await GDTask.NextFrame(PlayerLoopTiming.Process);
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-        await GDTask.Delay(DelayTimeSpan);
-        var elapsed = stopwatch.Elapsed;
-        Assertions.AssertThat(elapsed.TotalSeconds)
-            .IsBetween(
-                DelayDownToleranceSpan.TotalSeconds,
-                DelayUpToleranceSpan.TotalSeconds
-            );
+        using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime);
     }
 
     [TestCase]
-    public static async Task GDTask_Delay_PhysicsProcess()
+    public static async Task GDTask_Delay_DeltaTime_PhysicsProcess()
     {
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-        await GDTask.Delay(DelayTimeSpan, PlayerLoopTiming.PhysicsProcess);
-        var elapsed = stopwatch.Elapsed;
-        Assertions.AssertThat(elapsed.TotalSeconds)
-            .IsBetween(
-                DelayDownToleranceSpan.TotalSeconds,
-                DelayUpToleranceSpan.TotalSeconds
-            );
+        using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime, PlayerLoopTiming.PhysicsProcess);
+    }
+
+    [TestCase]
+    public static async Task GDTask_Delay_DeltaTime_Process_CancellationToken()
+    {
+        await GDTask.NextFrame(PlayerLoopTiming.Process);
+        var source = new CancellationTokenSource();
+        await source.CancelAsync();
+        try
+        {
+            await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime, cancellationToken: source.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        throw new GdUnit4.Exceptions.TestFailedException("Delay Instructions not canceled");
+    }
+
+    [TestCase]
+    public static async Task GDTask_Delay_DeltaTime_PhysicsProcess_CancellationToken()
+    {
+        await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
+        var source = new CancellationTokenSource();
+        await source.CancelAsync();
+        try
+        {
+            await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime, PlayerLoopTiming.PhysicsProcess, source.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        throw new GdUnit4.Exceptions.TestFailedException("Delay Instructions not canceled");
     }
 
     [TestCase]
     public static async Task GDTask_Delay_Realtime_Process()
     {
         await GDTask.NextFrame(PlayerLoopTiming.Process);
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-        await GDTask.Delay(DelayTimeSpan, DelayType.Realtime);
-        var elapsed = stopwatch.Elapsed;
-        Assertions.AssertThat(elapsed.TotalSeconds)
-            .IsBetween(
-                DelayDownToleranceSpan.TotalSeconds,
-                DelayUpToleranceSpan.TotalSeconds
-            );
+        using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.Realtime);
     }
 
     [TestCase]
     public static async Task GDTask_Delay_Realtime_PhysicsProcess()
     {
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-        await GDTask.Delay(DelayTimeSpan, DelayType.Realtime, PlayerLoopTiming.PhysicsProcess);
-        var elapsed = stopwatch.Elapsed;
-        Assertions.AssertThat(elapsed.TotalSeconds)
-            .IsBetween(
-                DelayDownToleranceSpan.TotalSeconds,
-                DelayUpToleranceSpan.TotalSeconds
-            );
+        using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.Realtime, PlayerLoopTiming.PhysicsProcess);
+    }
+
+    [TestCase]
+    public static async Task GDTask_Delay_RealTime_Process_CancellationToken()
+    {
+        await GDTask.NextFrame(PlayerLoopTiming.Process);
+        var source = new CancellationTokenSource();
+        await source.CancelAsync();
+        try
+        {
+            await GDTask.Delay(Constants.DelayTimeSpan, DelayType.Realtime, cancellationToken: source.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        throw new GdUnit4.Exceptions.TestFailedException("Delay Instructions not canceled");
+    }
+
+    [TestCase]
+    public static async Task GDTask_Delay_RealTime_PhysicsProcess_CancellationToken()
+    {
+        await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
+        var source = new CancellationTokenSource();
+        await source.CancelAsync();
+        try
+        {
+            await GDTask.Delay(Constants.DelayTimeSpan, DelayType.Realtime, PlayerLoopTiming.PhysicsProcess, source.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        throw new GdUnit4.Exceptions.TestFailedException("Delay Instructions not canceled");
     }
 }
