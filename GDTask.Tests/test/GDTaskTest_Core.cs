@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedType.Global
+using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
 
@@ -14,7 +16,7 @@ public class GDTaskTest_Core
         GDTask.Delay(100, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
 
     [TestCase]
-    public async Task GDTask_Status()
+    public static async Task GDTask_Status()
     {
         var gdTask = Delay();
         Assertions.AssertThat(gdTask.Status).Equals(GDTaskStatus.Pending);
@@ -22,7 +24,7 @@ public class GDTaskTest_Core
     }
 
     [TestCase]
-    public async Task GDTask_ToString()
+    public static async Task GDTask_ToString()
     {
         var gdTask = Delay();
         Assertions.AssertThat(gdTask.ToString()).IsEqual($"({GDTaskStatus.Pending})");
@@ -30,7 +32,7 @@ public class GDTaskTest_Core
     }
 
     [TestCase]
-    public async Task GDTask_GetAwaiter_OnCompleted()
+    public static async Task GDTask_GetAwaiter_OnCompleted()
     {
         var gdTask = Delay();
         var completed = false;
@@ -39,7 +41,7 @@ public class GDTaskTest_Core
     }
 
     [TestCase]
-    public async Task GDTask_SuppressCancellationThrow()
+    public static async Task GDTask_SuppressCancellationThrow()
     {
         var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.CancelAfter(10);
@@ -48,7 +50,7 @@ public class GDTaskTest_Core
     }
 
     [TestCase]
-    public async Task GDTask_Preserve()
+    public static async Task GDTask_Preserve()
     {
         var gdTask = Delay();
         gdTask = gdTask.Preserve();
@@ -59,7 +61,7 @@ public class GDTaskTest_Core
     }
 
     [TestCase]
-    public async Task GDTask_AsAsyncUnitGDTask()
+    public static async Task GDTask_AsAsyncUnitGDTask()
     {
         var asyncUnitGDTask = Delay().AsAsyncUnitGDTask();
         var result = await asyncUnitGDTask;
@@ -67,7 +69,7 @@ public class GDTaskTest_Core
     }
 
     [TestCase]
-    public async Task GDTaskT_Status()
+    public static async Task GDTaskT_Status()
     {
         var gdTask = DelayWithReturn();
         Assertions.AssertThat(gdTask.Status).Equals(GDTaskStatus.Pending);
@@ -75,7 +77,7 @@ public class GDTaskTest_Core
     }
 
     [TestCase]
-    public async Task GDTaskT_ToString()
+    public static async Task GDTaskT_ToString()
     {
         var gdTask = DelayWithReturn();
         Assertions.AssertThat(gdTask.ToString()).IsEqual($"({GDTaskStatus.Pending})");
@@ -83,7 +85,7 @@ public class GDTaskTest_Core
     }
     
     [TestCase]
-    public async Task GDTaskT_Result()
+    public static async Task GDTaskT_Result()
     {
         Assertions
             .AssertThat(await DelayWithReturn())
@@ -91,7 +93,7 @@ public class GDTaskTest_Core
     }
 
     [TestCase]
-    public async Task GDTaskT_GetAwaiter_OnCompleted()
+    public static async Task GDTaskT_GetAwaiter_OnCompleted()
     {
         var gdTask = DelayWithReturn();
         var completed = false;
@@ -101,7 +103,7 @@ public class GDTaskTest_Core
     
     
     [TestCase]
-    public async Task GDTaskT_SuppressCancellationThrow()
+    public static async Task GDTaskT_SuppressCancellationThrow()
     {
         var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.CancelAfter(10);
@@ -110,7 +112,7 @@ public class GDTaskTest_Core
     }
 
     [TestCase]
-    public async Task GDTaskT_Preserve()
+    public static async Task GDTaskT_Preserve()
     {
         var gdTask = DelayWithReturn();
         gdTask = gdTask.Preserve();
