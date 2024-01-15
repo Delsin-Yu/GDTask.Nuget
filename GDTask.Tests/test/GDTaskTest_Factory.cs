@@ -81,7 +81,7 @@ public class GDTaskTest_Factory
     }
 
     [TestCase]
-    public static async Task GDTask_FromCanceled_CancellationToken()
+    public static async Task GDTask_FromCanceled_Token()
     {
         var cancellationTokenSource = new CancellationTokenSource();
         await cancellationTokenSource.CancelAsync();
@@ -98,7 +98,7 @@ public class GDTaskTest_Factory
     }
 
     [TestCase]
-    public static async Task GDTask_FromCanceledT_CancellationToken()
+    public static async Task GDTask_FromCanceledT_Token()
     {
         var cancellationTokenSource = new CancellationTokenSource();
         await cancellationTokenSource.CancelAsync();
@@ -176,12 +176,10 @@ public class GDTaskTest_Factory
     }
 
     [TestCase]
-    public static async Task GDTask_Void_CancellationToken()
+    public static async Task GDTask_Void_Token()
     {
         var finished = false;
         OperationCanceledException exception = null;
-        var cancellationTokenSource = new CancellationTokenSource();
-        await cancellationTokenSource.CancelAsync();
         GDTask.Void(
             async cancellationToken =>
             {
@@ -197,7 +195,7 @@ public class GDTaskTest_Factory
 
                 finished = true;
             },
-            cancellationTokenSource.Token
+            Constants.CreateCanceledToken()
         );
         await GDTask.WaitUntil(() => finished || exception != null);
         Assertions.AssertThat(finished).IsFalse();
@@ -225,12 +223,10 @@ public class GDTaskTest_Factory
 
 
     [TestCase]
-    public static async Task GDTask_Action_CancellationToken()
+    public static async Task GDTask_Action_Token()
     {
         var finished = false;
         OperationCanceledException exception = null;
-        var cancellationTokenSource = new CancellationTokenSource();
-        await cancellationTokenSource.CancelAsync();
         var call = GDTask.Action(
             async cancellationToken =>
             {
@@ -246,7 +242,7 @@ public class GDTaskTest_Factory
 
                 finished = true;
             },
-            cancellationTokenSource.Token
+            Constants.CreateCanceledToken()
         );
         call();
         await GDTask.WaitUntil(() => finished || exception != null);
@@ -299,13 +295,11 @@ public class GDTaskTest_Factory
     [TestCase]
     public static async Task GDTask_Never()
     {
-        var cancellationTokenSource = new CancellationTokenSource();
-        cancellationTokenSource.CancelAfter(Constants.DelayTime);
         using (new ScopedStopwatch())
         {
             try
             {
-                await GDTask.Never(cancellationTokenSource.Token);
+                await GDTask.Never(Constants.CreateCanceledToken());
             }
             catch (OperationCanceledException)
             {
@@ -319,13 +313,11 @@ public class GDTaskTest_Factory
     [TestCase]
     public static async Task GDTask_NeverT()
     {
-        var cancellationTokenSource = new CancellationTokenSource();
-        cancellationTokenSource.CancelAfter(Constants.DelayTime);
         using (new ScopedStopwatch())
         {
             try
             {
-                await GDTask.Never<int>(cancellationTokenSource.Token);
+                await GDTask.Never<int>(Constants.CreateCanceledToken());
             }
             catch (OperationCanceledException)
             {

@@ -21,6 +21,8 @@ internal static class Constants
     
     internal static GDTask<int> DelayWithReturn(CancellationToken? cancellationToken = default) => 
         GDTask.Delay(DelayTime, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
+
+    public static CancellationToken CreateCanceledToken() => new(true);
 }
 
 internal readonly struct ScopedStopwatch : IDisposable

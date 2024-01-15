@@ -6,26 +6,50 @@ using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
 using GdUnit4.Exceptions;
-using Godot;
 
 namespace Fractural.Tasks.Tests;
 
 [TestSuite]
-public class GDTaskText_Threading
+public class GDTaskTest_Threading
 {
     [TestCase]
-    public static async Task GDTask_IsMainThread()
+    public static async Task GDTask_SwitchToThreadPool()
     {
-        await GDTask.NextFrame();
+        await GDTask.SwitchToThreadPool();
         Assertions
-            .AssertThat(GDTaskPlayerLoopAutoload.IsMainThread)
+            .AssertThat(Thread.CurrentThread.IsThreadPoolThread)
             .IsTrue();
     }
 
     [TestCase]
+    public static async Task GDTask_SwitchToMainThread_Process()
+    {
+        await GDTask.SwitchToMainThread();
+        Assertions
+            .AssertThat(GDTaskPlayerLoopAutoload.IsMainThread)
+            .IsTrue();
+    }
+    
+    [TestCase]
+    public static async Task GDTask_SwitchToMainThread_Process_Token()
+    {
+        try
+        {
+            await GDTask.SwitchToMainThread(Constants.CreateCanceledToken());
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        throw new TestFailedException("SwitchToMainThread not canceled");
+    }
+
+    
+    [TestCase]
     public static async Task GDTask_RunOnThreadPool_Delegate()
     {
-        await GDTask.NextFrame();
+        await GDTask.SwitchToMainThread();
         await GDTask.RunOnThreadPool(
             (Action)(() => Assertions
                 .AssertThat(Thread.CurrentThread.IsThreadPoolThread)
@@ -33,16 +57,12 @@ public class GDTaskText_Threading
             false,
             CancellationToken.None
         );
-
-        Assertions
-            .AssertThat(Thread.CurrentThread.IsThreadPoolThread)
-            .IsTrue();
     }
 
     [TestCase]
     public static async Task GDTask_RunOnThreadPool_Delegate_ConfigureAwait()
     {
-        await GDTask.NextFrame();
+        await GDTask.SwitchToMainThread();
         await GDTask.RunOnThreadPool(
             (Action)(() => Assertions
                 .AssertThat(Thread.CurrentThread.IsThreadPoolThread)
@@ -57,18 +77,15 @@ public class GDTaskText_Threading
     }
 
     [TestCase]
-    public static async Task GDTask_RunOnThreadPool_Delegate_CancellationToken()
+    public static async Task GDTask_RunOnThreadPool_Delegate_Token()
     {
-        await GDTask.NextFrame();
-        var cancellationTokenSource = new CancellationTokenSource();
-        await cancellationTokenSource.CancelAsync();
-
+        await GDTask.SwitchToMainThread();
         try
         {
             await GDTask.RunOnThreadPool(
                 () => { },
                 false,
-                cancellationTokenSource.Token
+                Constants.CreateCanceledToken()
             );
             throw new TestFailedException("Operation not canceled");
         }
@@ -78,18 +95,16 @@ public class GDTaskText_Threading
     }
 
     [TestCase]
-    public static async Task GDTask_RunOnThreadPool_Delegate_ConfigureAwait_CancellationToken()
+    public static async Task GDTask_RunOnThreadPool_Delegate_ConfigureAwait_Token()
     {
-        await GDTask.NextFrame();
-        var cancellationTokenSource = new CancellationTokenSource();
-        await cancellationTokenSource.CancelAsync();
+        await GDTask.SwitchToMainThread();
 
         try
         {
             await GDTask.RunOnThreadPool(
                 () => { },
                 true,
-                cancellationTokenSource.Token
+                Constants.CreateCanceledToken()
             );
 
             throw new TestFailedException("Operation not canceled");
@@ -103,7 +118,7 @@ public class GDTaskText_Threading
     [TestCase]
     public static async Task GDTask_RunOnThreadPool_DelegateT()
     {
-        await GDTask.NextFrame();
+        await GDTask.SwitchToMainThread();
         var result = await GDTask.RunOnThreadPool(
             () =>
             {
@@ -116,17 +131,13 @@ public class GDTaskText_Threading
             CancellationToken.None
         );
 
-        Assertions
-            .AssertThat(Thread.CurrentThread.IsThreadPoolThread)
-            .IsTrue();
-
         Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
     }
 
     [TestCase]
     public static async Task GDTask_RunOnThreadPool_DelegateT_ConfigureAwait()
     {
-        await GDTask.NextFrame();
+        await GDTask.SwitchToMainThread();
         var result = await GDTask.RunOnThreadPool(
             () =>
             {
@@ -147,18 +158,16 @@ public class GDTaskText_Threading
     }
 
     [TestCase]
-    public static async Task GDTask_RunOnThreadPool_DelegateT_CancellationToken()
+    public static async Task GDTask_RunOnThreadPool_DelegateT_Token()
     {
-        await GDTask.NextFrame();
-        var cancellationTokenSource = new CancellationTokenSource();
-        await cancellationTokenSource.CancelAsync();
+        await GDTask.SwitchToMainThread();
 
         try
         {
             await GDTask.RunOnThreadPool(
                 () => Constants.ReturnValue,
                 false,
-                cancellationTokenSource.Token
+                Constants.CreateCanceledToken()
             );
             throw new TestFailedException("Operation not canceled");
         }
@@ -168,18 +177,18 @@ public class GDTaskText_Threading
     }
 
     [TestCase]
-    public static async Task GDTask_RunOnThreadPool_DelegateT_ConfigureAwait_CancellationToken()
+    public static async Task GDTask_RunOnThreadPool_DelegateT_ConfigureAwait_Token()
     {
-        await GDTask.NextFrame();
-        var cancellationTokenSource = new CancellationTokenSource();
-        await cancellationTokenSource.CancelAsync();
+        await GDTask.SwitchToMainThread();
+
+        Constants.CreateCanceledToken();
 
         try
         {
             await GDTask.RunOnThreadPool(
                 () => Constants.ReturnValue,
                 true,
-                cancellationTokenSource.Token
+                Constants.CreateCanceledToken()
             );
 
             throw new TestFailedException("Operation not canceled");
@@ -193,7 +202,7 @@ public class GDTaskText_Threading
     [TestCase]
     public static async Task GDTask_RunOnThreadPool_GDTask()
     {
-        await GDTask.NextFrame();
+        await GDTask.SwitchToMainThread();
         await GDTask.RunOnThreadPool(
             () =>
             {
@@ -205,16 +214,12 @@ public class GDTaskText_Threading
             false,
             CancellationToken.None
         );
-
-        Assertions
-            .AssertThat(Thread.CurrentThread.IsThreadPoolThread)
-            .IsTrue();
     }
 
     [TestCase]
     public static async Task GDTask_RunOnThreadPool_GDTask_ConfigureAwait()
     {
-        await GDTask.NextFrame();
+        await GDTask.SwitchToMainThread();
         await GDTask.RunOnThreadPool(
             () =>
             {
@@ -233,18 +238,16 @@ public class GDTaskText_Threading
     }
 
     [TestCase]
-    public static async Task GDTask_RunOnThreadPool_GDTask_CancellationToken()
+    public static async Task GDTask_RunOnThreadPool_GDTask_Token()
     {
-        await GDTask.NextFrame();
-        var cancellationTokenSource = new CancellationTokenSource();
-        await cancellationTokenSource.CancelAsync();
+        await GDTask.SwitchToMainThread();
 
         try
         {
             await GDTask.RunOnThreadPool(
                 () => GDTask.CompletedTask,
                 false,
-                cancellationTokenSource.Token
+                Constants.CreateCanceledToken()
             );
             throw new TestFailedException("Operation not canceled");
         }
@@ -254,18 +257,16 @@ public class GDTaskText_Threading
     }
 
     [TestCase]
-    public static async Task GDTask_RunOnThreadPool_GDTask_ConfigureAwait_CancellationToken()
+    public static async Task GDTask_RunOnThreadPool_GDTask_ConfigureAwait_Token()
     {
-        await GDTask.NextFrame();
-        var cancellationTokenSource = new CancellationTokenSource();
-        await cancellationTokenSource.CancelAsync();
-
+        await GDTask.SwitchToMainThread();
+        
         try
         {
             await GDTask.RunOnThreadPool(
                 () => GDTask.CompletedTask,
                 true,
-                cancellationTokenSource.Token
+                Constants.CreateCanceledToken()
             );
 
             throw new TestFailedException("Operation not canceled");
@@ -279,7 +280,7 @@ public class GDTaskText_Threading
     [TestCase]
     public static async Task GDTask_RunOnThreadPool_GDTaskT()
     {
-        await GDTask.NextFrame();
+        await GDTask.SwitchToMainThread();
         var result = await GDTask.RunOnThreadPool(
             () =>
             {
@@ -291,11 +292,7 @@ public class GDTaskText_Threading
             false,
             CancellationToken.None
         );
-
-        Assertions
-            .AssertThat(Thread.CurrentThread.IsThreadPoolThread)
-            .IsTrue();
-
+        
         Assertions
             .AssertThat(result)
             .IsEqual(Constants.ReturnValue);
@@ -304,7 +301,7 @@ public class GDTaskText_Threading
     [TestCase]
     public static async Task GDTask_RunOnThreadPool_GDTaskT_ConfigureAwait()
     {
-        await GDTask.NextFrame();
+        await GDTask.SwitchToMainThread();
         var result = await GDTask.RunOnThreadPool(
             () =>
             {
@@ -327,18 +324,16 @@ public class GDTaskText_Threading
     }
 
     [TestCase]
-    public static async Task GDTask_RunOnThreadPool_GDTaskT_CancellationToken()
+    public static async Task GDTask_RunOnThreadPool_GDTaskT_Token()
     {
-        await GDTask.NextFrame();
-        var cancellationTokenSource = new CancellationTokenSource();
-        await cancellationTokenSource.CancelAsync();
-
+        await GDTask.SwitchToMainThread();
+        
         try
         {
             await GDTask.RunOnThreadPool(
                 () => GDTask.FromResult(Constants.ReturnValue),
                 false,
-                cancellationTokenSource.Token
+                Constants.CreateCanceledToken()
             );
             throw new TestFailedException("Operation not canceled");
         }
@@ -348,18 +343,16 @@ public class GDTaskText_Threading
     }
 
     [TestCase]
-    public static async Task GDTask_RunOnThreadPool_GDTaskT_ConfigureAwait_CancellationToken()
+    public static async Task GDTask_RunOnThreadPool_GDTaskT_ConfigureAwait_Token()
     {
-        await GDTask.NextFrame();
-        var cancellationTokenSource = new CancellationTokenSource();
-        await cancellationTokenSource.CancelAsync();
+        await GDTask.SwitchToMainThread();
 
         try
         {
             await GDTask.RunOnThreadPool(
                 () => GDTask.FromResult(Constants.ReturnValue),
                 true,
-                cancellationTokenSource.Token
+                Constants.CreateCanceledToken()
             );
 
             throw new TestFailedException("Operation not canceled");
@@ -367,5 +360,109 @@ public class GDTaskText_Threading
         catch (OperationCanceledException)
         {
         }
+    }
+    
+
+    [TestCase]
+    public static async Task GDTask_ReturnToMainThread()
+    {
+        await using (GDTask.ReturnToMainThread())
+        {
+            await GDTask.SwitchToThreadPool();
+            Assertions
+                .AssertThat(Thread.CurrentThread.IsThreadPoolThread)
+                .IsTrue();
+        }
+        
+        Assertions
+            .AssertThat(GDTaskPlayerLoopAutoload.IsMainThread)
+            .IsTrue();
+    }
+    
+    [TestCase]
+    public static async Task GDTask_ReturnToSynchronizationContext()
+    {
+        await GDTask.SwitchToMainThread();
+        
+        var context = SynchronizationContext.Current;
+        
+        await using (GDTask.ReturnToSynchronizationContext(context))
+        {
+            await GDTask.SwitchToThreadPool();
+            Assertions
+                .AssertThat(context != SynchronizationContext.Current);
+        }
+        
+        Assertions
+            .AssertThat(context == SynchronizationContext.Current);
+    }
+    
+    [TestCase]
+    public static async Task GDTask_ReturnToCurrentSynchronizationContext()
+    {
+        await GDTask.SwitchToMainThread();
+        
+        var context = SynchronizationContext.Current;
+        
+        await using (GDTask.ReturnToCurrentSynchronizationContext())
+        {
+            await GDTask.SwitchToThreadPool();
+            Assertions
+                .AssertThat(context != SynchronizationContext.Current);
+        }
+        
+        Assertions
+            .AssertThat(context == SynchronizationContext.Current);
+    }
+
+
+    [TestCase]
+    public static async Task GDTask_ReturnToMainThread_Token()
+    {
+        await GDTask.SwitchToThreadPool();
+        
+        try
+        {
+            await using var handler = GDTask.ReturnToMainThread(Constants.CreateCanceledToken());
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        throw new TestFailedException("Operation not canceled");
+    }
+
+    [TestCase]
+    public static async Task GDTask_ReturnToSynchronizationContext_Token()
+    {
+        await GDTask.SwitchToMainThread();
+        
+        var context = SynchronizationContext.Current;
+        
+        try
+        {
+            await using var handler = GDTask.ReturnToSynchronizationContext(context, Constants.CreateCanceledToken());
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        throw new TestFailedException("Operation not canceled");
+    }
+    
+    [TestCase]
+    public static async Task GDTask_ReturnToCurrentSynchronizationContext_Token()
+    {
+        await GDTask.SwitchToMainThread();
+
+        try
+        {
+            await using var handler = GDTask.ReturnToCurrentSynchronizationContext(cancellationToken: Constants.CreateCanceledToken());
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        throw new TestFailedException("Operation not canceled");
     }
 }

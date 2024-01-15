@@ -28,7 +28,7 @@ public class GDTaskTest_Delay
     }
 
     [TestCase]
-    public static async Task GDTask_Yield_Process_CancellationToken()
+    public static async Task GDTask_Yield_Process_Token()
     {
         var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -45,7 +45,7 @@ public class GDTaskTest_Delay
     }
 
     [TestCase]
-    public static async Task GDTask_Yield_PhysicsProcess_CancellationToken()
+    public static async Task GDTask_Yield_PhysicsProcess_Token()
     {
         var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -82,7 +82,7 @@ public class GDTaskTest_Delay
     }
 
     [TestCase]
-    public static async Task GDTask_NextFrame_Process_CancellationToken()
+    public static async Task GDTask_NextFrame_Process_Token()
     {
         var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -99,7 +99,7 @@ public class GDTaskTest_Delay
     }
 
     [TestCase]
-    public static async Task GDTask_NextFrame_PhysicsProcess_CancellationToken()
+    public static async Task GDTask_NextFrame_PhysicsProcess_Token()
     {
         var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -136,7 +136,7 @@ public class GDTaskTest_Delay
     }
 
     [TestCase]
-    public static async Task GDTask_DelayFrame_Process_CancellationToken()
+    public static async Task GDTask_DelayFrame_Process_Token()
     {
         var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -153,7 +153,7 @@ public class GDTaskTest_Delay
     }
 
     [TestCase]
-    public static async Task GDTask_DelayFrame_PhysicsProcess_CancellationToken()
+    public static async Task GDTask_DelayFrame_PhysicsProcess_Token()
     {
         var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -184,7 +184,7 @@ public class GDTaskTest_Delay
     }
 
     [TestCase]
-    public static async Task GDTask_Delay_DeltaTime_Process_CancellationToken()
+    public static async Task GDTask_Delay_DeltaTime_Process_Token()
     {
         await GDTask.NextFrame(PlayerLoopTiming.Process);
         var source = new CancellationTokenSource();
@@ -202,7 +202,7 @@ public class GDTaskTest_Delay
     }
 
     [TestCase]
-    public static async Task GDTask_Delay_DeltaTime_PhysicsProcess_CancellationToken()
+    public static async Task GDTask_Delay_DeltaTime_PhysicsProcess_Token()
     {
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
         var source = new CancellationTokenSource();
@@ -234,7 +234,7 @@ public class GDTaskTest_Delay
     }
 
     [TestCase]
-    public static async Task GDTask_Delay_RealTime_Process_CancellationToken()
+    public static async Task GDTask_Delay_RealTime_Process_Token()
     {
         await GDTask.NextFrame(PlayerLoopTiming.Process);
         var source = new CancellationTokenSource();
@@ -252,7 +252,7 @@ public class GDTaskTest_Delay
     }
 
     [TestCase]
-    public static async Task GDTask_Delay_RealTime_PhysicsProcess_CancellationToken()
+    public static async Task GDTask_Delay_RealTime_PhysicsProcess_Token()
     {
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
         var source = new CancellationTokenSource();
