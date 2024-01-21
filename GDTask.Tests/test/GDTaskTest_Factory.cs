@@ -10,7 +10,7 @@ using GdUnit4.Exceptions;
 namespace Fractural.Tasks.Tests;
 
 [TestSuite]
-public class GDTaskTest_Factory
+public partial class GDTaskTest_Factory
 {
     [TestCase]
     public static async Task GDTask_FromException()
@@ -295,16 +295,13 @@ public class GDTaskTest_Factory
     [TestCase]
     public static async Task GDTask_Never()
     {
-        using (new ScopedStopwatch())
+        try
         {
-            try
-            {
-                await GDTask.Never(Constants.CreateCanceledToken());
-            }
-            catch (OperationCanceledException)
-            {
-                return;        
-            }
+            await GDTask.Never(Constants.CreateCanceledToken());
+        }
+        catch (OperationCanceledException)
+        {
+            return;
         }
 
         throw new TestFailedException("OperationCanceledException not thrown");
@@ -313,22 +310,15 @@ public class GDTaskTest_Factory
     [TestCase]
     public static async Task GDTask_NeverT()
     {
-        using (new ScopedStopwatch())
+        try
         {
-            try
-            {
-                await GDTask.Never<int>(Constants.CreateCanceledToken());
-            }
-            catch (OperationCanceledException)
-            {
-                return;        
-            }
+            await GDTask.Never<int>(Constants.CreateCanceledToken());
+        }
+        catch (OperationCanceledException)
+        {
+            return;
         }
 
         throw new TestFailedException("OperationCanceledException not thrown");
-    }
-
-    private class ExpectedException : Exception
-    {
     }
 }

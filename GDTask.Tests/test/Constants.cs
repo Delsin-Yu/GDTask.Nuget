@@ -11,16 +11,26 @@ internal static class Constants
     internal const int ReturnValue = 5;
     internal const int DelayTime = 100;
     internal const int DelayFrames = 5;
+
+    internal static readonly TimeSpan DelayTimeSpan = TimeSpan.FromMilliseconds(DelayTime);
+    internal static readonly TimeSpan DelayDownToleranceSpan = TimeSpan.FromMilliseconds(DelayTime - DelayTime / 2f);
+    internal static readonly TimeSpan DelayUpToleranceSpan = TimeSpan.FromMilliseconds(DelayTime + DelayTime / 2f);
+
+    internal static async GDTask Throw()
+    {
+        await GDTask.Yield();
+        throw new ExpectedException();
+    }
     
-    internal static readonly TimeSpan DelayTimeSpan = TimeSpan.FromSeconds(1);
-    internal static readonly TimeSpan DelayDownToleranceSpan = TimeSpan.FromSeconds(0);
-    internal static readonly TimeSpan DelayUpToleranceSpan = TimeSpan.FromSeconds(2);
-    
-    internal static GDTask Delay(CancellationToken? cancellationToken = default) => 
-        GDTask.Delay(DelayTime, cancellationToken: cancellationToken ?? CancellationToken.None);
-    
-    internal static GDTask<int> DelayWithReturn(CancellationToken? cancellationToken = default) => 
-        GDTask.Delay(DelayTime, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
+    internal static async GDTask<int> ThrowT()
+    {
+        await GDTask.Yield();
+        throw new ExpectedException();
+    }
+
+    internal static GDTask Delay(CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTime, cancellationToken: cancellationToken ?? CancellationToken.None);
+
+    internal static GDTask<int> DelayWithReturn(CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTime, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
 
     public static CancellationToken CreateCanceledToken() => new(true);
 }
@@ -34,7 +44,7 @@ internal readonly struct ScopedStopwatch : IDisposable
         _stopwatch = new();
         _stopwatch.Start();
     }
-        
+
     public void Dispose()
     {
         Assertions.AssertThat(_stopwatch.Elapsed.TotalSeconds)
@@ -59,13 +69,13 @@ internal readonly struct ScopedFrameCount : IDisposable
             _ => throw new ArgumentOutOfRangeException(nameof(timing), timing, null)
         };
     }
-    
+
     public ScopedFrameCount(ulong offset, PlayerLoopTiming timing)
     {
         _targetFrame = GetCurrentFrame(timing) + offset;
         _timing = timing;
     }
-    
+
     public void Dispose()
     {
         Assertions.AssertThat(_targetFrame)

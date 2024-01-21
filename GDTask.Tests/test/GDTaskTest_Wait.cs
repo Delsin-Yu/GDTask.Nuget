@@ -5,7 +5,7 @@ using GdUnit4;
 namespace Fractural.Tasks.Tests;
 
 [TestSuite]
-public class GDTaskText_Wait
+public class GDTaskTest_Wait
 {
     [TestCase]
     public static async Task GDTask_WaitUntil()
