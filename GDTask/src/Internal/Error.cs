@@ -13,7 +13,7 @@ namespace GodotTasks.Tasks.Internal
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static void ThrowArgumentNullExceptionCore(string paramName)
+        private static void ThrowArgumentNullExceptionCore(string paramName)
         {
             throw new ArgumentNullException(paramName);
         }

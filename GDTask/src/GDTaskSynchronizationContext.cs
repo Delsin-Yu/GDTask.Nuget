@@ -10,19 +10,19 @@ namespace GodotTasks.Tasks
     /// </summary>
     public sealed class GDTaskSynchronizationContext : SynchronizationContext
     {
-        const int MaxArrayLength = 0X7FEFFFFF;
-        const int InitialSize = 16;
+        private const int MaxArrayLength = 0X7FEFFFFF;
+        private const int InitialSize = 16;
 
-        static SpinLock gate = new SpinLock(false);
-        static bool dequing = false;
+        private static SpinLock gate = new SpinLock(false);
+        private static bool dequing = false;
 
-        static int actionListCount = 0;
-        static Callback[] actionList = new Callback[InitialSize];
+        private static int actionListCount = 0;
+        private static Callback[] actionList = new Callback[InitialSize];
 
-        static int waitingListCount = 0;
-        static Callback[] waitingList = new Callback[InitialSize];
+        private static int waitingListCount = 0;
+        private static Callback[] waitingList = new Callback[InitialSize];
 
-        static int opCount;
+        private static int opCount;
 
         internal GDTaskSynchronizationContext() { }
         
@@ -152,10 +152,10 @@ namespace GodotTasks.Tasks
         }
 
         [StructLayout(LayoutKind.Auto)]
-        readonly struct Callback
+        private readonly struct Callback
         {
-            readonly SendOrPostCallback callback;
-            readonly object state;
+            private readonly SendOrPostCallback callback;
+            private readonly object state;
 
             public Callback(SendOrPostCallback callback, object state)
             {

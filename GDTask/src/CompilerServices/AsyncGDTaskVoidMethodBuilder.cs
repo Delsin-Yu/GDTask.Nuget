@@ -10,7 +10,7 @@ namespace GodotTasks.Tasks.CompilerServices
     [StructLayout(LayoutKind.Auto)]
     public struct AsyncGDTaskVoidMethodBuilder
     {
-        IStateMachineRunner runner;
+        private IStateMachineRunner runner;
 
         // 1. Static Create method.
         [DebuggerHidden]
@@ -107,7 +107,7 @@ namespace GodotTasks.Tasks.CompilerServices
 
 #if DEBUG
         // Important for IDE debugger.
-        object debuggingId;
+        private object debuggingId;
         private object ObjectIdForDebugger
         {
             get

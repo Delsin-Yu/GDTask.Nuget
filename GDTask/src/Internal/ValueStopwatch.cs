@@ -5,13 +5,13 @@ namespace GodotTasks.Tasks.Internal
 {
     internal readonly struct ValueStopwatch
     {
-        static readonly double TimestampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
+        private static readonly double TimestampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
 
-        readonly long startTimestamp;
+        private readonly long startTimestamp;
 
         public static ValueStopwatch StartNew() => new ValueStopwatch(Stopwatch.GetTimestamp());
 
-        ValueStopwatch(long startTimestamp)
+        private ValueStopwatch(long startTimestamp)
         {
             this.startTimestamp = startTimestamp;
         }

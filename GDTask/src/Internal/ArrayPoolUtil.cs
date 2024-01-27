@@ -17,7 +17,7 @@ namespace GodotTasks.Tasks.Internal
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static void EnsureCapacityCore<T>(ref T[] array, int index, ArrayPool<T> pool)
+        private static void EnsureCapacityCore<T>(ref T[] array, int index, ArrayPool<T> pool)
         {
             if (array.Length <= index)
             {
@@ -81,7 +81,7 @@ namespace GodotTasks.Tasks.Internal
         {
             public readonly T[] Array;
             public readonly int Length;
-            ArrayPool<T> pool;
+            private ArrayPool<T> pool;
 
             public RentArray(T[] array, int length, ArrayPool<T> pool)
             {

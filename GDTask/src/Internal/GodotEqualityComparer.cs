@@ -13,14 +13,14 @@ namespace GodotTasks.Tasks.Internal
         public static readonly IEqualityComparer<Aabb> AABB = new AABBEqualityComparer();
         public static readonly IEqualityComparer<Quaternion> Quaternion = new QuatEqualityComparer();
 
-        static readonly RuntimeTypeHandle vector2Type = typeof(Vector2).TypeHandle;
-        static readonly RuntimeTypeHandle vector3Type = typeof(Vector3).TypeHandle;
-        static readonly RuntimeTypeHandle colorType = typeof(Color).TypeHandle;
-        static readonly RuntimeTypeHandle rectType = typeof(Rect2).TypeHandle;
-        static readonly RuntimeTypeHandle AABBType = typeof(Aabb).TypeHandle;
-        static readonly RuntimeTypeHandle quaternionType = typeof(Quaternion).TypeHandle;
+        private static readonly RuntimeTypeHandle vector2Type = typeof(Vector2).TypeHandle;
+        private static readonly RuntimeTypeHandle vector3Type = typeof(Vector3).TypeHandle;
+        private static readonly RuntimeTypeHandle colorType = typeof(Color).TypeHandle;
+        private static readonly RuntimeTypeHandle rectType = typeof(Rect2).TypeHandle;
+        private static readonly RuntimeTypeHandle AABBType = typeof(Aabb).TypeHandle;
+        private static readonly RuntimeTypeHandle quaternionType = typeof(Quaternion).TypeHandle;
 
-        static class Cache<T>
+        private static class Cache<T>
         {
             public static readonly IEqualityComparer<T> Comparer;
 
@@ -43,7 +43,7 @@ namespace GodotTasks.Tasks.Internal
             return Cache<T>.Comparer;
         }
 
-        static object GetDefaultHelper(Type type)
+        private static object GetDefaultHelper(Type type)
         {
             var t = type.TypeHandle;
 
@@ -57,42 +57,42 @@ namespace GodotTasks.Tasks.Internal
             return null;
         }
 
-        sealed class Vector2EqualityComparer : IEqualityComparer<Vector2>
+        private sealed class Vector2EqualityComparer : IEqualityComparer<Vector2>
         {
             public bool Equals(Vector2 self, Vector2 vector) => self.Equals(vector);
 
             public int GetHashCode(Vector2 obj) => obj.GetHashCode();
         }
 
-        sealed class Vector3EqualityComparer : IEqualityComparer<Vector3>
+        private sealed class Vector3EqualityComparer : IEqualityComparer<Vector3>
         {
             public bool Equals(Vector3 self, Vector3 vector) => self.Equals(vector);
 
             public int GetHashCode(Vector3 obj) => obj.GetHashCode();
         }
 
-        sealed class ColorEqualityComparer : IEqualityComparer<Color>
+        private sealed class ColorEqualityComparer : IEqualityComparer<Color>
         {
             public bool Equals(Color self, Color other) => self.Equals(other);
 
             public int GetHashCode(Color obj) => obj.GetHashCode();
         }
 
-        sealed class Rect2EqualityComparer : IEqualityComparer<Rect2>
+        private sealed class Rect2EqualityComparer : IEqualityComparer<Rect2>
         {
             public bool Equals(Rect2 self, Rect2 other) => self.Equals(other);
 
             public int GetHashCode(Rect2 obj) => obj.GetHashCode();
         }
 
-        sealed class AABBEqualityComparer : IEqualityComparer<Aabb>
+        private sealed class AABBEqualityComparer : IEqualityComparer<Aabb>
         {
             public bool Equals(Aabb self, Aabb vector) => self.Equals(vector);
 
             public int GetHashCode(Aabb obj) => obj.GetHashCode();
         }
 
-        sealed class QuatEqualityComparer : IEqualityComparer<Quaternion>
+        private sealed class QuatEqualityComparer : IEqualityComparer<Quaternion>
         {
             public bool Equals(Quaternion self, Quaternion vector) => self.Equals(vector);
 

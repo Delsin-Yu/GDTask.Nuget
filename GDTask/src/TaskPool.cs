@@ -16,7 +16,7 @@ namespace GodotTasks.Tasks
         internal static int MaxPoolSize;
 
         // Avoid to use ConcurrentDictionary for safety of WebGL build.
-        static Dictionary<Type, Func<int>> sizes = new Dictionary<Type, Func<int>>();
+        private static Dictionary<Type, Func<int>> sizes = new Dictionary<Type, Func<int>>();
 
         static TaskPool()
         {
@@ -89,11 +89,12 @@ namespace GodotTasks.Tasks
         where T : class, ITaskPoolNode<T>
     {
         // gate is basically a lock, which controls both popping and pushing to the TaskPool
-        int gate;
-        int size;
+        private int gate;
+
+        private int size;
         // Linked list points backwards:
         // root <-- node2 <-- node3 <-- node4
-        T root;
+        private T root;
 
         public int Size => size;
 

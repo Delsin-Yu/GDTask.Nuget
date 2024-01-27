@@ -32,14 +32,14 @@ namespace GodotTasks.Tasks
 
     internal class AsyncLazy : IAsyncLazy
     {
-        static Action<object> continuation = SetCompletionSource;
+        private static Action<object> continuation = SetCompletionSource;
 
-        Func<GDTask> taskFactory;
-        GDTaskCompletionSource completionSource;
-        GDTask.Awaiter awaiter;
+        private Func<GDTask> taskFactory;
+        private GDTaskCompletionSource completionSource;
+        private GDTask.Awaiter awaiter;
 
-        object syncLock;
-        bool initialized;
+        private object syncLock;
+        private bool initialized;
 
         public AsyncLazy(Func<GDTask> taskFactory)
         {
@@ -80,7 +80,7 @@ namespace GodotTasks.Tasks
 
         public GDTask.Awaiter GetAwaiter() => Task.GetAwaiter();
 
-        void EnsureInitialized()
+        private void EnsureInitialized()
         {
             if (Volatile.Read(ref initialized))
             {
@@ -90,7 +90,7 @@ namespace GodotTasks.Tasks
             EnsureInitializedCore();
         }
 
-        void EnsureInitializedCore()
+        private void EnsureInitializedCore()
         {
             lock (syncLock)
             {
@@ -117,7 +117,7 @@ namespace GodotTasks.Tasks
             }
         }
 
-        void SetCompletionSource(in GDTask.Awaiter awaiter)
+        private void SetCompletionSource(in GDTask.Awaiter awaiter)
         {
             try
             {
@@ -130,7 +130,7 @@ namespace GodotTasks.Tasks
             }
         }
 
-        static void SetCompletionSource(object state)
+        private static void SetCompletionSource(object state)
         {
             var self = (AsyncLazy)state;
             try
@@ -151,14 +151,14 @@ namespace GodotTasks.Tasks
 
     internal class AsyncLazy<T> : IAsyncLazy<T>
     {
-        static Action<object> continuation = SetCompletionSource;
+        private static Action<object> continuation = SetCompletionSource;
 
-        Func<GDTask<T>> taskFactory;
-        GDTaskCompletionSource<T> completionSource;
-        GDTask<T>.Awaiter awaiter;
+        private Func<GDTask<T>> taskFactory;
+        private GDTaskCompletionSource<T> completionSource;
+        private GDTask<T>.Awaiter awaiter;
 
-        object syncLock;
-        bool initialized;
+        private object syncLock;
+        private bool initialized;
 
         public AsyncLazy(Func<GDTask<T>> taskFactory)
         {
@@ -199,7 +199,7 @@ namespace GodotTasks.Tasks
 
         public GDTask<T>.Awaiter GetAwaiter() => Task.GetAwaiter();
 
-        void EnsureInitialized()
+        private void EnsureInitialized()
         {
             if (Volatile.Read(ref initialized))
             {
@@ -209,7 +209,7 @@ namespace GodotTasks.Tasks
             EnsureInitializedCore();
         }
 
-        void EnsureInitializedCore()
+        private void EnsureInitializedCore()
         {
             lock (syncLock)
             {
@@ -236,7 +236,7 @@ namespace GodotTasks.Tasks
             }
         }
 
-        void SetCompletionSource(in GDTask<T>.Awaiter awaiter)
+        private void SetCompletionSource(in GDTask<T>.Awaiter awaiter)
         {
             try
             {
@@ -249,7 +249,7 @@ namespace GodotTasks.Tasks
             }
         }
 
-        static void SetCompletionSource(object state)
+        private static void SetCompletionSource(object state)
         {
             var self = (AsyncLazy<T>)state;
             try

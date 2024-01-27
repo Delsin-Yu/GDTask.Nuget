@@ -112,8 +112,8 @@ namespace GodotTasks.Tasks
     /// </summary>
     public struct SwitchToMainThreadAwaitable
     {
-        readonly PlayerLoopTiming playerLoopTiming;
-        readonly CancellationToken cancellationToken;
+        private readonly PlayerLoopTiming playerLoopTiming;
+        private readonly CancellationToken cancellationToken;
 
         internal SwitchToMainThreadAwaitable(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
         {
@@ -131,8 +131,8 @@ namespace GodotTasks.Tasks
         /// </summary>
         public struct Awaiter : ICriticalNotifyCompletion
         {
-            readonly PlayerLoopTiming playerLoopTiming;
-            readonly CancellationToken cancellationToken;
+            private readonly PlayerLoopTiming playerLoopTiming;
+            private readonly CancellationToken cancellationToken;
             
             /// <summary>
             /// Initializes the <see cref="Awaiter"/>.
@@ -190,8 +190,8 @@ namespace GodotTasks.Tasks
     /// </summary>
     public struct ReturnToMainThread
     {
-        readonly PlayerLoopTiming playerLoopTiming;
-        readonly CancellationToken cancellationToken;
+        private readonly PlayerLoopTiming playerLoopTiming;
+        private readonly CancellationToken cancellationToken;
 
         internal ReturnToMainThread(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
         {
@@ -212,8 +212,8 @@ namespace GodotTasks.Tasks
         /// </summary>
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
-            readonly PlayerLoopTiming timing;
-            readonly CancellationToken cancellationToken;
+            private readonly PlayerLoopTiming timing;
+            private readonly CancellationToken cancellationToken;
 
             /// <summary>
             /// Initializes the <see cref="Awaiter"/>.
@@ -272,7 +272,7 @@ namespace GodotTasks.Tasks
         /// </summary>
         public struct Awaiter : ICriticalNotifyCompletion
         {
-            static readonly WaitCallback switchToCallback = Callback;
+            private static readonly WaitCallback switchToCallback = Callback;
 
             /// <summary>
             /// Gets whether this <see cref="SwitchToThreadPoolAwaitable"/> has completed, always returns false.
@@ -300,7 +300,7 @@ namespace GodotTasks.Tasks
                 ThreadPool.UnsafeQueueUserWorkItem(switchToCallback, continuation);
             }
 
-            static void Callback(object state)
+            private static void Callback(object state)
             {
                 var continuation = (Action)state;
                 continuation();
@@ -313,8 +313,8 @@ namespace GodotTasks.Tasks
     /// </summary>
     public struct SwitchToSynchronizationContextAwaitable
     {
-        readonly SynchronizationContext synchronizationContext;
-        readonly CancellationToken cancellationToken;
+        private readonly SynchronizationContext synchronizationContext;
+        private readonly CancellationToken cancellationToken;
 
         internal SwitchToSynchronizationContextAwaitable(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
         {
@@ -332,9 +332,9 @@ namespace GodotTasks.Tasks
         /// </summary>
         public struct Awaiter : ICriticalNotifyCompletion
         {
-            static readonly SendOrPostCallback switchToCallback = Callback;
-            readonly SynchronizationContext synchronizationContext;
-            readonly CancellationToken cancellationToken;
+            private static readonly SendOrPostCallback switchToCallback = Callback;
+            private readonly SynchronizationContext synchronizationContext;
+            private readonly CancellationToken cancellationToken;
 
             /// <summary>
             /// Initializes the <see cref="Awaiter"/>.
@@ -371,7 +371,7 @@ namespace GodotTasks.Tasks
                 synchronizationContext.Post(switchToCallback, continuation);
             }
 
-            static void Callback(object state)
+            private static void Callback(object state)
             {
                 var continuation = (Action)state;
                 continuation();
@@ -384,9 +384,9 @@ namespace GodotTasks.Tasks
     /// </summary>
     public struct ReturnToSynchronizationContext
     {
-        readonly SynchronizationContext syncContext;
-        readonly bool dontPostWhenSameContext;
-        readonly CancellationToken cancellationToken;
+        private readonly SynchronizationContext syncContext;
+        private readonly bool dontPostWhenSameContext;
+        private readonly CancellationToken cancellationToken;
 
         internal ReturnToSynchronizationContext(SynchronizationContext syncContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
         {
@@ -408,11 +408,11 @@ namespace GodotTasks.Tasks
         /// </summary>
         public struct Awaiter : ICriticalNotifyCompletion
         {
-            static readonly SendOrPostCallback switchToCallback = Callback;
+            private static readonly SendOrPostCallback switchToCallback = Callback;
 
-            readonly SynchronizationContext synchronizationContext;
-            readonly bool dontPostWhenSameContext;
-            readonly CancellationToken cancellationToken;
+            private readonly SynchronizationContext synchronizationContext;
+            private readonly bool dontPostWhenSameContext;
+            private readonly CancellationToken cancellationToken;
 
             /// <summary>
             /// Initializes the <see cref="Awaiter"/>.
@@ -471,7 +471,7 @@ namespace GodotTasks.Tasks
                 synchronizationContext.Post(switchToCallback, continuation);
             }
 
-            static void Callback(object state)
+            private static void Callback(object state)
             {
                 var continuation = (Action)state;
                 continuation();

@@ -6,13 +6,13 @@ namespace GodotTasks.Tasks.Internal
     // optimized version of Standard Queue<T>.
     internal class MinimumQueue<T>
     {
-        const int MinimumGrow = 4;
-        const int GrowFactor = 200;
+        private const int MinimumGrow = 4;
+        private const int GrowFactor = 200;
 
-        T[] array;
-        int head;
-        int tail;
-        int size;
+        private T[] array;
+        private int head;
+        private int tail;
+        private int size;
 
         public MinimumQueue(int capacity)
         {
@@ -60,7 +60,7 @@ namespace GodotTasks.Tasks.Internal
             return removed;
         }
 
-        void Grow()
+        private void Grow()
         {
             int newcapacity = (int)((long)array.Length * (long)GrowFactor / 100);
             if (newcapacity < array.Length + MinimumGrow)
@@ -70,7 +70,7 @@ namespace GodotTasks.Tasks.Internal
             SetCapacity(newcapacity);
         }
 
-        void SetCapacity(int capacity)
+        private void SetCapacity(int capacity)
         {
             T[] newarray = new T[capacity];
             if (size > 0)
@@ -92,7 +92,7 @@ namespace GodotTasks.Tasks.Internal
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void MoveNext(ref int index)
+        private void MoveNext(ref int index)
         {
             int tmp = index + 1;
             if (tmp == array.Length)
@@ -102,7 +102,7 @@ namespace GodotTasks.Tasks.Internal
             index = tmp;
         }
 
-        void ThrowForEmptyQueue()
+        private void ThrowForEmptyQueue()
         {
             throw new InvalidOperationException("EmptyQueue");
         }

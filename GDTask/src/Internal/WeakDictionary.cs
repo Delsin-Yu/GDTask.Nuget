@@ -8,12 +8,12 @@ namespace GodotTasks.Tasks.Internal
     internal class WeakDictionary<TKey, TValue>
         where TKey : class
     {
-        Entry[] buckets;
-        int size;
-        SpinLock gate; // mutable struct(not readonly)
+        private Entry[] buckets;
+        private int size;
+        private SpinLock gate; // mutable struct(not readonly)
 
-        readonly float loadFactor;
-        readonly IEqualityComparer<TKey> keyEqualityComparer;
+        private readonly float loadFactor;
+        private readonly IEqualityComparer<TKey> keyEqualityComparer;
 
         public WeakDictionary(int capacity = 4, float loadFactor = 0.75f, IEqualityComparer<TKey> keyComparer = null)
         {
@@ -79,7 +79,7 @@ namespace GodotTasks.Tasks.Internal
             }
         }
 
-        bool TryAddInternal(TKey key, TValue value)
+        private bool TryAddInternal(TKey key, TValue value)
         {
             var nextCapacity = CalculateCapacity(size + 1, loadFactor);
 
@@ -110,7 +110,7 @@ namespace GodotTasks.Tasks.Internal
             }
         }
 
-        bool AddToBuckets(Entry[] targetBuckets, TKey newKey, TValue value, int keyHash)
+        private bool AddToBuckets(Entry[] targetBuckets, TKey newKey, TValue value, int keyHash)
         {
             var h = keyHash;
             var hashIndex = h & (targetBuckets.Length - 1);
@@ -167,7 +167,7 @@ namespace GodotTasks.Tasks.Internal
             }
         }
 
-        bool TryGetEntry(TKey key, out int hashIndex, out Entry entry)
+        private bool TryGetEntry(TKey key, out int hashIndex, out Entry entry)
         {
             var table = buckets;
             var hash = keyEqualityComparer.GetHashCode(key);
@@ -195,7 +195,7 @@ namespace GodotTasks.Tasks.Internal
             return false;
         }
 
-        void Remove(int hashIndex, Entry entry)
+        private void Remove(int hashIndex, Entry entry)
         {
             if (entry.Prev == null && entry.Next == null)
             {
@@ -275,7 +275,7 @@ namespace GodotTasks.Tasks.Internal
             return listIndex;
         }
 
-        static int CalculateCapacity(int collectionSize, float loadFactor)
+        private static int CalculateCapacity(int collectionSize, float loadFactor)
         {
             var size = (int)(((float)collectionSize) / loadFactor);
 
@@ -294,7 +294,7 @@ namespace GodotTasks.Tasks.Internal
             return size;
         }
 
-        class Entry
+        private class Entry
         {
             public WeakReference<TKey> Key;
             public TValue Value;
@@ -315,7 +315,7 @@ namespace GodotTasks.Tasks.Internal
                 }
             }
 
-            int Count()
+            private int Count()
             {
                 var count = 1;
                 var n = this;

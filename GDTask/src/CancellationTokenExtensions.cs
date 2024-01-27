@@ -53,7 +53,7 @@ namespace GodotTasks.Tasks
             return ToCancellationToken(task.AsGDTask(), linkToken);
         }
 
-        static async GDTaskVoid ToCancellationTokenCore(GDTask task, CancellationTokenSource cts)
+        private static async GDTaskVoid ToCancellationTokenCore(GDTask task, CancellationTokenSource cts)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace GodotTasks.Tasks
             return (promise.Task, cancellationToken.RegisterWithoutCaptureExecutionContext(Callback, promise));
         }
 
-        static void Callback(object state)
+        private static void Callback(object state)
         {
             var promise = (GDTaskCompletionSource)state;
             promise.TrySetResult();
@@ -154,7 +154,7 @@ namespace GodotTasks.Tasks
             return cancellationToken.RegisterWithoutCaptureExecutionContext(DisposeCallback, disposable);
         }
 
-        static void DisposeCallback(object state)
+        private static void DisposeCallback(object state)
         {
             var d = (IDisposable)state;
             d.Dispose();
@@ -167,7 +167,7 @@ namespace GodotTasks.Tasks
     /// </summary>
     public struct CancellationTokenAwaitable
     {
-        CancellationToken cancellationToken;
+        private CancellationToken cancellationToken;
 
         internal CancellationTokenAwaitable(CancellationToken cancellationToken)
         {
@@ -187,7 +187,7 @@ namespace GodotTasks.Tasks
         /// </summary>
         public struct Awaiter : ICriticalNotifyCompletion
         {
-            CancellationToken cancellationToken;
+            private CancellationToken cancellationToken;
 
             internal Awaiter(CancellationToken cancellationToken)
             {

@@ -12,7 +12,7 @@ namespace GodotTasks.Tasks
     /// </summary>
     public static class CancellationTokenSourceExtensions
     {
-        static void CancelCancellationTokenSourceState(object state)
+        private static void CancelCancellationTokenSourceState(object state)
         {
             var cts = (CancellationTokenSource)state;
             cts.Cancel();

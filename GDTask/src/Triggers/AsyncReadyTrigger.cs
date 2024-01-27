@@ -32,7 +32,7 @@ namespace GodotTasks.Tasks.Triggers
     
     internal sealed partial class AsyncReadyTrigger : AsyncTriggerBase<AsyncUnit>, IAsyncReadyHandler
     {
-        bool called;
+        private bool called;
 
         public override void _Ready()
         {

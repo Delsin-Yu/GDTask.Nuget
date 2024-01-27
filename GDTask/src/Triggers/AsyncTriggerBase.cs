@@ -6,7 +6,7 @@ namespace GodotTasks.Tasks.Triggers
 {
     internal abstract partial class AsyncTriggerBase<T> : Node
     {
-        TriggerEvent<T> triggerEvent;
+        private TriggerEvent<T> triggerEvent;
 
         internal protected bool calledEnterTree;
         internal protected bool calledDestroy;
@@ -22,7 +22,7 @@ namespace GodotTasks.Tasks.Triggers
                 OnDestroy();
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             if (calledDestroy) return;
             calledDestroy = true;
@@ -55,9 +55,9 @@ namespace GodotTasks.Tasks.Triggers
             triggerEvent.SetResult(value);
         }
 
-        class EnterTreeMonitor : IPlayerLoopItem
+        private class EnterTreeMonitor : IPlayerLoopItem
         {
-            readonly AsyncTriggerBase<T> trigger;
+            private readonly AsyncTriggerBase<T> trigger;
 
             public EnterTreeMonitor(AsyncTriggerBase<T> trigger)
             {
@@ -93,14 +93,14 @@ namespace GodotTasks.Tasks.Triggers
 
     internal sealed partial class AsyncTriggerHandler<T> : IGDTaskSource<T>, ITriggerHandler<T>, IDisposable
     {
-        readonly AsyncTriggerBase<T> trigger;
+        private readonly AsyncTriggerBase<T> trigger;
 
-        CancellationToken cancellationToken;
-        CancellationTokenRegistration registration;
-        bool isDisposed;
-        bool callOnce;
+        private CancellationToken cancellationToken;
+        private CancellationTokenRegistration registration;
+        private bool isDisposed;
+        private bool callOnce;
 
-        GDTaskCompletionSourceCore<T> core;
+        private GDTaskCompletionSourceCore<T> core;
 
         internal CancellationToken CancellationToken => cancellationToken;
 
@@ -147,7 +147,7 @@ namespace GodotTasks.Tasks.Triggers
             TaskTracker.TrackActiveTask(this, 3);
         }
 
-        static void CancellationCallback(object state)
+        private static void CancellationCallback(object state)
         {
             var self = (AsyncTriggerHandler<T>)state;
             self.Dispose();

@@ -48,9 +48,9 @@ namespace GodotTasks.Tasks.Triggers
 
     internal sealed partial class AsyncPredeleteTrigger : Node, IAsyncPredeleteHandler
     {
-        bool enterTreeCalled = false;
-        bool predeleteCalled = false;
-        CancellationTokenSource cancellationTokenSource;
+        private bool enterTreeCalled = false;
+        private bool predeleteCalled = false;
+        private CancellationTokenSource cancellationTokenSource;
 
         public CancellationToken CancellationToken
         {
@@ -81,7 +81,7 @@ namespace GodotTasks.Tasks.Triggers
                 OnPredelete();
         }
 
-        void OnPredelete()
+        private void OnPredelete()
         {
             predeleteCalled = true;
 
@@ -105,9 +105,9 @@ namespace GodotTasks.Tasks.Triggers
             return tcs.Task;
         }
 
-        class AwakeMonitor : IPlayerLoopItem
+        private class AwakeMonitor : IPlayerLoopItem
         {
-            readonly AsyncPredeleteTrigger trigger;
+            private readonly AsyncPredeleteTrigger trigger;
 
             public AwakeMonitor(AsyncPredeleteTrigger trigger)
             {

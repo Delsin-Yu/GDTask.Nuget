@@ -7,15 +7,15 @@ namespace GodotTasks.Tasks
 {
     internal abstract class PlayerLoopTimer : IDisposable, IPlayerLoopItem
     {
-        readonly CancellationToken cancellationToken;
-        readonly Action<object> timerCallback;
-        readonly object state;
-        readonly PlayerLoopTiming playerLoopTiming;
-        readonly bool periodic;
+        private readonly CancellationToken cancellationToken;
+        private readonly Action<object> timerCallback;
+        private readonly object state;
+        private readonly PlayerLoopTiming playerLoopTiming;
+        private readonly bool periodic;
 
-        bool isRunning;
-        bool tryStop;
-        bool isDisposed;
+        private bool isRunning;
+        private bool tryStop;
+        private bool isDisposed;
 
         protected PlayerLoopTimer(bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
         {
@@ -140,12 +140,12 @@ namespace GodotTasks.Tasks
         protected abstract bool MoveNextCore();
     }
 
-    sealed class DeltaTimePlayerLoopTimer : PlayerLoopTimer
+    internal sealed class DeltaTimePlayerLoopTimer : PlayerLoopTimer
     {
-        bool isMainThread;
-        ulong initialFrame;
-        double elapsed;
-        double interval;
+        private bool isMainThread;
+        private ulong initialFrame;
+        private double elapsed;
+        private double interval;
 
         public DeltaTimePlayerLoopTimer(TimeSpan interval, bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
             : base(periodic, playerLoopTiming, cancellationToken, timerCallback, state)
@@ -185,10 +185,10 @@ namespace GodotTasks.Tasks
         }
     }
 
-    sealed class RealtimePlayerLoopTimer : PlayerLoopTimer
+    internal sealed class RealtimePlayerLoopTimer : PlayerLoopTimer
     {
-        ValueStopwatch stopwatch;
-        long intervalTicks;
+        private ValueStopwatch stopwatch;
+        private long intervalTicks;
 
         public RealtimePlayerLoopTimer(TimeSpan interval, bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
             : base(periodic, playerLoopTiming, cancellationToken, timerCallback, state)

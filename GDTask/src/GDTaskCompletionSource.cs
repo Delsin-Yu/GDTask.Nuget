@@ -39,8 +39,8 @@ namespace GodotTasks.Tasks
 
     internal class ExceptionHolder
     {
-        ExceptionDispatchInfo exception;
-        bool calledGet = false;
+        private ExceptionDispatchInfo exception;
+        private bool calledGet = false;
 
         public ExceptionHolder(ExceptionDispatchInfo exception)
         {
@@ -71,13 +71,13 @@ namespace GodotTasks.Tasks
     {
         // Struct Size: TResult + (8 + 2 + 1 + 1 + 8 + 8)
 
-        TResult result;
-        object error; // ExceptionHolder or OperationCanceledException
-        short version;
-        bool hasUnhandledError;
-        int completedCount; // 0: completed == false
-        Action<object> continuation;
-        object continuationState;
+        private TResult result;
+        private object error; // ExceptionHolder or OperationCanceledException
+        private short version;
+        private bool hasUnhandledError;
+        private int completedCount; // 0: completed == false
+        private Action<object> continuation;
+        private object continuationState;
 
         [DebuggerHidden]
         public void Reset()
@@ -96,7 +96,7 @@ namespace GodotTasks.Tasks
             continuationState = null;
         }
 
-        void ReportUnhandledError()
+        private void ReportUnhandledError()
         {
             if (hasUnhandledError)
             {
@@ -316,8 +316,8 @@ namespace GodotTasks.Tasks
 
     internal class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolNode<AutoResetGDTaskCompletionSource>, IPromise
     {
-        static TaskPool<AutoResetGDTaskCompletionSource> pool;
-        AutoResetGDTaskCompletionSource nextNode;
+        private static TaskPool<AutoResetGDTaskCompletionSource> pool;
+        private AutoResetGDTaskCompletionSource nextNode;
         public ref AutoResetGDTaskCompletionSource NextNode => ref nextNode;
 
         static AutoResetGDTaskCompletionSource()
@@ -325,9 +325,9 @@ namespace GodotTasks.Tasks
             TaskPool.RegisterSizeGetter(typeof(AutoResetGDTaskCompletionSource), () => pool.Size);
         }
 
-        GDTaskCompletionSourceCore<AsyncUnit> core;
+        private GDTaskCompletionSourceCore<AsyncUnit> core;
 
-        AutoResetGDTaskCompletionSource()
+        private AutoResetGDTaskCompletionSource()
         {
         }
 
@@ -429,7 +429,7 @@ namespace GodotTasks.Tasks
         }
 
         [DebuggerHidden]
-        bool TryReturn()
+        private bool TryReturn()
         {
             TaskTracker.RemoveTracking(this);
             core.Reset();
@@ -439,8 +439,8 @@ namespace GodotTasks.Tasks
 
     internal class AutoResetGDTaskCompletionSource<T> : IGDTaskSource<T>, ITaskPoolNode<AutoResetGDTaskCompletionSource<T>>, IPromise<T>
     {
-        static TaskPool<AutoResetGDTaskCompletionSource<T>> pool;
-        AutoResetGDTaskCompletionSource<T> nextNode;
+        private static TaskPool<AutoResetGDTaskCompletionSource<T>> pool;
+        private AutoResetGDTaskCompletionSource<T> nextNode;
         public ref AutoResetGDTaskCompletionSource<T> NextNode => ref nextNode;
 
         static AutoResetGDTaskCompletionSource()
@@ -448,9 +448,9 @@ namespace GodotTasks.Tasks
             TaskPool.RegisterSizeGetter(typeof(AutoResetGDTaskCompletionSource<T>), () => pool.Size);
         }
 
-        GDTaskCompletionSourceCore<T> core;
+        private GDTaskCompletionSourceCore<T> core;
 
-        AutoResetGDTaskCompletionSource()
+        private AutoResetGDTaskCompletionSource()
         {
         }
 
@@ -557,7 +557,7 @@ namespace GodotTasks.Tasks
         }
 
         [DebuggerHidden]
-        bool TryReturn()
+        private bool TryReturn()
         {
             TaskTracker.RemoveTracking(this);
             core.Reset();
@@ -567,15 +567,15 @@ namespace GodotTasks.Tasks
 
     internal class GDTaskCompletionSource : IGDTaskSource, IPromise
     {
-        CancellationToken cancellationToken;
-        ExceptionHolder exception;
-        object gate;
-        Action<object> singleContinuation;
-        object singleState;
-        List<(Action<object>, object)> secondaryContinuationList;
+        private CancellationToken cancellationToken;
+        private ExceptionHolder exception;
+        private object gate;
+        private Action<object> singleContinuation;
+        private object singleState;
+        private List<(Action<object>, object)> secondaryContinuationList;
 
-        int intStatus; // GDTaskStatus
-        bool handled = false;
+        private int intStatus; // GDTaskStatus
+        private bool handled = false;
 
         public GDTaskCompletionSource()
         {
@@ -697,7 +697,7 @@ namespace GodotTasks.Tasks
         }
 
         [DebuggerHidden]
-        bool TrySignalCompletion(GDTaskStatus status)
+        private bool TrySignalCompletion(GDTaskStatus status)
         {
             if (Interlocked.CompareExchange(ref intStatus, (int)status, (int)GDTaskStatus.Pending) == (int)GDTaskStatus.Pending)
             {
@@ -748,16 +748,16 @@ namespace GodotTasks.Tasks
 
     internal class GDTaskCompletionSource<T> : IGDTaskSource<T>, IPromise<T>
     {
-        CancellationToken cancellationToken;
-        T result;
-        ExceptionHolder exception;
-        object gate;
-        Action<object> singleContinuation;
-        object singleState;
-        List<(Action<object>, object)> secondaryContinuationList;
+        private CancellationToken cancellationToken;
+        private T result;
+        private ExceptionHolder exception;
+        private object gate;
+        private Action<object> singleContinuation;
+        private object singleState;
+        private List<(Action<object>, object)> secondaryContinuationList;
 
-        int intStatus; // GDTaskStatus
-        bool handled = false;
+        private int intStatus; // GDTaskStatus
+        private bool handled = false;
 
         public GDTaskCompletionSource()
         {
@@ -888,7 +888,7 @@ namespace GodotTasks.Tasks
         }
 
         [DebuggerHidden]
-        bool TrySignalCompletion(GDTaskStatus status)
+        private bool TrySignalCompletion(GDTaskStatus status)
         {
             if (Interlocked.CompareExchange(ref intStatus, (int)status, (int)GDTaskStatus.Pending) == (int)GDTaskStatus.Pending)
             {

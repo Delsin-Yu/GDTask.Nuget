@@ -6,19 +6,19 @@ namespace GodotTasks.Tasks.Internal
 {
     internal sealed class ContinuationQueue
     {
-        const int MaxArrayLength = 0X7FEFFFFF;
-        const int InitialSize = 16;
+        private const int MaxArrayLength = 0X7FEFFFFF;
+        private const int InitialSize = 16;
 
-        readonly PlayerLoopTiming timing;
+        private readonly PlayerLoopTiming timing;
 
-        SpinLock gate = new SpinLock(false);
-        bool dequing = false;
+        private SpinLock gate = new SpinLock(false);
+        private bool dequing = false;
 
-        int actionListCount = 0;
-        Action[] actionList = new Action[InitialSize];
+        private int actionListCount = 0;
+        private Action[] actionList = new Action[InitialSize];
 
-        int waitingListCount = 0;
-        Action[] waitingList = new Action[InitialSize];
+        private int waitingListCount = 0;
+        private Action[] waitingList = new Action[InitialSize];
 
         public ContinuationQueue(PlayerLoopTiming timing)
         {
@@ -103,11 +103,11 @@ namespace GodotTasks.Tasks.Internal
 #endif
         }
 
-        void PhysicsProcess() => RunCore();
-        void Process() => RunCore();
+        private void PhysicsProcess() => RunCore();
+        private void Process() => RunCore();
 
         [System.Diagnostics.DebuggerHidden]
-        void RunCore()
+        private void RunCore()
         {
             {
                 bool lockTaken = false;

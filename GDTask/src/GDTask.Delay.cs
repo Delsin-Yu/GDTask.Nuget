@@ -194,10 +194,10 @@ namespace GodotTasks.Tasks
             }
         }
 
-        sealed class YieldPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<YieldPromise>
+        private sealed class YieldPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<YieldPromise>
         {
-            static TaskPool<YieldPromise> pool;
-            YieldPromise nextNode;
+            private static TaskPool<YieldPromise> pool;
+            private YieldPromise nextNode;
             public ref YieldPromise NextNode => ref nextNode;
 
             static YieldPromise()
@@ -205,10 +205,10 @@ namespace GodotTasks.Tasks
                 TaskPool.RegisterSizeGetter(typeof(YieldPromise), () => pool.Size);
             }
 
-            CancellationToken cancellationToken;
-            GDTaskCompletionSourceCore<object> core;
+            private CancellationToken cancellationToken;
+            private GDTaskCompletionSourceCore<object> core;
 
-            YieldPromise()
+            private YieldPromise()
             {
             }
 
@@ -274,7 +274,7 @@ namespace GodotTasks.Tasks
                 return false;
             }
 
-            bool TryReturn()
+            private bool TryReturn()
             {
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
@@ -283,10 +283,10 @@ namespace GodotTasks.Tasks
             }
         }
 
-        sealed class NextFramePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<NextFramePromise>
+        private sealed class NextFramePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<NextFramePromise>
         {
-            static TaskPool<NextFramePromise> pool;
-            NextFramePromise nextNode;
+            private static TaskPool<NextFramePromise> pool;
+            private NextFramePromise nextNode;
             public ref NextFramePromise NextNode => ref nextNode;
 
             static NextFramePromise()
@@ -294,12 +294,12 @@ namespace GodotTasks.Tasks
                 TaskPool.RegisterSizeGetter(typeof(NextFramePromise), () => pool.Size);
             }
 
-            bool isMainThread;
-            ulong frameCount;
-            CancellationToken cancellationToken;
-            GDTaskCompletionSourceCore<AsyncUnit> core;
+            private bool isMainThread;
+            private ulong frameCount;
+            private CancellationToken cancellationToken;
+            private GDTaskCompletionSourceCore<AsyncUnit> core;
 
-            NextFramePromise()
+            private NextFramePromise()
             {
             }
 
@@ -372,7 +372,7 @@ namespace GodotTasks.Tasks
                 return false;
             }
 
-            bool TryReturn()
+            private bool TryReturn()
             {
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
@@ -381,10 +381,10 @@ namespace GodotTasks.Tasks
             }
         }
 
-        sealed class DelayFramePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayFramePromise>
+        private sealed class DelayFramePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayFramePromise>
         {
-            static TaskPool<DelayFramePromise> pool;
-            DelayFramePromise nextNode;
+            private static TaskPool<DelayFramePromise> pool;
+            private DelayFramePromise nextNode;
             public ref DelayFramePromise NextNode => ref nextNode;
 
             static DelayFramePromise()
@@ -392,15 +392,15 @@ namespace GodotTasks.Tasks
                 TaskPool.RegisterSizeGetter(typeof(DelayFramePromise), () => pool.Size);
             }
 
-            bool isMainThread;
-            ulong initialFrame;
-            int delayFrameCount;
-            CancellationToken cancellationToken;
+            private bool isMainThread;
+            private ulong initialFrame;
+            private int delayFrameCount;
+            private CancellationToken cancellationToken;
 
-            int currentFrameCount;
-            GDTaskCompletionSourceCore<AsyncUnit> core;
+            private int currentFrameCount;
+            private GDTaskCompletionSourceCore<AsyncUnit> core;
 
-            DelayFramePromise()
+            private DelayFramePromise()
             {
             }
 
@@ -501,7 +501,7 @@ namespace GodotTasks.Tasks
                 return true;
             }
 
-            bool TryReturn()
+            private bool TryReturn()
             {
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
@@ -512,10 +512,10 @@ namespace GodotTasks.Tasks
             }
         }
 
-        sealed class DelayPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayPromise>
+        private sealed class DelayPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayPromise>
         {
-            static TaskPool<DelayPromise> pool;
-            DelayPromise nextNode;
+            private static TaskPool<DelayPromise> pool;
+            private DelayPromise nextNode;
             public ref DelayPromise NextNode => ref nextNode;
 
             static DelayPromise()
@@ -523,15 +523,15 @@ namespace GodotTasks.Tasks
                 TaskPool.RegisterSizeGetter(typeof(DelayPromise), () => pool.Size);
             }
 
-            bool isMainThread;
-            ulong initialFrame;
-            double delayTimeSpan;
-            double elapsed;
-            CancellationToken cancellationToken;
-            PlayerLoopTiming timing;
-            GDTaskCompletionSourceCore<object> core;
+            private bool isMainThread;
+            private ulong initialFrame;
+            private double delayTimeSpan;
+            private double elapsed;
+            private CancellationToken cancellationToken;
+            private PlayerLoopTiming timing;
+            private GDTaskCompletionSourceCore<object> core;
 
-            DelayPromise()
+            private DelayPromise()
             {
             }
 
@@ -619,7 +619,7 @@ namespace GodotTasks.Tasks
                 return true;
             }
 
-            bool TryReturn()
+            private bool TryReturn()
             {
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
@@ -630,10 +630,10 @@ namespace GodotTasks.Tasks
             }
         }
 
-        sealed class DelayRealtimePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayRealtimePromise>
+        private sealed class DelayRealtimePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayRealtimePromise>
         {
-            static TaskPool<DelayRealtimePromise> pool;
-            DelayRealtimePromise nextNode;
+            private static TaskPool<DelayRealtimePromise> pool;
+            private DelayRealtimePromise nextNode;
             public ref DelayRealtimePromise NextNode => ref nextNode;
 
             static DelayRealtimePromise()
@@ -641,13 +641,13 @@ namespace GodotTasks.Tasks
                 TaskPool.RegisterSizeGetter(typeof(DelayRealtimePromise), () => pool.Size);
             }
 
-            long delayTimeSpanTicks;
-            ValueStopwatch stopwatch;
-            CancellationToken cancellationToken;
+            private long delayTimeSpanTicks;
+            private ValueStopwatch stopwatch;
+            private CancellationToken cancellationToken;
 
-            GDTaskCompletionSourceCore<AsyncUnit> core;
+            private GDTaskCompletionSourceCore<AsyncUnit> core;
 
-            DelayRealtimePromise()
+            private DelayRealtimePromise()
             {
             }
 
@@ -725,7 +725,7 @@ namespace GodotTasks.Tasks
                 return true;
             }
 
-            bool TryReturn()
+            private bool TryReturn()
             {
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
@@ -741,7 +741,7 @@ namespace GodotTasks.Tasks
     /// </summary>
     public readonly struct YieldAwaitable
     {
-        readonly PlayerLoopTiming timing;
+        private readonly PlayerLoopTiming timing;
 
         internal YieldAwaitable(PlayerLoopTiming timing)
         {
@@ -769,7 +769,7 @@ namespace GodotTasks.Tasks
         /// </summary>
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
-            readonly PlayerLoopTiming timing;
+            private readonly PlayerLoopTiming timing;
 
             /// <summary>
             /// Initializes the <see cref="Awaiter"/>.

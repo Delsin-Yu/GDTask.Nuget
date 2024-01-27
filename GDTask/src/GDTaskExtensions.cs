@@ -240,13 +240,13 @@ namespace GodotTasks.Tasks
             return new GDTask<T>(new AttachExternalCancellationSource<T>(task, cancellationToken), 0);
         }
 
-        sealed class AttachExternalCancellationSource : IGDTaskSource
+        private sealed class AttachExternalCancellationSource : IGDTaskSource
         {
-            static readonly Action<object> cancellationCallbackDelegate = CancellationCallback;
+            private static readonly Action<object> cancellationCallbackDelegate = CancellationCallback;
 
-            CancellationToken cancellationToken;
-            CancellationTokenRegistration tokenRegistration;
-            GDTaskCompletionSourceCore<AsyncUnit> core;
+            private CancellationToken cancellationToken;
+            private CancellationTokenRegistration tokenRegistration;
+            private GDTaskCompletionSourceCore<AsyncUnit> core;
 
             public AttachExternalCancellationSource(GDTask task, CancellationToken cancellationToken)
             {
@@ -255,7 +255,7 @@ namespace GodotTasks.Tasks
                 RunTask(task).Forget();
             }
 
-            async GDTaskVoid RunTask(GDTask task)
+            private async GDTaskVoid RunTask(GDTask task)
             {
                 try
                 {
@@ -272,7 +272,7 @@ namespace GodotTasks.Tasks
                 }
             }
 
-            static void CancellationCallback(object state)
+            private static void CancellationCallback(object state)
             {
                 var self = (AttachExternalCancellationSource)state;
                 self.core.TrySetCanceled(self.cancellationToken);
@@ -299,11 +299,11 @@ namespace GodotTasks.Tasks
             }
         }
 
-        sealed class AttachExternalCancellationSource<T> : IGDTaskSource<T>
+        private sealed class AttachExternalCancellationSource<T> : IGDTaskSource<T>
         {
-            CancellationToken cancellationToken;
-            CancellationTokenRegistration tokenRegistration;
-            GDTaskCompletionSourceCore<T> core;
+            private CancellationToken cancellationToken;
+            private CancellationTokenRegistration tokenRegistration;
+            private GDTaskCompletionSourceCore<T> core;
 
             public AttachExternalCancellationSource(GDTask<T> task, CancellationToken cancellationToken)
             {
@@ -312,7 +312,7 @@ namespace GodotTasks.Tasks
                 RunTask(task).Forget();
             }
 
-            async GDTaskVoid RunTask(GDTask<T> task)
+            private async GDTaskVoid RunTask(GDTask<T> task)
             {
                 try
                 {
@@ -328,7 +328,7 @@ namespace GodotTasks.Tasks
                 }
             }
 
-            static void CancellationCallback(object state)
+            private static void CancellationCallback(object state)
             {
                 var self = (AttachExternalCancellationSource<T>)state;
                 self.core.TrySetCanceled(self.cancellationToken);
@@ -598,7 +598,7 @@ namespace GodotTasks.Tasks
             }
         }
 
-        static async GDTaskVoid ForgetCoreWithCatch(GDTask task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread)
+        private static async GDTaskVoid ForgetCoreWithCatch(GDTask task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread)
         {
             try
             {
@@ -668,7 +668,7 @@ namespace GodotTasks.Tasks
             }
         }
 
-        static async GDTaskVoid ForgetCoreWithCatch<T>(GDTask<T> task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread)
+        private static async GDTaskVoid ForgetCoreWithCatch<T>(GDTask<T> task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread)
         {
             try
             {

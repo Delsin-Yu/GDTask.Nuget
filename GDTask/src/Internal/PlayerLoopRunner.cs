@@ -6,17 +6,17 @@ namespace GodotTasks.Tasks.Internal
 {
     internal sealed class PlayerLoopRunner
     {
-        const int InitialSize = 16;
+        private const int InitialSize = 16;
 
-        readonly PlayerLoopTiming timing;
-        readonly object runningAndQueueLock = new object();
-        readonly object arrayLock = new object();
-        readonly Action<Exception> unhandledExceptionCallback;
+        private readonly PlayerLoopTiming timing;
+        private readonly object runningAndQueueLock = new object();
+        private readonly object arrayLock = new object();
+        private readonly Action<Exception> unhandledExceptionCallback;
 
-        int tail = 0;
-        bool running = false;
-        IPlayerLoopItem[] loopItems = new IPlayerLoopItem[InitialSize];
-        MinimumQueue<IPlayerLoopItem> waitQueue = new MinimumQueue<IPlayerLoopItem>(InitialSize);
+        private int tail = 0;
+        private bool running = false;
+        private IPlayerLoopItem[] loopItems = new IPlayerLoopItem[InitialSize];
+        private MinimumQueue<IPlayerLoopItem> waitQueue = new MinimumQueue<IPlayerLoopItem>(InitialSize);
 
 
 
@@ -88,12 +88,12 @@ namespace GodotTasks.Tasks.Internal
 #endif
         }
 
-        void PhysicsProcess() => RunCore();
-        void Process() => RunCore();
+        private void PhysicsProcess() => RunCore();
+        private void Process() => RunCore();
 
 
         [System.Diagnostics.DebuggerHidden]
-        void RunCore()
+        private void RunCore()
         {
             lock (runningAndQueueLock)
             {

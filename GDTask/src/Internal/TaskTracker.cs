@@ -16,7 +16,7 @@ namespace GodotTasks.Tasks
     {
 #if DEBUG
 
-        static int trackingId = 0;
+        private static int trackingId = 0;
 
         public const string EnableAutoReloadKey = "GDTaskTrackerWindow_EnableAutoReloadKey";
         public const string EnableTrackingKey = "GDTaskTrackerWindow_EnableTrackingKey";
@@ -24,7 +24,7 @@ namespace GodotTasks.Tasks
 
         public static class EditorEnableState
         {
-            static bool enableAutoReload;
+            private static bool enableAutoReload;
             public static bool EnableAutoReload
             {
                 get { return enableAutoReload; }
@@ -35,7 +35,7 @@ namespace GodotTasks.Tasks
                 }
             }
 
-            static bool enableTracking;
+            private static bool enableTracking;
             public static bool EnableTracking
             {
                 get { return enableTracking; }
@@ -46,7 +46,7 @@ namespace GodotTasks.Tasks
                 }
             }
 
-            static bool enableStackTrace;
+            private static bool enableStackTrace;
             public static bool EnableStackTrace
             {
                 get { return enableStackTrace; }
@@ -61,9 +61,9 @@ namespace GodotTasks.Tasks
 #endif
 
 
-        static List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>> listPool = new List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>>();
+        private static List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>> listPool = new List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>>();
 
-        static readonly WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)> tracking = new WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>();
+        private static readonly WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)> tracking = new WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>();
 
         [Conditional("DEBUG")]
         internal static void TrackActiveTask(IGDTaskSource task, int skipFrame)
@@ -98,7 +98,7 @@ namespace GodotTasks.Tasks
 #endif
         }
 
-        static bool dirty;
+        private static bool dirty;
 
         public static bool CheckAndResetDirty()
         {
@@ -129,7 +129,7 @@ namespace GodotTasks.Tasks
             }
         }
 
-        static void TypeBeautify(Type type, StringBuilder sb)
+        private static void TypeBeautify(Type type, StringBuilder sb)
         {
             if (type.IsNested)
             {

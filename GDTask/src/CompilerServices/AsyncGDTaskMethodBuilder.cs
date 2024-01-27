@@ -10,8 +10,8 @@ namespace GodotTasks.Tasks.CompilerServices
     [StructLayout(LayoutKind.Auto)]
     public struct AsyncGDTaskMethodBuilder
     {
-        IStateMachineRunnerPromise runnerPromise;
-        Exception ex;
+        private IStateMachineRunnerPromise runnerPromise;
+        private Exception ex;
 
         // 1. Static Create method.
         [DebuggerHidden]
@@ -118,7 +118,7 @@ namespace GodotTasks.Tasks.CompilerServices
 
 #if DEBUG
         // Important for IDE debugger.
-        object debuggingId;
+        private object debuggingId;
         private object ObjectIdForDebugger
         {
             get
@@ -136,9 +136,9 @@ namespace GodotTasks.Tasks.CompilerServices
     [StructLayout(LayoutKind.Auto)]
     public struct AsyncGDTaskMethodBuilder<T>
     {
-        IStateMachineRunnerPromise<T> runnerPromise;
-        Exception ex;
-        T result;
+        private IStateMachineRunnerPromise<T> runnerPromise;
+        private Exception ex;
+        private T result;
 
         // 1. Static Create method.
         [DebuggerHidden]
@@ -249,7 +249,7 @@ namespace GodotTasks.Tasks.CompilerServices
 
 #if DEBUG
         // Important for IDE debugger.
-        object debuggingId;
+        private object debuggingId;
         private object ObjectIdForDebugger
         {
             get
