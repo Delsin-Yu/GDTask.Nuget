@@ -26,6 +26,9 @@
 
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Fractural/GDTask</RepositoryUrl>
+    
+    <GodotDisabledSourceGenerators>GodotPluginsInitializer</GodotDisabledSourceGenerators>
+    <GodotDisabledSourceGenerators>ScriptPathAttribute</GodotDisabledSourceGenerators>
   </PropertyGroup>
 
   <ItemGroup>
