@@ -170,7 +170,7 @@ namespace GodotTasks.Tasks
 
 #if DEBUG
             // force use Realtime.
-            if (GDTaskPlayerLoopAutoload.IsMainThread && Engine.IsEditorHint())
+            if (GDTaskPlayerLoopRunner.IsMainThread && Engine.IsEditorHint())
             {
                 if (delayType != DelayType.Realtime)
                 {
@@ -229,7 +229,7 @@ namespace GodotTasks.Tasks
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopAutoload.AddAction(timing, result);
+                GDTaskPlayerLoopRunner.AddAction(timing, result);
 
                 token = result.core.Version;
                 return result;
@@ -315,14 +315,14 @@ namespace GodotTasks.Tasks
                     result = new NextFramePromise();
                 }
 
-                result.isMainThread = GDTaskPlayerLoopAutoload.IsMainThread;
+                result.isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
                 if (result.isMainThread)
                     result.frameCount = Engine.GetProcessFrames();
                 result.cancellationToken = cancellationToken;
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopAutoload.AddAction(timing, result);
+                GDTaskPlayerLoopRunner.AddAction(timing, result);
 
                 token = result.core.Version;
                 return result;
@@ -418,13 +418,13 @@ namespace GodotTasks.Tasks
 
                 result.delayFrameCount = delayFrameCount;
                 result.cancellationToken = cancellationToken;
-                result.isMainThread = GDTaskPlayerLoopAutoload.IsMainThread;
+                result.isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
                 if (result.isMainThread)
                     result.initialFrame = Engine.GetProcessFrames();
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopAutoload.AddAction(timing, result);
+                GDTaskPlayerLoopRunner.AddAction(timing, result);
 
                 token = result.core.Version;
                 return result;
@@ -478,7 +478,7 @@ namespace GodotTasks.Tasks
                     {
 #if DEBUG
                         // force use Realtime.
-                        if (GDTaskPlayerLoopAutoload.IsMainThread && Engine.IsEditorHint())
+                        if (GDTaskPlayerLoopRunner.IsMainThread && Engine.IsEditorHint())
                         {
                             //goto ++currentFrameCount
                         }
@@ -550,14 +550,14 @@ namespace GodotTasks.Tasks
                 result.elapsed = 0.0f;
                 result.delayTimeSpan = (float)delayTimeSpan.TotalSeconds;
                 result.cancellationToken = cancellationToken;
-                result.isMainThread = GDTaskPlayerLoopAutoload.IsMainThread;
+                result.isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
                 result.timing = timing;
                 if (result.isMainThread)
                     result.initialFrame = Engine.GetProcessFrames();
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopAutoload.AddAction(timing, result);
+                GDTaskPlayerLoopRunner.AddAction(timing, result);
 
                 token = result.core.Version;
                 return result;
@@ -607,8 +607,8 @@ namespace GodotTasks.Tasks
                 }
 
                 elapsed += timing == PlayerLoopTiming.Process ? 
-                    GDTaskPlayerLoopAutoload.Global.DeltaTime : 
-                    GDTaskPlayerLoopAutoload.Global.PhysicsDeltaTime;
+                    GDTaskPlayerLoopRunner.Global.DeltaTime : 
+                    GDTaskPlayerLoopRunner.Global.PhysicsDeltaTime;
                 
                 if (elapsed >= delayTimeSpan)
                 {
@@ -669,7 +669,7 @@ namespace GodotTasks.Tasks
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopAutoload.AddAction(timing, result);
+                GDTaskPlayerLoopRunner.AddAction(timing, result);
 
                 token = result.core.Version;
                 return result;
@@ -794,7 +794,7 @@ namespace GodotTasks.Tasks
             /// </summary>
             public void OnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
+                GDTaskPlayerLoopRunner.AddContinuation(timing, continuation);
             }
 
             /// <summary>
@@ -802,7 +802,7 @@ namespace GodotTasks.Tasks
             /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
+                GDTaskPlayerLoopRunner.AddContinuation(timing, continuation);
             }
         }
     }

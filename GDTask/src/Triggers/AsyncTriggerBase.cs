@@ -34,7 +34,7 @@ namespace GodotTasks.Tasks.Triggers
         {
             if (!calledEnterTree)
             {
-                GDTaskPlayerLoopAutoload.AddAction(PlayerLoopTiming.Process, new EnterTreeMonitor(this));
+                GDTaskPlayerLoopRunner.AddAction(PlayerLoopTiming.Process, new EnterTreeMonitor(this));
             }
 
             triggerEvent.Add(handler);
@@ -44,7 +44,7 @@ namespace GodotTasks.Tasks.Triggers
         {
             if (!calledEnterTree)
             {
-                GDTaskPlayerLoopAutoload.AddAction(PlayerLoopTiming.Process, new EnterTreeMonitor(this));
+                GDTaskPlayerLoopRunner.AddAction(PlayerLoopTiming.Process, new EnterTreeMonitor(this));
             }
 
             triggerEvent.Remove(handler);

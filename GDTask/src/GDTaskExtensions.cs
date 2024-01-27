@@ -753,55 +753,55 @@ namespace GodotTasks.Tasks
             return await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{GDTask{T}})"/>
         public static async GDTask Unwrap(this GDTask<GDTask> task)
         {
             await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{GDTask{T}})"/>
         public static async GDTask<T> Unwrap<T>(this Task<GDTask<T>> task)
         {
             return await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{GDTask{T}})"/>
         public static async GDTask<T> Unwrap<T>(this Task<GDTask<T>> task, bool continueOnCapturedContext)
         {
             return await await task.ConfigureAwait(continueOnCapturedContext);
         }
 
-        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{GDTask{T}})"/>
         public static async GDTask Unwrap(this Task<GDTask> task)
         {
             await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{GDTask{T}})"/>
         public static async GDTask Unwrap(this Task<GDTask> task, bool continueOnCapturedContext)
         {
             await await task.ConfigureAwait(continueOnCapturedContext);
         }
 
-        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{GDTask{T}})"/>
         public static async GDTask<T> Unwrap<T>(this GDTask<Task<T>> task)
         {
             return await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{GDTask{T}})"/>
         public static async GDTask<T> Unwrap<T>(this GDTask<Task<T>> task, bool continueOnCapturedContext)
         {
             return await (await task).ConfigureAwait(continueOnCapturedContext);
         }
 
-        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{GDTask{T}})"/>
         public static async GDTask Unwrap(this GDTask<Task> task)
         {
             await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{GDTask{T}})"/>
         public static async GDTask Unwrap(this GDTask<Task> task, bool continueOnCapturedContext)
         {
             await (await task).ConfigureAwait(continueOnCapturedContext);

@@ -26,7 +26,7 @@ public class GDTaskTest_Threading
     {
         await GDTask.SwitchToMainThread();
         Assertions
-            .AssertThat(GDTaskPlayerLoopAutoload.IsMainThread)
+            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
             .IsTrue();
     }
     
@@ -72,7 +72,7 @@ public class GDTaskTest_Threading
         );
 
         Assertions
-            .AssertThat(GDTaskPlayerLoopAutoload.IsMainThread)
+            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
             .IsTrue();
     }
 
@@ -151,7 +151,7 @@ public class GDTaskTest_Threading
         );
 
         Assertions
-            .AssertThat(GDTaskPlayerLoopAutoload.IsMainThread)
+            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
             .IsTrue();
 
         Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
@@ -233,7 +233,7 @@ public class GDTaskTest_Threading
         );
 
         Assertions
-            .AssertThat(GDTaskPlayerLoopAutoload.IsMainThread)
+            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
             .IsTrue();
     }
 
@@ -315,7 +315,7 @@ public class GDTaskTest_Threading
         );
 
         Assertions
-            .AssertThat(GDTaskPlayerLoopAutoload.IsMainThread)
+            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
             .IsTrue();
 
         Assertions
@@ -375,7 +375,7 @@ public class GDTaskTest_Threading
         }
         
         Assertions
-            .AssertThat(GDTaskPlayerLoopAutoload.IsMainThread)
+            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
             .IsTrue();
     }
     

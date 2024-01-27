@@ -30,7 +30,7 @@ namespace GodotTasks.Tasks
         {
 #if DEBUG
             // force use Realtime.
-            if (GDTaskPlayerLoopAutoload.IsMainThread && Engine.IsEditorHint())
+            if (GDTaskPlayerLoopRunner.IsMainThread && Engine.IsEditorHint())
             {
                 delayType = DelayType.Realtime;
             }
@@ -64,7 +64,7 @@ namespace GodotTasks.Tasks
             if (!isRunning)
             {
                 isRunning = true;
-                GDTaskPlayerLoopAutoload.AddAction(playerLoopTiming, this);
+                GDTaskPlayerLoopRunner.AddAction(playerLoopTiming, this);
             }
             tryStop = false;
         }
@@ -80,7 +80,7 @@ namespace GodotTasks.Tasks
             if (!isRunning)
             {
                 isRunning = true;
-                GDTaskPlayerLoopAutoload.AddAction(playerLoopTiming, this);
+                GDTaskPlayerLoopRunner.AddAction(playerLoopTiming, this);
             }
             tryStop = false;
         }
@@ -163,7 +163,7 @@ namespace GodotTasks.Tasks
                 }
             }
 
-            elapsed += GDTaskPlayerLoopAutoload.Global.DeltaTime;
+            elapsed += GDTaskPlayerLoopRunner.Global.DeltaTime;
             if (elapsed >= interval)
             {
                 return false;
@@ -175,7 +175,7 @@ namespace GodotTasks.Tasks
         protected override void ResetCore(TimeSpan? interval)
         {
             this.elapsed = 0.0;
-            this.isMainThread = GDTaskPlayerLoopAutoload.IsMainThread;
+            this.isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
             if (this.isMainThread)
                 this.initialFrame = Engine.GetProcessFrames();
             if (interval != null)

@@ -58,7 +58,7 @@ namespace GodotTasks.Tasks
         /// </summary>
         public static void Post(Action action, PlayerLoopTiming timing = PlayerLoopTiming.Process)
         {
-            GDTaskPlayerLoopAutoload.AddContinuation(timing, action);
+            GDTaskPlayerLoopRunner.AddContinuation(timing, action);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace GodotTasks.Tasks
                 get
                 {
                     var currentThreadId = Environment.CurrentManagedThreadId;
-                    if (GDTaskPlayerLoopAutoload.MainThreadId == currentThreadId)
+                    if (GDTaskPlayerLoopRunner.MainThreadId == currentThreadId)
                     {
                         return true; // run immediate.
                     }
@@ -172,7 +172,7 @@ namespace GodotTasks.Tasks
             /// </summary>
             public void OnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopAutoload.AddContinuation(playerLoopTiming, continuation);
+                GDTaskPlayerLoopRunner.AddContinuation(playerLoopTiming, continuation);
             }
 
             /// <summary>
@@ -180,7 +180,7 @@ namespace GodotTasks.Tasks
             /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopAutoload.AddContinuation(playerLoopTiming, continuation);
+                GDTaskPlayerLoopRunner.AddContinuation(playerLoopTiming, continuation);
             }
         }
     }
@@ -230,9 +230,9 @@ namespace GodotTasks.Tasks
             public Awaiter GetAwaiter() => this;
 
             /// <summary>
-            /// Gets whether the current <see cref="GDTaskPlayerLoopAutoload.MainThreadId"/> is <see cref="Environment.CurrentManagedThreadId"/>.
+            /// Gets whether the current <see cref="GDTaskPlayerLoopRunner.MainThreadId"/> is <see cref="Environment.CurrentManagedThreadId"/>.
             /// </summary>
-            public bool IsCompleted => GDTaskPlayerLoopAutoload.MainThreadId == Environment.CurrentManagedThreadId;
+            public bool IsCompleted => GDTaskPlayerLoopRunner.MainThreadId == Environment.CurrentManagedThreadId;
 
             /// <summary>
             /// Ends the await on the completed <see cref="ReturnToMainThread"/>.
@@ -244,7 +244,7 @@ namespace GodotTasks.Tasks
             /// </summary>
             public void OnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
+                GDTaskPlayerLoopRunner.AddContinuation(timing, continuation);
             }
 
             /// <summary>
@@ -252,7 +252,7 @@ namespace GodotTasks.Tasks
             /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
+                GDTaskPlayerLoopRunner.AddContinuation(timing, continuation);
             }
         }
     }

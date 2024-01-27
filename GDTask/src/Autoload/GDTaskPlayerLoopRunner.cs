@@ -31,7 +31,7 @@ namespace GodotTasks.Tasks
     /// <summary>
     /// Singleton that forwards Godot calls and values to GDTasks.
     /// </summary>
-    internal partial class GDTaskPlayerLoopAutoload : Node
+    internal partial class GDTaskPlayerLoopRunner : Node
     {
         public static int MainThreadId => Global.mainThreadId;
         public static bool IsMainThread => System.Environment.CurrentManagedThreadId == Global.mainThreadId;
@@ -60,16 +60,16 @@ namespace GodotTasks.Tasks
             q!.Enqueue(continuation);
         }
 
-        private GDTaskPlayerLoopAutoload() { }
+        private GDTaskPlayerLoopRunner() { }
 
-        public static GDTaskPlayerLoopAutoload Global
+        public static GDTaskPlayerLoopRunner Global
         {
             get
             {
                 if (s_Global != null) return s_Global;
 
                 SynchronizationContext.SetSynchronizationContext(new GDTaskSynchronizationContext());
-                var newInstance = new GDTaskPlayerLoopAutoload();
+                var newInstance = new GDTaskPlayerLoopRunner();
                 newInstance.Initialize();
                 var root = ((SceneTree)Engine.GetMainLoop()).Root;
                 root.CallDeferred(Node.MethodName.AddChild, newInstance);
@@ -83,7 +83,7 @@ namespace GodotTasks.Tasks
         public double DeltaTime => GetProcessDeltaTime();
         public double PhysicsDeltaTime => GetPhysicsProcessDeltaTime();
 
-        private static GDTaskPlayerLoopAutoload s_Global;
+        private static GDTaskPlayerLoopRunner s_Global;
         private int mainThreadId;
         private ContinuationQueue[] yielders;
         private PlayerLoopRunner[] runners;

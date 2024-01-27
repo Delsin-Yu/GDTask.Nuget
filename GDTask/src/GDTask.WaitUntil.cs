@@ -81,7 +81,7 @@ namespace GodotTasks.Tasks
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopAutoload.AddAction(timing, result);
+                GDTaskPlayerLoopRunner.AddAction(timing, result);
 
                 token = result.core.Version;
                 return result;
@@ -186,7 +186,7 @@ namespace GodotTasks.Tasks
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopAutoload.AddAction(timing, result);
+                GDTaskPlayerLoopRunner.AddAction(timing, result);
 
                 token = result.core.Version;
                 return result;
@@ -289,7 +289,7 @@ namespace GodotTasks.Tasks
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopAutoload.AddAction(timing, result);
+                GDTaskPlayerLoopRunner.AddAction(timing, result);
 
                 token = result.core.Version;
                 return result;
@@ -388,7 +388,7 @@ namespace GodotTasks.Tasks
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopAutoload.AddAction(timing, result);
+                GDTaskPlayerLoopRunner.AddAction(timing, result);
 
                 token = result.core.Version;
                 return result;
@@ -510,7 +510,7 @@ namespace GodotTasks.Tasks
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopAutoload.AddAction(timing, result);
+                GDTaskPlayerLoopRunner.AddAction(timing, result);
 
                 token = result.core.Version;
                 return result;

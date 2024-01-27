@@ -63,7 +63,7 @@ namespace GodotTasks.Tasks.Triggers
 
                 if (!enterTreeCalled)
                 {
-                    GDTaskPlayerLoopAutoload.AddAction(PlayerLoopTiming.Process, new AwakeMonitor(this));
+                    GDTaskPlayerLoopRunner.AddAction(PlayerLoopTiming.Process, new AwakeMonitor(this));
                 }
 
                 return cancellationTokenSource.Token;
