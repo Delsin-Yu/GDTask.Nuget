@@ -50,12 +50,18 @@ public class GDTaskTest_Extensions_Node
         Assertions.AssertThat(frames + 1).IsEqual(newFrames);
     }
 
+    [TestCase]
+    public static async Task Node_OnPredeleteAsync()
+    {
+        var node = CreateTestNode("OnPredeleteAsync");
+        node.QueueFree();
+        await node.OnPredeleteAsync();
+    }
+
     private static Node CreateTestNode(string nodeName)
     {
-        GD.Print($"Create Test Node: {nodeName}");
         var node = new Node { Name = nodeName };
         var root = ((SceneTree)Engine.GetMainLoop()).Root;
-        GD.Print($"CallDeferred: AddChild");
         root.CallDeferred(Node.MethodName.AddChild, node);
         return node;
     }
