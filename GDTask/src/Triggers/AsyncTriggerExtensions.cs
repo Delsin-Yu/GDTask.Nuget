@@ -22,7 +22,7 @@ namespace Fractural.Tasks.Triggers
 
 		internal static T CreateChild<T>(this Node node) where T : Node, new()
 		{
-			T child = new T();
+			T child = new T { Name = typeof(T).Name };
 			node.AddChild(child);
 			return child;
 		}

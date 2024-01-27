@@ -34,7 +34,7 @@ namespace Fractural.Tasks.Triggers
         {
             if (!calledEnterTree)
             {
-                GDTaskPlayerLoopAutoload.AddAction(PlayerLoopTiming.Process, new AwakeMonitor(this));
+                GDTaskPlayerLoopAutoload.AddAction(PlayerLoopTiming.Process, new EnterTreeMonitor(this));
             }
 
             triggerEvent.Add(handler);
@@ -44,7 +44,7 @@ namespace Fractural.Tasks.Triggers
         {
             if (!calledEnterTree)
             {
-                GDTaskPlayerLoopAutoload.AddAction(PlayerLoopTiming.Process, new AwakeMonitor(this));
+                GDTaskPlayerLoopAutoload.AddAction(PlayerLoopTiming.Process, new EnterTreeMonitor(this));
             }
 
             triggerEvent.Remove(handler);
@@ -55,11 +55,11 @@ namespace Fractural.Tasks.Triggers
             triggerEvent.SetResult(value);
         }
 
-        class AwakeMonitor : IPlayerLoopItem
+        class EnterTreeMonitor : IPlayerLoopItem
         {
             readonly AsyncTriggerBase<T> trigger;
 
-            public AwakeMonitor(AsyncTriggerBase<T> trigger)
+            public EnterTreeMonitor(AsyncTriggerBase<T> trigger)
             {
                 this.trigger = trigger;
             }
@@ -67,7 +67,7 @@ namespace Fractural.Tasks.Triggers
             public bool MoveNext()
             {
                 if (trigger.calledEnterTree) return false;
-                if (trigger == null)
+                if (!IsInstanceValid(trigger))
                 {
                     trigger.OnDestroy();
                     return false;
@@ -93,8 +93,6 @@ namespace Fractural.Tasks.Triggers
 
     internal sealed partial class AsyncTriggerHandler<T> : IGDTaskSource<T>, ITriggerHandler<T>, IDisposable
     {
-        static Action<object> cancellationCallback = CancellationCallback;
-
         readonly AsyncTriggerBase<T> trigger;
 
         CancellationToken cancellationToken;
@@ -143,7 +141,7 @@ namespace Fractural.Tasks.Triggers
 
             if (cancellationToken.CanBeCanceled)
             {
-                registration = cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallback, this);
+                registration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallback, this);
             }
 
             TaskTracker.TrackActiveTask(this, 3);

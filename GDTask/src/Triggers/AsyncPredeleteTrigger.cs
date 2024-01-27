@@ -117,7 +117,7 @@ namespace Fractural.Tasks.Triggers
             public bool MoveNext()
             {
                 if (trigger.predeleteCalled) return false;
-                if (trigger == null)
+                if (!IsInstanceValid(trigger))
                 {
                     trigger.OnPredelete();
                     return false;

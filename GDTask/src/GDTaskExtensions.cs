@@ -706,13 +706,13 @@ namespace Fractural.Tasks
         }
 
         /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
-        public static async GDTask<TR> ContinueWith<T, TR>(this GDTask<T> task, Func<T, TR> continuationFunction)
+        public static async GDTask<TReturn> ContinueWith<T, TReturn>(this GDTask<T> task, Func<T, TReturn> continuationFunction)
         {
             return continuationFunction(await task);
         }
 
         /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
-        public static async GDTask<TR> ContinueWith<T, TR>(this GDTask<T> task, Func<T, GDTask<TR>> continuationFunction)
+        public static async GDTask<TReturn> ContinueWith<T, TReturn>(this GDTask<T> task, Func<T, GDTask<TReturn>> continuationFunction)
         {
             return await continuationFunction(await task);
         }
