@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
-using GodotTasks.Tasks.Internal;
+using GodotTask.Tasks.Internal;
 
-namespace GodotTasks.Tasks
+namespace GodotTask.Tasks
 {
     /// <summary>
     /// TODO: Tracking active tasks

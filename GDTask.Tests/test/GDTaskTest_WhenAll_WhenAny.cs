@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
 
-namespace GodotTasks.Tasks.Tests;
+namespace GodotTask.Tasks.Tests;
 
 [TestSuite]
 public class GDTaskTest_WhenAll_WhenAny

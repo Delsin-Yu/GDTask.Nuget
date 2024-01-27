@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace GodotTasks.Tasks
+namespace GodotTask.Tasks
 {
     public partial struct GDTask
     {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using GdUnit4;
 using GdUnit4.Exceptions;
 
-namespace GodotTasks.Tasks.Tests;
+namespace GodotTask.Tasks.Tests;
 
 [TestSuite]
 public partial class GDTaskTest_Factory

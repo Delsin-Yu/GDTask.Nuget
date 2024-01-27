@@ -5,9 +5,9 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using GodotTasks.Tasks.CompilerServices;
+using GodotTask.Tasks.CompilerServices;
 
-namespace GodotTasks.Tasks
+namespace GodotTask.Tasks
 {
     [AsyncMethodBuilder(typeof(AsyncGDTaskVoidMethodBuilder))]
     public readonly struct GDTaskVoid

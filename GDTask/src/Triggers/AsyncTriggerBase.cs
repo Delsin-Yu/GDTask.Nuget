@@ -2,7 +2,7 @@
 using System.Threading;
 using Godot;
 
-namespace GodotTasks.Tasks.Triggers
+namespace GodotTask.Tasks.Triggers
 {
     internal abstract partial class AsyncTriggerBase<T> : Node
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
-using GodotTasks.Tasks.Triggers;
+using GodotTask.Tasks.Triggers;
 using Godot;
 
-namespace GodotTasks.Tasks.Triggers
+namespace GodotTask.Tasks.Triggers
 {
     public static partial class AsyncTriggerExtensions
     {

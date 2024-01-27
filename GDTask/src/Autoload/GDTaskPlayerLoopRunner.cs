@@ -2,10 +2,10 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Godot;
-using GodotTasks.Tasks.Internal;
+using GodotTask.Tasks.Internal;
 
 [assembly: InternalsVisibleTo("GDTask.Tests")]
-namespace GodotTasks.Tasks
+namespace GodotTask.Tasks
 {
     /// <summary>
     /// Indicates one of the functions from the player loop.

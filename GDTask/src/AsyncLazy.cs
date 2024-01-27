@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GodotTasks.Tasks
+namespace GodotTask.Tasks
 {
     /// <summary>
     /// Provides access a lazy initialized of an asynchronous work.

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using Godot;
 
-namespace GodotTasks.Tasks.Triggers
+namespace GodotTask.Tasks.Triggers
 {
     /// Provides async extensions methods for <see cref="Node"/>.
     public static partial class AsyncTriggerExtensions

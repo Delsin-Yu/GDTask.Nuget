@@ -3,9 +3,9 @@ using System.Collections;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using GodotTasks.Tasks.Internal;
+using GodotTask.Tasks.Internal;
 
-namespace GodotTasks.Tasks
+namespace GodotTask.Tasks
 {
     /// <summary>
     /// Provides extensions methods for <see cref="GDTask"/>.

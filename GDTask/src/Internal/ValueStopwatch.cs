@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace GodotTasks.Tasks.Internal
+namespace GodotTask.Tasks.Internal
 {
     internal readonly struct ValueStopwatch
     {

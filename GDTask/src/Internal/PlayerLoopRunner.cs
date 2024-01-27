@@ -2,7 +2,7 @@
 using Godot;
 using System;
 
-namespace GodotTasks.Tasks.Internal
+namespace GodotTask.Tasks.Internal
 {
     internal sealed class PlayerLoopRunner
     {

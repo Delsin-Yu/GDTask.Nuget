@@ -1,10 +1,10 @@
 ﻿using System.Threading;
-using GodotTasks.Tasks.Triggers;
+using GodotTask.Tasks.Triggers;
 using System;
-using GodotTasks.Tasks.Internal;
+using GodotTask.Tasks.Internal;
 using Godot;
 
-namespace GodotTasks.Tasks
+namespace GodotTask.Tasks
 {
 
     /// <summary>

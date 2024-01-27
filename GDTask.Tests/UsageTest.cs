@@ -4,11 +4,11 @@ using System.Linq;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
-using GodotTasks.Tasks.Triggers;
+using GodotTask.Tasks.Triggers;
 using Godot;
 using Environment = System.Environment;
 
-namespace GodotTasks.Tasks.Tests;
+namespace GodotTask.Tasks.Tests;
 
 public class UsageTest
 {

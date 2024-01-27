@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using GdUnit4;
 
-namespace GodotTasks.Tasks.Tests;
+namespace GodotTask.Tasks.Tests;
 
 public class GDTaskTest_CancellationTokenEqualityComparer
 {

@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace GodotTasks.Tasks.Triggers
+namespace GodotTask.Tasks.Triggers
 {
     public static partial class AsyncTriggerExtensions
     {
