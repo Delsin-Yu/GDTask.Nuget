@@ -26,10 +26,8 @@ namespace GodotTasks.Tasks
         /// <inheritdoc cref="WhenAny{T}(GDTask{T},GDTask)"/>
         public static GDTask<(int winArgumentIndex, T result)> WhenAny<T>(IEnumerable<GDTask<T>> tasks)
         {
-            using (var span = ArrayPoolUtil.Materialize(tasks))
-            {
-                return new GDTask<(int, T)>(new WhenAnyPromise<T>(span.Array, span.Length), 0);
-            }
+            using var span = ArrayPoolUtil.Materialize(tasks);
+            return new GDTask<(int, T)>(new WhenAnyPromise<T>(span.Array, span.Length), 0);
         }
 
         /// <summary>
@@ -44,10 +42,8 @@ namespace GodotTasks.Tasks
         /// <inheritdoc cref="WhenAny(GDTask[])"/>
         public static GDTask<int> WhenAny(IEnumerable<GDTask> tasks)
         {
-            using (var span = ArrayPoolUtil.Materialize(tasks))
-            {
-                return new GDTask<int>(new WhenAnyPromise(span.Array, span.Length), 0);
-            }
+            using var span = ArrayPoolUtil.Materialize(tasks);
+            return new GDTask<int>(new WhenAnyPromise(span.Array, span.Length), 0);
         }
 
         private sealed class WhenAnyLRPromise<T> : IGDTaskSource<(bool, T)>
@@ -79,16 +75,14 @@ namespace GodotTasks.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyLRPromise<T>, GDTask<T>.Awaiter>)state)
-                            {
-                                TryLeftInvokeContinuation(t.Item1, t.Item2);
-                            }
+                            using var t = (StateTuple<WhenAnyLRPromise<T>, GDTask<T>.Awaiter>)state;
+                            TryLeftInvokeContinuation(t.Item1, t.Item2);
                         }, StateTuple.Create(this, awaiter));
                     }
                 }
                 RIGHT:
                 {
-                    GDTask.Awaiter awaiter;
+                    Awaiter awaiter;
                     try
                     {
                         awaiter = rightTask.GetAwaiter();
@@ -107,10 +101,8 @@ namespace GodotTasks.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyLRPromise<T>, GDTask.Awaiter>)state)
-                            {
-                                TryRightInvokeContinuation(t.Item1, t.Item2);
-                            }
+                            using var t = (StateTuple<WhenAnyLRPromise<T>, Awaiter>)state;
+                            TryRightInvokeContinuation(t.Item1, t.Item2);
                         }, StateTuple.Create(this, awaiter));
                     }
                 }
@@ -135,7 +127,7 @@ namespace GodotTasks.Tasks
                 }
             }
 
-            private static void TryRightInvokeContinuation(WhenAnyLRPromise<T> self, in GDTask.Awaiter awaiter)
+            private static void TryRightInvokeContinuation(WhenAnyLRPromise<T> self, in Awaiter awaiter)
             {
                 try
                 {
@@ -217,10 +209,8 @@ namespace GodotTasks.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T>, GDTask<T>.Awaiter, int>)state)
-                            {
-                                TryInvokeContinuation(t.Item1, t.Item2, t.Item3);
-                            }
+                            using var t = (StateTuple<WhenAnyPromise<T>, GDTask<T>.Awaiter, int>)state;
+                            TryInvokeContinuation(t.Item1, t.Item2, t.Item3);
                         }, StateTuple.Create(this, awaiter, i));
                     }
                 }
@@ -289,7 +279,7 @@ namespace GodotTasks.Tasks
 
                 for (int i = 0; i < tasksLength; i++)
                 {
-                    GDTask.Awaiter awaiter;
+                    Awaiter awaiter;
                     try
                     {
                         awaiter = tasks[i].GetAwaiter();
@@ -308,16 +298,14 @@ namespace GodotTasks.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise, GDTask.Awaiter, int>)state)
-                            {
-                                TryInvokeContinuation(t.Item1, t.Item2, t.Item3);
-                            }
+                            using var t = (StateTuple<WhenAnyPromise, Awaiter, int>)state;
+                            TryInvokeContinuation(t.Item1, t.Item2, t.Item3);
                         }, StateTuple.Create(this, awaiter, i));
                     }
                 }
             }
 
-            private static void TryInvokeContinuation(WhenAnyPromise self, in GDTask.Awaiter awaiter, int i)
+            private static void TryInvokeContinuation(WhenAnyPromise self, in Awaiter awaiter, int i)
             {
                 try
                 {

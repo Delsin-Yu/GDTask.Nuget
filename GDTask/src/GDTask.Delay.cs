@@ -89,13 +89,13 @@ namespace GodotTasks.Tasks
         /// <inheritdoc cref="Yield()"/>
         public static YieldAwaitable WaitForEndOfFrame()
         {
-            return GDTask.Yield(PlayerLoopTiming.Process);
+            return Yield(PlayerLoopTiming.Process);
         }
 
         /// <inheritdoc cref="Yield(CancellationToken)"/>
         public static GDTask WaitForEndOfFrame(CancellationToken cancellationToken)
         {
-            return GDTask.Yield(PlayerLoopTiming.Process, cancellationToken);
+            return Yield(PlayerLoopTiming.Process, cancellationToken);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace GodotTasks.Tasks
         /// </summary>
         public static YieldAwaitable WaitForPhysicsProcess()
         {
-            return GDTask.Yield(PlayerLoopTiming.PhysicsProcess);
+            return Yield(PlayerLoopTiming.PhysicsProcess);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace GodotTasks.Tasks
         /// </summary>
         public static GDTask WaitForPhysicsProcess(CancellationToken cancellationToken)
         {
-            return GDTask.Yield(PlayerLoopTiming.PhysicsProcess, cancellationToken);
+            return Yield(PlayerLoopTiming.PhysicsProcess, cancellationToken);
         }
 
         /// <summary>

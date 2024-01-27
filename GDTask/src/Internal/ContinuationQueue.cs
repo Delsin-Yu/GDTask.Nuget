@@ -12,7 +12,7 @@ namespace GodotTasks.Tasks.Internal
         private readonly PlayerLoopTiming timing;
 
         private SpinLock gate = new SpinLock(false);
-        private bool dequing = false;
+        private bool dequeuing = false;
 
         private int actionListCount = 0;
         private Action[] actionList = new Action[InitialSize];
@@ -32,7 +32,7 @@ namespace GodotTasks.Tasks.Internal
             {
                 gate.Enter(ref lockTaken);
 
-                if (dequing)
+                if (dequeuing)
                 {
                     // Ensure Capacity
                     if (waitingList.Length == waitingListCount)
@@ -115,7 +115,7 @@ namespace GodotTasks.Tasks.Internal
                 {
                     gate.Enter(ref lockTaken);
                     if (actionListCount == 0) return;
-                    dequing = true;
+                    dequeuing = true;
                 }
                 finally
                 {
@@ -143,7 +143,7 @@ namespace GodotTasks.Tasks.Internal
                 try
                 {
                     gate.Enter(ref lockTaken);
-                    dequing = false;
+                    dequeuing = false;
 
                     var swapTempActionList = actionList;
 

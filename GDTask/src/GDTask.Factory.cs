@@ -9,10 +9,7 @@ namespace GodotTasks.Tasks
 {
     public partial struct GDTask
     {
-        private static readonly GDTask CanceledGDTask = new Func<GDTask>(() =>
-        {
-            return new GDTask(new CanceledResultSource(CancellationToken.None), 0);
-        })();
+        private static readonly GDTask CanceledGDTask = new Func<GDTask>(() => new GDTask(new CanceledResultSource(CancellationToken.None), 0))();
 
         private static class CanceledGDTaskCache<T>
         {
@@ -365,7 +362,7 @@ namespace GodotTasks.Tasks
         {
             private Func<GDTask> factory;
             private GDTask task;
-            private GDTask.Awaiter awaiter;
+            private Awaiter awaiter;
 
             public DeferPromise(Func<GDTask> factory)
             {
@@ -446,9 +443,7 @@ namespace GodotTasks.Tasks
 
         private sealed class NeverPromise<T> : IGDTaskSource<T>
         {
-            private static readonly Action<object> cancellationCallback = CancellationCallback;
-
-            private CancellationToken cancellationToken;
+            private readonly CancellationToken cancellationToken;
             private GDTaskCompletionSourceCore<T> core;
 
             public NeverPromise(CancellationToken cancellationToken)
@@ -456,7 +451,7 @@ namespace GodotTasks.Tasks
                 this.cancellationToken = cancellationToken;
                 if (this.cancellationToken.CanBeCanceled)
                 {
-                    this.cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallback, this);
+                    this.cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallback, this);
                 }
             }
 

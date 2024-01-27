@@ -16,13 +16,13 @@ namespace GodotTasks.Tasks.Internal
         private int tail = 0;
         private bool running = false;
         private IPlayerLoopItem[] loopItems = new IPlayerLoopItem[InitialSize];
-        private MinimumQueue<IPlayerLoopItem> waitQueue = new MinimumQueue<IPlayerLoopItem>(InitialSize);
+        private readonly MinimumQueue<IPlayerLoopItem> waitQueue = new MinimumQueue<IPlayerLoopItem>(InitialSize);
 
 
 
         public PlayerLoopRunner(PlayerLoopTiming timing)
         {
-            this.unhandledExceptionCallback = ex => GD.PrintErr(ex);
+            unhandledExceptionCallback = ex => GD.PrintErr(ex);
             this.timing = timing;
         }
 

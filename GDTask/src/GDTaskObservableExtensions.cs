@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using GodotTasks.Tasks.Internal;
@@ -23,7 +24,7 @@ namespace GodotTasks.Tasks
             var disposable = new SingleAssignmentDisposable();
 
             var observer = useFirstValue
-                ? (IObserver<T>)new FirstValueToGDTaskObserver<T>(promise, disposable, cancellationToken)
+                ? new FirstValueToGDTaskObserver<T>(promise, disposable, cancellationToken)
                 : (IObserver<T>)new ToGDTaskObserver<T>(promise, disposable, cancellationToken);
 
             try
@@ -93,7 +94,7 @@ namespace GodotTasks.Tasks
             return subject;
         }
 
-        private static async GDTaskVoid Fire<T>(AsyncSubject<T> subject, GDTask<T> task)
+        private static async GDTaskVoid Fire<T>(IObserver<T> subject, GDTask<T> task)
         {
             T value;
             try
@@ -110,7 +111,7 @@ namespace GodotTasks.Tasks
             subject.OnCompleted();
         }
 
-        private static async GDTaskVoid Fire<TUnit>(AsyncSubject<TUnit> subject, GDTask task)
+        private static async GDTaskVoid Fire<TUnit>(IObserver<TUnit> subject, GDTask task)
         {
             try
             {
@@ -128,8 +129,6 @@ namespace GodotTasks.Tasks
 
         private class ToGDTaskObserver<T> : IObserver<T>
         {
-            private static readonly Action<object> callback = OnCanceled;
-
             private readonly GDTaskCompletionSource<T> promise;
             private readonly SingleAssignmentDisposable disposable;
             private readonly CancellationToken cancellationToken;
@@ -146,7 +145,7 @@ namespace GodotTasks.Tasks
 
                 if (this.cancellationToken.CanBeCanceled)
                 {
-                    this.registration = this.cancellationToken.RegisterWithoutCaptureExecutionContext(callback, this);
+                    registration = this.cancellationToken.RegisterWithoutCaptureExecutionContext(OnCanceled, this);
                 }
             }
 
@@ -199,7 +198,6 @@ namespace GodotTasks.Tasks
 
         private class FirstValueToGDTaskObserver<T> : IObserver<T>
         {
-            private static readonly Action<object> callback = OnCanceled;
 
             private readonly GDTaskCompletionSource<T> promise;
             private readonly SingleAssignmentDisposable disposable;
@@ -216,7 +214,7 @@ namespace GodotTasks.Tasks
 
                 if (this.cancellationToken.CanBeCanceled)
                 {
-                    this.registration = this.cancellationToken.RegisterWithoutCaptureExecutionContext(callback, this);
+                    registration = this.cancellationToken.RegisterWithoutCaptureExecutionContext(OnCanceled, this);
                 }
             }
 
@@ -312,7 +310,7 @@ namespace GodotTasks.Tasks.Internal
 
     internal class EmptyDisposable : IDisposable
     {
-        public static EmptyDisposable Instance = new EmptyDisposable();
+        public static readonly EmptyDisposable Instance = new EmptyDisposable();
 
         private EmptyDisposable()
         {
@@ -334,13 +332,10 @@ namespace GodotTasks.Tasks.Internal
 
         public IDisposable Disposable
         {
-            get
-            {
-                return current;
-            }
+            get => current;
             set
             {
-                var old = default(IDisposable);
+                IDisposable old;
                 bool alreadyDisposed;
                 lock (gate)
                 {
@@ -384,7 +379,7 @@ namespace GodotTasks.Tasks.Internal
 
     internal sealed class AsyncSubject<T> : IObservable<T>, IObserver<T>
     {
-        private object observerLock = new object();
+        private readonly object observerLock = new object();
 
         private T lastValue;
         private bool hasValue;
@@ -404,15 +399,9 @@ namespace GodotTasks.Tasks.Internal
             }
         }
 
-        public bool HasObservers
-        {
-            get
-            {
-                return !(outObserver is EmptyObserver<T>) && !isStopped && !isDisposed;
-            }
-        }
+        public bool HasObservers => !(outObserver is EmptyObserver<T>) && !isStopped && !isDisposed;
 
-        public bool IsCompleted { get { return isStopped; } }
+        public bool IsCompleted => isStopped;
 
         public void OnCompleted()
         {
@@ -444,7 +433,7 @@ namespace GodotTasks.Tasks.Internal
 
         public void OnError(Exception error)
         {
-            if (error == null) throw new ArgumentNullException("error");
+            if (error == null) throw new ArgumentNullException(nameof(error));
 
             IObserver<T> old;
             lock (observerLock)
@@ -468,14 +457,14 @@ namespace GodotTasks.Tasks.Internal
                 ThrowIfDisposed();
                 if (isStopped) return;
 
-                this.hasValue = true;
-                this.lastValue = value;
+                hasValue = true;
+                lastValue = value;
             }
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
         {
-            if (observer == null) throw new ArgumentNullException("observer");
+            if (observer == null) throw new ArgumentNullException(nameof(observer));
 
             var ex = default(Exception);
             var v = default(T);
@@ -486,8 +475,7 @@ namespace GodotTasks.Tasks.Internal
                 ThrowIfDisposed();
                 if (!isStopped)
                 {
-                    var listObserver = outObserver as ListObserver<T>;
-                    if (listObserver != null)
+                    if (outObserver is ListObserver<T> listObserver)
                     {
                         outObserver = listObserver.Add(observer);
                     }
@@ -565,8 +553,7 @@ namespace GodotTasks.Tasks.Internal
                     {
                         lock (parent.observerLock)
                         {
-                            var listObserver = parent.outObserver as ListObserver<T>;
-                            if (listObserver != null)
+                            if (parent.outObserver is ListObserver<T> listObserver)
                             {
                                 parent.outObserver = listObserver.Remove(unsubscribeTarget);
                             }
@@ -718,14 +705,11 @@ namespace GodotTasks.Tasks.Internal
 
         private T[] data;
 
-        public T[] Data
-        {
-            get { return data; }
-        }
+        public T[] Data => data;
 
         private ImmutableList()
         {
-            data = new T[0];
+            data = Array.Empty<T>();
         }
 
         public ImmutableList(T[] data)
@@ -759,10 +743,11 @@ namespace GodotTasks.Tasks.Internal
 
         public int IndexOf(T value)
         {
+            var comparer = EqualityComparer<T>.Default;
             for (var i = 0; i < data.Length; ++i)
             {
                 // ImmutableList only use for IObserver(no worry for boxed)
-                if (object.Equals(data[i], value)) return i;
+                if (comparer.Equals(data[i], value)) return i;
             }
             return -1;
         }

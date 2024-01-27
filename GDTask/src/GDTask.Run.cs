@@ -15,7 +15,7 @@ namespace GodotTasks.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await GDTask.SwitchToThreadPool();
+            await SwitchToThreadPool();
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -27,7 +27,7 @@ namespace GodotTasks.Tasks
                 }
                 finally
                 {
-                    await GDTask.Yield();
+                    await Yield();
                 }
             }
             else
@@ -49,7 +49,7 @@ namespace GodotTasks.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await GDTask.SwitchToThreadPool();
+            await SwitchToThreadPool();
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -61,7 +61,7 @@ namespace GodotTasks.Tasks
                 }
                 finally
                 {
-                    await GDTask.Yield();
+                    await Yield();
                 }
             }
             else
@@ -82,7 +82,7 @@ namespace GodotTasks.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await GDTask.SwitchToThreadPool();
+            await SwitchToThreadPool();
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -94,7 +94,7 @@ namespace GodotTasks.Tasks
                 }
                 finally
                 {
-                    await GDTask.Yield();
+                    await Yield();
                 }
             }
             else
@@ -116,7 +116,7 @@ namespace GodotTasks.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await GDTask.SwitchToThreadPool();
+            await SwitchToThreadPool();
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -128,7 +128,7 @@ namespace GodotTasks.Tasks
                 }
                 finally
                 {
-                    await GDTask.Yield();
+                    await Yield();
                 }
             }
             else
@@ -150,7 +150,7 @@ namespace GodotTasks.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await GDTask.SwitchToThreadPool();
+            await SwitchToThreadPool();
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -162,7 +162,7 @@ namespace GodotTasks.Tasks
                 }
                 finally
                 {
-                    await GDTask.Yield();
+                    await Yield();
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }
@@ -183,7 +183,7 @@ namespace GodotTasks.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await GDTask.SwitchToThreadPool();
+            await SwitchToThreadPool();
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -196,7 +196,7 @@ namespace GodotTasks.Tasks
                 finally
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    await GDTask.Yield();
+                    await Yield();
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }
@@ -220,7 +220,7 @@ namespace GodotTasks.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await GDTask.SwitchToThreadPool();
+            await SwitchToThreadPool();
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -232,7 +232,7 @@ namespace GodotTasks.Tasks
                 }
                 finally
                 {
-                    await GDTask.Yield();
+                    await Yield();
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }
@@ -254,7 +254,7 @@ namespace GodotTasks.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await GDTask.SwitchToThreadPool();
+            await SwitchToThreadPool();
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -267,7 +267,7 @@ namespace GodotTasks.Tasks
                 finally
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    await GDTask.Yield();
+                    await Yield();
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }

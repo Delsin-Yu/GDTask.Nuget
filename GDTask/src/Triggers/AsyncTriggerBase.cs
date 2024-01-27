@@ -87,7 +87,7 @@ namespace GodotTasks.Tasks.Triggers
         GDTask IAsyncOneShotTrigger.OneShotAsync()
         {
             core.Reset();
-            return new GDTask((IGDTaskSource)this, core.Version);
+            return new GDTask(this, core.Version);
         }
     }
 
@@ -116,8 +116,8 @@ namespace GodotTasks.Tasks.Triggers
             }
 
             this.trigger = trigger;
-            this.cancellationToken = default;
-            this.registration = default;
+            cancellationToken = default;
+            registration = default;
             this.callOnce = callOnce;
 
             trigger.AddHandler(this);

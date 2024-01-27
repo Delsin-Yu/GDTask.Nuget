@@ -98,7 +98,7 @@ namespace GodotTasks.Tasks.CompilerServices
         }
     }
 
-    internal sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, IGDTaskSource, ITaskPoolNode<AsyncGDTask<TStateMachine>>
+    internal sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, ITaskPoolNode<AsyncGDTask<TStateMachine>>
         where TStateMachine : IAsyncStateMachine
     {
         private static TaskPool<AsyncGDTask<TStateMachine>> pool;
@@ -159,10 +159,7 @@ namespace GodotTasks.Tasks.CompilerServices
         public GDTask Task
         {
             [DebuggerHidden]
-            get
-            {
-                return new GDTask(this, core.Version);
-            }
+            get => new(this, core.Version);
         }
 
         [DebuggerHidden]
@@ -209,7 +206,7 @@ namespace GodotTasks.Tasks.CompilerServices
         }
     }
 
-    internal sealed class AsyncGDTask<TStateMachine, T> : IStateMachineRunnerPromise<T>, IGDTaskSource<T>, ITaskPoolNode<AsyncGDTask<TStateMachine, T>>
+    internal sealed class AsyncGDTask<TStateMachine, T> : IStateMachineRunnerPromise<T>, ITaskPoolNode<AsyncGDTask<TStateMachine, T>>
         where TStateMachine : IAsyncStateMachine
     {
         private static TaskPool<AsyncGDTask<TStateMachine, T>> pool;
@@ -270,10 +267,7 @@ namespace GodotTasks.Tasks.CompilerServices
         public GDTask<T> Task
         {
             [DebuggerHidden]
-            get
-            {
-                return new GDTask<T>(this, core.Version);
-            }
+            get => new(this, core.Version);
         }
 
         [DebuggerHidden]

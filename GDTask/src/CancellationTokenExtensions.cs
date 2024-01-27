@@ -165,9 +165,9 @@ namespace GodotTasks.Tasks
     /// <summary>
     /// A context that will complete when the associated <see cref="CancellationToken"/> is canceled.
     /// </summary>
-    public struct CancellationTokenAwaitable
+    public readonly struct CancellationTokenAwaitable
     {
-        private CancellationToken cancellationToken;
+        private readonly CancellationToken cancellationToken;
 
         internal CancellationTokenAwaitable(CancellationToken cancellationToken)
         {
@@ -185,9 +185,9 @@ namespace GodotTasks.Tasks
         /// <summary>
         /// Provides an object that waits for the completion of a <see cref="CancellationToken"/>.
         /// </summary>
-        public struct Awaiter : ICriticalNotifyCompletion
+        public readonly struct Awaiter : ICriticalNotifyCompletion
         {
-            private CancellationToken cancellationToken;
+            private readonly CancellationToken cancellationToken;
 
             internal Awaiter(CancellationToken cancellationToken)
             {

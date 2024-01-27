@@ -14,7 +14,7 @@ namespace GodotTasks.Tasks
         bool TrySetResult();
     }
 
-    internal interface IResolvePromise<T>
+    internal interface IResolvePromise<in T>
     {
         bool TrySetResult(T value);
     }
@@ -29,7 +29,7 @@ namespace GodotTasks.Tasks
         bool TrySetCanceled(CancellationToken cancellationToken = default);
     }
 
-    internal interface IPromise<T> : IResolvePromise<T>, IRejectPromise, ICancelPromise
+    internal interface IPromise<in T> : IResolvePromise<T>, IRejectPromise, ICancelPromise
     {
     }
 
@@ -39,7 +39,7 @@ namespace GodotTasks.Tasks
 
     internal class ExceptionHolder
     {
-        private ExceptionDispatchInfo exception;
+        private readonly ExceptionDispatchInfo exception;
         private bool calledGet = false;
 
         public ExceptionHolder(ExceptionDispatchInfo exception)
@@ -132,7 +132,7 @@ namespace GodotTasks.Tasks
                 // setup result
                 this.result = result;
 
-                if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GDTaskCompletionSourceCoreShared.s_sentinel, null) != null)
+                if (continuation != null || Interlocked.CompareExchange(ref continuation, GDTaskCompletionSourceCoreShared.s_sentinel, null) != null)
                 {
                     continuation(continuationState);
                     return true;
@@ -150,7 +150,7 @@ namespace GodotTasks.Tasks
             if (Interlocked.Increment(ref completedCount) == 1)
             {
                 // setup result
-                this.hasUnhandledError = true;
+                hasUnhandledError = true;
                 if (error is OperationCanceledException)
                 {
                     this.error = error;
@@ -160,7 +160,7 @@ namespace GodotTasks.Tasks
                     this.error = new ExceptionHolder(ExceptionDispatchInfo.Capture(error));
                 }
 
-                if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GDTaskCompletionSourceCoreShared.s_sentinel, null) != null)
+                if (continuation != null || Interlocked.CompareExchange(ref continuation, GDTaskCompletionSourceCoreShared.s_sentinel, null) != null)
                 {
                     continuation(continuationState);
                     return true;
@@ -176,10 +176,10 @@ namespace GodotTasks.Tasks
             if (Interlocked.Increment(ref completedCount) == 1)
             {
                 // setup result
-                this.hasUnhandledError = true;
-                this.error = new OperationCanceledException(cancellationToken);
+                hasUnhandledError = true;
+                error = new OperationCanceledException(cancellationToken);
 
-                if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GDTaskCompletionSourceCoreShared.s_sentinel, null) != null)
+                if (continuation != null || Interlocked.CompareExchange(ref continuation, GDTaskCompletionSourceCoreShared.s_sentinel, null) != null)
                 {
                     continuation(continuationState);
                     return true;
@@ -372,10 +372,7 @@ namespace GodotTasks.Tasks
         public GDTask Task
         {
             [DebuggerHidden]
-            get
-            {
-                return new GDTask(this, core.Version);
-            }
+            get => new(this, core.Version);
         }
 
         [DebuggerHidden]
@@ -495,10 +492,7 @@ namespace GodotTasks.Tasks
         public GDTask<T> Task
         {
             [DebuggerHidden]
-            get
-            {
-                return new GDTask<T>(this, core.Version);
-            }
+            get => new(this, core.Version);
         }
 
         [DebuggerHidden]
@@ -595,10 +589,7 @@ namespace GodotTasks.Tasks
         public GDTask Task
         {
             [DebuggerHidden]
-            get
-            {
-                return new GDTask(this, 0);
-            }
+            get => new(this, 0);
         }
 
         [DebuggerHidden]
@@ -777,10 +768,7 @@ namespace GodotTasks.Tasks
         public GDTask<T> Task
         {
             [DebuggerHidden]
-            get
-            {
-                return new GDTask<T>(this, 0);
-            }
+            get => new(this, 0);
         }
 
         [DebuggerHidden]

@@ -24,7 +24,7 @@ namespace GodotTasks.Tasks.Internal
         public int Count
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return size; }
+            get => size;
         }
 
         public T Peek()
@@ -62,7 +62,7 @@ namespace GodotTasks.Tasks.Internal
 
         private void Grow()
         {
-            int newcapacity = (int)((long)array.Length * (long)GrowFactor / 100);
+            int newcapacity = (int)(array.Length * (long)GrowFactor / 100);
             if (newcapacity < array.Length + MinimumGrow)
             {
                 newcapacity = array.Length + MinimumGrow;

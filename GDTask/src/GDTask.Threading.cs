@@ -110,7 +110,7 @@ namespace GodotTasks.Tasks
     /// <summary>
     /// An awaitable that, when awaited, will asynchronously yields back to the next <see cref="PlayerLoopTiming"/>.
     /// </summary>
-    public struct SwitchToMainThreadAwaitable
+    public readonly struct SwitchToMainThreadAwaitable
     {
         private readonly PlayerLoopTiming playerLoopTiming;
         private readonly CancellationToken cancellationToken;
@@ -129,7 +129,7 @@ namespace GodotTasks.Tasks
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="SwitchToMainThreadAwaitable"/>.
         /// </summary>
-        public struct Awaiter : ICriticalNotifyCompletion
+        public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             private readonly PlayerLoopTiming playerLoopTiming;
             private readonly CancellationToken cancellationToken;
@@ -188,7 +188,7 @@ namespace GodotTasks.Tasks
     /// <summary>
     /// An context that, when disposed, will asynchronously yields back to the next specified <see cref="PlayerLoopTiming"/> on the main thread.
     /// </summary>
-    public struct ReturnToMainThread
+    public readonly struct ReturnToMainThread
     {
         private readonly PlayerLoopTiming playerLoopTiming;
         private readonly CancellationToken cancellationToken;
@@ -311,7 +311,7 @@ namespace GodotTasks.Tasks
     /// <summary>
     /// An awaitable that asynchronously yields to the provided <see cref="SynchronizationContext"/> when awaited.
     /// </summary>
-    public struct SwitchToSynchronizationContextAwaitable
+    public readonly struct SwitchToSynchronizationContextAwaitable
     {
         private readonly SynchronizationContext synchronizationContext;
         private readonly CancellationToken cancellationToken;
@@ -330,7 +330,7 @@ namespace GodotTasks.Tasks
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="SwitchToSynchronizationContextAwaitable"/>.
         /// </summary>
-        public struct Awaiter : ICriticalNotifyCompletion
+        public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             private static readonly SendOrPostCallback switchToCallback = Callback;
             private readonly SynchronizationContext synchronizationContext;
@@ -382,7 +382,7 @@ namespace GodotTasks.Tasks
     /// <summary>
     /// An context that, when disposed, will asynchronously yields back to the previous <see cref="SynchronizationContext"/>.
     /// </summary>
-    public struct ReturnToSynchronizationContext
+    public readonly struct ReturnToSynchronizationContext
     {
         private readonly SynchronizationContext syncContext;
         private readonly bool dontPostWhenSameContext;
@@ -406,7 +406,7 @@ namespace GodotTasks.Tasks
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="ReturnToSynchronizationContext"/>.
         /// </summary>
-        public struct Awaiter : ICriticalNotifyCompletion
+        public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             private static readonly SendOrPostCallback switchToCallback = Callback;
 

@@ -48,7 +48,7 @@ namespace GodotTasks.Tasks.Triggers
         GDTask IAsyncPhysicsProcessHandler.OnPhysicsProcessAsync()
         {
             core.Reset();
-            return new GDTask((IGDTaskSource)(object)this, core.Version);
+            return new GDTask(this, core.Version);
         }      
     }
     

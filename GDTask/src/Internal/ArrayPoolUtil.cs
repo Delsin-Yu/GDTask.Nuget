@@ -52,9 +52,9 @@ namespace GodotTasks.Tasks.Internal
                 coll.CopyTo(buffer, 0);
                 return new RentArray<T>(buffer, coll.Count, pool);
             }
-            else if (source is IReadOnlyCollection<T> rcoll)
+            else if (source is IReadOnlyCollection<T> readOnlyCollection)
             {
-                defaultCount = rcoll.Count;
+                defaultCount = readOnlyCollection.Count;
             }
 
             if (defaultCount == 0)
@@ -85,8 +85,8 @@ namespace GodotTasks.Tasks.Internal
 
             public RentArray(T[] array, int length, ArrayPool<T> pool)
             {
-                this.Array = array;
-                this.Length = length;
+                Array = array;
+                Length = length;
                 this.pool = pool;
             }
 

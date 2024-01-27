@@ -25,10 +25,7 @@ namespace GodotTasks.Tasks.CompilerServices
         {
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                return default;
-            }
+            get => default;
         }
 
         // 3. SetException

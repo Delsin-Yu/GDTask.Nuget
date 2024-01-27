@@ -80,7 +80,7 @@ namespace GodotTasks.Tasks
         public override string ToString()
         {
             if (source == null) return "()";
-            return "(" + source.UnsafeGetStatus() + ")";
+            return $"({source.UnsafeGetStatus()})";
         }
 
         /// <summary>
@@ -104,20 +104,20 @@ namespace GodotTasks.Tasks
         /// <returns></returns>
         public GDTask<AsyncUnit> AsAsyncUnitGDTask()
         {
-            if (this.source == null) return CompletedTasks.AsyncUnit;
+            if (source == null) return CompletedTasks.AsyncUnit;
 
-            var status = this.source.GetStatus(this.token);
+            var status = source.GetStatus(token);
             if (status.IsCompletedSuccessfully())
             {
-                this.source.GetResult(this.token);
+                source.GetResult(token);
                 return CompletedTasks.AsyncUnit;
             }
-            else if (this.source is IGDTaskSource<AsyncUnit> asyncUnitSource)
+            else if (source is IGDTaskSource<AsyncUnit> asyncUnitSource)
             {
-                return new GDTask<AsyncUnit>(asyncUnitSource, this.token);
+                return new GDTask<AsyncUnit>(asyncUnitSource, token);
             }
 
-            return new GDTask<AsyncUnit>(new AsyncUnitSource(this.source), this.token);
+            return new GDTask<AsyncUnit>(new AsyncUnitSource(source), token);
         }
 
         private sealed class AsyncUnitSource : IGDTaskSource<AsyncUnit>
@@ -301,10 +301,7 @@ namespace GodotTasks.Tasks
             {
                 [DebuggerHidden]
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get
-                {
-                    return task.Status.IsCompleted();
-                }
+                get => task.Status.IsCompleted();
             }
 
             /// <summary>
@@ -387,8 +384,8 @@ namespace GodotTasks.Tasks
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal GDTask(T result)
         {
-            this.source = default;
-            this.token = default;
+            source = default;
+            token = default;
             this.result = result;
         }
 
@@ -398,7 +395,7 @@ namespace GodotTasks.Tasks
         {
             this.source = source;
             this.token = token;
-            this.result = default;
+            result = default;
         }
 
         /// <summary>
@@ -408,10 +405,7 @@ namespace GodotTasks.Tasks
         {
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                return (source == null) ? GDTaskStatus.Succeeded : source.GetStatus(token);
-            }
+            get => (source == null) ? GDTaskStatus.Succeeded : source.GetStatus(token);
         }
 
         /// <summary>
@@ -444,17 +438,17 @@ namespace GodotTasks.Tasks
         /// </summary>
         public GDTask AsGDTask()
         {
-            if (this.source == null) return GDTask.CompletedTask;
+            if (source == null) return GDTask.CompletedTask;
 
-            var status = this.source.GetStatus(this.token);
+            var status = source.GetStatus(token);
             if (status.IsCompletedSuccessfully())
             {
-                this.source.GetResult(this.token);
+                source.GetResult(token);
                 return GDTask.CompletedTask;
             }
 
             // Converting GDTask<T> -> GDTask is zero overhead.
-            return new GDTask(this.source, this.token);
+            return new GDTask(source, token);
         }
 
         /// <summary>
@@ -483,8 +477,8 @@ namespace GodotTasks.Tasks
         /// </summary>
         public override string ToString()
         {
-            return (this.source == null) ? result?.ToString()
-                 : "(" + this.source.UnsafeGetStatus() + ")";
+            return (source == null) ? result?.ToString()
+                 : "(" + source.UnsafeGetStatus() + ")";
         }
 
         private sealed class IsCanceledSource : IGDTaskSource<(bool, T)>
@@ -652,10 +646,7 @@ namespace GodotTasks.Tasks
             {
                 [DebuggerHidden]
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get
-                {
-                    return task.Status.IsCompleted();
-                }
+                get => task.Status.IsCompleted();
             }
 
             /// <summary>

@@ -174,10 +174,10 @@ namespace GodotTasks.Tasks
 
         protected override void ResetCore(TimeSpan? interval)
         {
-            this.elapsed = 0.0;
-            this.isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
-            if (this.isMainThread)
-                this.initialFrame = Engine.GetProcessFrames();
+            elapsed = 0.0;
+            isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
+            if (isMainThread)
+                initialFrame = Engine.GetProcessFrames();
             if (interval != null)
             {
                 this.interval = (float)interval.Value.TotalSeconds;
@@ -208,10 +208,10 @@ namespace GodotTasks.Tasks
 
         protected override void ResetCore(TimeSpan? interval)
         {
-            this.stopwatch = ValueStopwatch.StartNew();
+            stopwatch = ValueStopwatch.StartNew();
             if (interval != null)
             {
-                this.intervalTicks = interval.Value.Ticks;
+                intervalTicks = interval.Value.Ticks;
             }
         }
     }

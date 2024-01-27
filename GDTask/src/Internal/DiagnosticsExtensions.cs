@@ -69,7 +69,7 @@ namespace GodotTasks.Tasks.Internal
             {
                 var sf = stackTrace.GetFrame(i);
 
-                var mb = sf.GetMethod();
+                var mb = sf!.GetMethod();
 
                 if (IgnoreLine(mb)) continue;
                 if (IsAsync(mb))
@@ -82,30 +82,30 @@ namespace GodotTasks.Tasks.Internal
                 if (mb is MethodInfo mi)
                 {
                     sb.Append(BeautifyType(mi.ReturnType, false));
-                    sb.Append(" ");
+                    sb.Append(' ');
                 }
 
                 // method name
                 sb.Append(BeautifyType(mb.DeclaringType, false));
                 if (!mb.IsConstructor)
                 {
-                    sb.Append(".");
+                    sb.Append('.');
                 }
                 sb.Append(mb.Name);
                 if (mb.IsGenericMethod)
                 {
-                    sb.Append("<");
+                    sb.Append('<');
                     foreach (var item in mb.GetGenericArguments())
                     {
                         sb.Append(BeautifyType(item, true));
                     }
-                    sb.Append(">");
+                    sb.Append('>');
                 }
 
                 // parameter
-                sb.Append("(");
+                sb.Append('(');
                 sb.Append(string.Join(", ", mb.GetParameters().Select(p => BeautifyType(p.ParameterType, true) + " " + p.Name)));
-                sb.Append(")");
+                sb.Append(')');
 
                 // file name
                 if (displayFilenames && (sf.GetILOffset() != -1))
@@ -128,7 +128,7 @@ namespace GodotTasks.Tasks.Internal
                     if (fileName != null)
                     {
                         sb.Append(' ');
-                        sb.AppendFormat(CultureInfo.InvariantCulture, "(at {0})", AppendHyperLink(fileName, sf.GetFileLineNumber().ToString()));
+                        sb.Append(CultureInfo.InvariantCulture, $"(at {AppendHyperLink(fileName, sf.GetFileLineNumber().ToString())})");
                     }
                 }
 
@@ -149,25 +149,17 @@ namespace GodotTasks.Tasks.Internal
         {
             declaringType = method.DeclaringType;
 
-            var parentType = declaringType.DeclaringType;
+            var parentType = declaringType!.DeclaringType;
             if (parentType == null)
             {
                 return false;
             }
 
             var methods = parentType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            if (methods == null)
-            {
-                return false;
-            }
 
             foreach (var candidateMethod in methods)
             {
                 var attributes = candidateMethod.GetCustomAttributes<StateMachineAttribute>(false);
-                if (attributes == null)
-                {
-                    continue;
-                }
 
                 foreach (var asma in attributes)
                 {
@@ -254,7 +246,7 @@ namespace GodotTasks.Tasks.Internal
             }
             else
             {
-                var fname = fi.FullName.Replace(System.IO.Path.DirectorySeparatorChar, '/').Replace(ProjectSettings.GlobalizePath("res://"), "");
+                var fname = fi.FullName.Replace(Path.DirectorySeparatorChar, '/').Replace(ProjectSettings.GlobalizePath("res://"), "");
                 var withAssetsPath = "Assets/" + fname;
                 return "<a href=\"" + withAssetsPath + "\" line=\"" + line + "\">" + withAssetsPath + ":" + line + "</a>";
             }

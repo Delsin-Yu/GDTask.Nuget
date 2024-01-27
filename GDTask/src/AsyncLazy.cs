@@ -32,29 +32,27 @@ namespace GodotTasks.Tasks
 
     internal class AsyncLazy : IAsyncLazy
     {
-        private static Action<object> continuation = SetCompletionSource;
-
         private Func<GDTask> taskFactory;
-        private GDTaskCompletionSource completionSource;
+        private readonly GDTaskCompletionSource completionSource;
         private GDTask.Awaiter awaiter;
 
-        private object syncLock;
+        private readonly object syncLock;
         private bool initialized;
 
         public AsyncLazy(Func<GDTask> taskFactory)
         {
             this.taskFactory = taskFactory;
-            this.completionSource = new GDTaskCompletionSource();
-            this.syncLock = new object();
-            this.initialized = false;
+            completionSource = new GDTaskCompletionSource();
+            syncLock = new object();
+            initialized = false;
         }
 
         internal AsyncLazy(GDTask task)
         {
-            this.taskFactory = null;
-            this.completionSource = new GDTaskCompletionSource();
-            this.syncLock = null;
-            this.initialized = true;
+            taskFactory = null;
+            completionSource = new GDTaskCompletionSource();
+            syncLock = null;
+            initialized = true;
 
             var awaiter = task.GetAwaiter();
             if (awaiter.IsCompleted)
@@ -64,7 +62,7 @@ namespace GodotTasks.Tasks
             else
             {
                 this.awaiter = awaiter;
-                awaiter.SourceOnCompleted(continuation, this);
+                awaiter.SourceOnCompleted(SetCompletionSource, this);
             }
         }
 
@@ -108,7 +106,7 @@ namespace GodotTasks.Tasks
                         else
                         {
                             this.awaiter = awaiter;
-                            awaiter.SourceOnCompleted(continuation, this);
+                            awaiter.SourceOnCompleted(SetCompletionSource, this);
                         }
 
                         Volatile.Write(ref initialized, true);
@@ -151,29 +149,27 @@ namespace GodotTasks.Tasks
 
     internal class AsyncLazy<T> : IAsyncLazy<T>
     {
-        private static Action<object> continuation = SetCompletionSource;
-
         private Func<GDTask<T>> taskFactory;
-        private GDTaskCompletionSource<T> completionSource;
+        private readonly GDTaskCompletionSource<T> completionSource;
         private GDTask<T>.Awaiter awaiter;
 
-        private object syncLock;
+        private readonly object syncLock;
         private bool initialized;
 
         public AsyncLazy(Func<GDTask<T>> taskFactory)
         {
             this.taskFactory = taskFactory;
-            this.completionSource = new GDTaskCompletionSource<T>();
-            this.syncLock = new object();
-            this.initialized = false;
+            completionSource = new GDTaskCompletionSource<T>();
+            syncLock = new object();
+            initialized = false;
         }
 
         internal AsyncLazy(GDTask<T> task)
         {
-            this.taskFactory = null;
-            this.completionSource = new GDTaskCompletionSource<T>();
-            this.syncLock = null;
-            this.initialized = true;
+            taskFactory = null;
+            completionSource = new GDTaskCompletionSource<T>();
+            syncLock = null;
+            initialized = true;
 
             var awaiter = task.GetAwaiter();
             if (awaiter.IsCompleted)
@@ -183,7 +179,7 @@ namespace GodotTasks.Tasks
             else
             {
                 this.awaiter = awaiter;
-                awaiter.SourceOnCompleted(continuation, this);
+                awaiter.SourceOnCompleted(SetCompletionSource, this);
             }
         }
 
@@ -227,7 +223,7 @@ namespace GodotTasks.Tasks
                         else
                         {
                             this.awaiter = awaiter;
-                            awaiter.SourceOnCompleted(continuation, this);
+                            awaiter.SourceOnCompleted(SetCompletionSource, this);
                         }
 
                         Volatile.Write(ref initialized, true);

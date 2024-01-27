@@ -104,18 +104,16 @@ namespace GodotTasks.Tasks
 
                 awaiter.SourceOnCompleted(state =>
                 {
-                    using (var tuple = (StateTuple<TaskCompletionSource<T>, GDTask<T>.Awaiter>)state)
+                    using var tuple = (StateTuple<TaskCompletionSource<T>, GDTask<T>.Awaiter>)state;
+                    var (inTcs, inAwaiter) = tuple;
+                    try
                     {
-                        var (inTcs, inAwaiter) = tuple;
-                        try
-                        {
-                            var result = inAwaiter.GetResult();
-                            inTcs.SetResult(result);
-                        }
-                        catch (Exception ex)
-                        {
-                            inTcs.SetException(ex);
-                        }
+                        var result = inAwaiter.GetResult();
+                        inTcs.SetResult(result);
+                    }
+                    catch (Exception ex)
+                    {
+                        inTcs.SetException(ex);
                     }
                 }, StateTuple.Create(tcs, awaiter));
 
@@ -159,18 +157,16 @@ namespace GodotTasks.Tasks
 
                 awaiter.SourceOnCompleted(state =>
                 {
-                    using (var tuple = (StateTuple<TaskCompletionSource<object>, GDTask.Awaiter>)state)
+                    using var tuple = (StateTuple<TaskCompletionSource<object>, GDTask.Awaiter>)state;
+                    var (inTcs, inAwaiter) = tuple;
+                    try
                     {
-                        var (inTcs, inAwaiter) = tuple;
-                        try
-                        {
-                            inAwaiter.GetResult();
-                            inTcs.SetResult(null);
-                        }
-                        catch (Exception ex)
-                        {
-                            inTcs.SetException(ex);
-                        }
+                        inAwaiter.GetResult();
+                        inTcs.SetResult(null);
+                    }
+                    catch (Exception ex)
+                    {
+                        inTcs.SetException(ex);
                     }
                 }, StateTuple.Create(tcs, awaiter));
 
@@ -251,7 +247,7 @@ namespace GodotTasks.Tasks
             public AttachExternalCancellationSource(GDTask task, CancellationToken cancellationToken)
             {
                 this.cancellationToken = cancellationToken;
-                this.tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallbackDelegate, this);
+                tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallbackDelegate, this);
                 RunTask(task).Forget();
             }
 
@@ -301,14 +297,14 @@ namespace GodotTasks.Tasks
 
         private sealed class AttachExternalCancellationSource<T> : IGDTaskSource<T>
         {
-            private CancellationToken cancellationToken;
-            private CancellationTokenRegistration tokenRegistration;
+            private readonly CancellationToken cancellationToken;
+            private readonly CancellationTokenRegistration tokenRegistration;
             private GDTaskCompletionSourceCore<T> core;
 
             public AttachExternalCancellationSource(GDTask<T> task, CancellationToken cancellationToken)
             {
                 this.cancellationToken = cancellationToken;
-                this.tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallback, this);
+                tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallback, this);
                 RunTask(task).Forget();
             }
 
@@ -570,16 +566,14 @@ namespace GodotTasks.Tasks
             {
                 awaiter.SourceOnCompleted(state =>
                 {
-                    using (var t = (StateTuple<GDTask.Awaiter>)state)
+                    using var t = (StateTuple<GDTask.Awaiter>)state;
+                    try
                     {
-                        try
-                        {
-                            t.Item1.GetResult();
-                        }
-                        catch (Exception ex)
-                        {
-                            GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
-                        }
+                        t.Item1.GetResult();
+                    }
+                    catch (Exception ex)
+                    {
+                        GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
                     }
                 }, StateTuple.Create(awaiter));
             }
@@ -640,16 +634,14 @@ namespace GodotTasks.Tasks
             {
                 awaiter.SourceOnCompleted(state =>
                 {
-                    using (var t = (StateTuple<GDTask<T>.Awaiter>)state)
+                    using var t = (StateTuple<GDTask<T>.Awaiter>)state;
+                    try
                     {
-                        try
-                        {
-                            t.Item1.GetResult();
-                        }
-                        catch (Exception ex)
-                        {
-                            GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
-                        }
+                        t.Item1.GetResult();
+                    }
+                    catch (Exception ex)
+                    {
+                        GDTaskExceptionHandler.PublishUnobservedTaskException(ex);
                     }
                 }, StateTuple.Create(awaiter));
             }

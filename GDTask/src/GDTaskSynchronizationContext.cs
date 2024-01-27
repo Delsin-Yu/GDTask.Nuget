@@ -14,7 +14,7 @@ namespace GodotTasks.Tasks
         private const int InitialSize = 16;
 
         private static SpinLock gate = new SpinLock(false);
-        private static bool dequing = false;
+        private static bool dequeuing = false;
 
         private static int actionListCount = 0;
         private static Callback[] actionList = new Callback[InitialSize];
@@ -44,7 +44,7 @@ namespace GodotTasks.Tasks
             {
                 gate.Enter(ref lockTaken);
 
-                if (dequing)
+                if (dequeuing)
                 {
                     // Ensure Capacity
                     if (waitingList.Length == waitingListCount)
@@ -114,7 +114,7 @@ namespace GodotTasks.Tasks
                 {
                     gate.Enter(ref lockTaken);
                     if (actionListCount == 0) return;
-                    dequing = true;
+                    dequeuing = true;
                 }
                 finally
                 {
@@ -134,7 +134,7 @@ namespace GodotTasks.Tasks
                 try
                 {
                     gate.Enter(ref lockTaken);
-                    dequing = false;
+                    dequeuing = false;
 
                     var swapTempActionList = actionList;
 

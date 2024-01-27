@@ -28,7 +28,7 @@ namespace GodotTasks.Tasks.Internal
 
         public void Deconstruct(out T1 item1)
         {
-            item1 = this.Item1;
+            item1 = Item1;
         }
 
         public void Dispose()
@@ -68,8 +68,8 @@ namespace GodotTasks.Tasks.Internal
 
         public void Deconstruct(out T1 item1, out T2 item2)
         {
-            item1 = this.Item1;
-            item2 = this.Item2;
+            item1 = Item1;
+            item2 = Item2;
         }
 
         public void Dispose()
@@ -112,9 +112,9 @@ namespace GodotTasks.Tasks.Internal
 
         public void Deconstruct(out T1 item1, out T2 item2, out T3 item3)
         {
-            item1 = this.Item1;
-            item2 = this.Item2;
-            item3 = this.Item3;
+            item1 = Item1;
+            item2 = Item2;
+            item3 = Item3;
         }
 
         public void Dispose()

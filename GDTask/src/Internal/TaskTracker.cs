@@ -27,34 +27,25 @@ namespace GodotTasks.Tasks
             private static bool enableAutoReload;
             public static bool EnableAutoReload
             {
-                get { return enableAutoReload; }
-                set
-                {
-                    enableAutoReload = value;
-                    //UnityEditor.EditorPrefs.SetBool(EnableAutoReloadKey, value);
-                }
+                get => enableAutoReload;
+                set => enableAutoReload = value;
+                //UnityEditor.EditorPrefs.SetBool(EnableAutoReloadKey, value);
             }
 
             private static bool enableTracking;
             public static bool EnableTracking
             {
-                get { return enableTracking; }
-                set
-                {
-                    enableTracking = value;
-                    //UnityEditor.EditorPrefs.SetBool(EnableTrackingKey, value);
-                }
+                get => enableTracking;
+                set => enableTracking = value;
+                //UnityEditor.EditorPrefs.SetBool(EnableTrackingKey, value);
             }
 
             private static bool enableStackTrace;
             public static bool EnableStackTrace
             {
-                get { return enableStackTrace; }
-                set
-                {
-                    enableStackTrace = value;
-                    //UnityEditor.EditorPrefs.SetBool(EnableStackTraceKey, value);
-                }
+                get => enableStackTrace;
+                set => enableStackTrace = value;
+                //UnityEditor.EditorPrefs.SetBool(EnableStackTraceKey, value);
             }
         }
 

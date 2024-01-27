@@ -434,7 +434,7 @@ namespace GodotTasks.Tasks
                     return false;
                 }
 
-                U nextValue = default(U);
+                U nextValue;
                 try
                 {
                     nextValue = monitorFunction(target);
@@ -556,7 +556,7 @@ namespace GodotTasks.Tasks
                     return false;
                 }
 
-                U nextValue = default(U);
+                U nextValue;
                 try
                 {
                     nextValue = monitorFunction(t);

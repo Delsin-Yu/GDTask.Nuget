@@ -17,7 +17,7 @@ namespace GodotTasks.Tasks
         {
             if (tasks.Length == 0)
             {
-                return GDTask.FromResult(Array.Empty<T>());
+                return FromResult(Array.Empty<T>());
             }
 
             return new GDTask<T[]>(new WhenAllPromise<T>(tasks, tasks.Length), 0);
@@ -26,11 +26,9 @@ namespace GodotTasks.Tasks
         /// <inheritdoc cref="WhenAll{T}(GDTask{T}[])"/>
         public static GDTask<T[]> WhenAll<T>(IEnumerable<GDTask<T>> tasks)
         {
-            using (var span = ArrayPoolUtil.Materialize(tasks))
-            {
-                var promise = new WhenAllPromise<T>(span.Array, span.Length); // consumed array in constructor.
-                return new GDTask<T[]>(promise, 0);
-            }
+            using var span = ArrayPoolUtil.Materialize(tasks);
+            var promise = new WhenAllPromise<T>(span.Array, span.Length); // consumed array in constructor.
+            return new GDTask<T[]>(promise, 0);
         }
 
         /// <summary>
@@ -42,7 +40,7 @@ namespace GodotTasks.Tasks
         {
             if (tasks.Length == 0)
             {
-                return GDTask.CompletedTask;
+                return CompletedTask;
             }
 
             return new GDTask(new WhenAllPromise(tasks, tasks.Length), 0);
@@ -51,16 +49,14 @@ namespace GodotTasks.Tasks
         /// <inheritdoc cref="WhenAll(GDTask[])"/>
         public static GDTask WhenAll(IEnumerable<GDTask> tasks)
         {
-            using (var span = ArrayPoolUtil.Materialize(tasks))
-            {
-                var promise = new WhenAllPromise(span.Array, span.Length); // consumed array in constructor.
-                return new GDTask(promise, 0);
-            }
+            using var span = ArrayPoolUtil.Materialize(tasks);
+            var promise = new WhenAllPromise(span.Array, span.Length); // consumed array in constructor.
+            return new GDTask(promise, 0);
         }
 
         private sealed class WhenAllPromise<T> : IGDTaskSource<T[]>
         {
-            private T[] result;
+            private readonly T[] result;
             private int completeCount;
             private GDTaskCompletionSourceCore<T[]> core; // don't reset(called after GetResult, will invoke TrySetException.)
 
@@ -68,16 +64,16 @@ namespace GodotTasks.Tasks
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
-                this.completeCount = 0;
+                completeCount = 0;
 
                 if (tasksLength == 0)
                 {
-                    this.result = Array.Empty<T>();
+                    result = Array.Empty<T>();
                     core.TrySetResult(result);
                     return;
                 }
 
-                this.result = new T[tasksLength];
+                result = new T[tasksLength];
 
                 for (int i = 0; i < tasksLength; i++)
                 {
@@ -100,10 +96,8 @@ namespace GodotTasks.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAllPromise<T>, GDTask<T>.Awaiter, int>)state)
-                            {
-                                TryInvokeContinuation(t.Item1, t.Item2, t.Item3);
-                            }
+                            using var t = (StateTuple<WhenAllPromise<T>, GDTask<T>.Awaiter, int>)state;
+                            TryInvokeContinuation(t.Item1, t.Item2, t.Item3);
                         }, StateTuple.Create(this, awaiter, i));
                     }
                 }
@@ -158,7 +152,7 @@ namespace GodotTasks.Tasks
         private sealed class WhenAllPromise : IGDTaskSource
         {
             private int completeCount;
-            private int tasksLength;
+            private readonly int tasksLength;
             private GDTaskCompletionSourceCore<AsyncUnit> core; // don't reset(called after GetResult, will invoke TrySetException.)
 
             public WhenAllPromise(GDTask[] tasks, int tasksLength)
@@ -166,7 +160,7 @@ namespace GodotTasks.Tasks
                 TaskTracker.TrackActiveTask(this, 3);
 
                 this.tasksLength = tasksLength;
-                this.completeCount = 0;
+                completeCount = 0;
 
                 if (tasksLength == 0)
                 {
@@ -176,7 +170,7 @@ namespace GodotTasks.Tasks
 
                 for (int i = 0; i < tasksLength; i++)
                 {
-                    GDTask.Awaiter awaiter;
+                    Awaiter awaiter;
                     try
                     {
                         awaiter = tasks[i].GetAwaiter();
@@ -195,16 +189,14 @@ namespace GodotTasks.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAllPromise, GDTask.Awaiter>)state)
-                            {
-                                TryInvokeContinuation(t.Item1, t.Item2);
-                            }
+                            using var t = (StateTuple<WhenAllPromise, Awaiter>)state;
+                            TryInvokeContinuation(t.Item1, t.Item2);
                         }, StateTuple.Create(this, awaiter));
                     }
                 }
             }
 
-            private static void TryInvokeContinuation(WhenAllPromise self, in GDTask.Awaiter awaiter)
+            private static void TryInvokeContinuation(WhenAllPromise self, in Awaiter awaiter)
             {
                 try
                 {
