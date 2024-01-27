@@ -56,7 +56,7 @@ public class GDTaskTest_Extensions_Node
         var node = new Node { Name = nodeName };
         var root = ((SceneTree)Engine.GetMainLoop()).Root;
         GD.Print($"CallDeferred: AddChild");
-        root.CallDeferred(Window.MethodName.AddChild, node);
+        root.CallDeferred(Node.MethodName.AddChild, node);
         return node;
     }
 }
