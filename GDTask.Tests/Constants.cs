@@ -28,11 +28,21 @@ internal static class Constants
         throw new ExpectedException();
     }
 
-    internal static GDTask Delay(CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTime, cancellationToken: cancellationToken ?? CancellationToken.None);
+    internal static GDTask DelayRealtime(int multiplier = 1, CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan * multiplier, DelayType.Realtime, cancellationToken: cancellationToken ?? CancellationToken.None);
+    internal static GDTask Delay(CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan, cancellationToken: cancellationToken ?? CancellationToken.None);
 
-    internal static GDTask<int> DelayWithReturn(CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTime, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
+    internal static GDTask DelayRealtimeWithReturn(int multiplier = 1, CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan * multiplier, DelayType.Realtime, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
+    internal static GDTask<int> DelayWithReturn(CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
 
-    public static CancellationToken CreateCanceledToken() => new(true);
+    internal static Node CreateTestNode(string nodeName)
+    {
+        var node = new Node { Name = nodeName };
+        var root = ((SceneTree)Engine.GetMainLoop()).Root;
+        root.CallDeferred(Node.MethodName.AddChild, node);
+        return node;
+    }
+    
+    internal static CancellationToken CreateCanceledToken() => new(true);
 }
 
 internal readonly struct ScopedStopwatch : IDisposable
