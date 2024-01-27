@@ -68,7 +68,6 @@ namespace GodotTask.Tasks
             {
                 if (s_Global != null) return s_Global;
 
-                SynchronizationContext.SetSynchronizationContext(new GDTaskSynchronizationContext());
                 var newInstance = new GDTaskPlayerLoopRunner();
                 newInstance.Initialize();
                 var root = ((SceneTree)Engine.GetMainLoop()).Root;
@@ -136,7 +135,6 @@ namespace GodotTask.Tasks
         {
             yielders[(int)PlayerLoopTiming.Process].Run();
             runners[(int)PlayerLoopTiming.Process].Run();
-            GDTaskSynchronizationContext.Run();
         }
 
         public override void _PhysicsProcess(double delta)
