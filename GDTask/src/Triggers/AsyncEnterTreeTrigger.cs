@@ -41,6 +41,7 @@ namespace Fractural.Tasks.Triggers
             base._EnterTree();
             RaiseEvent(AsyncUnit.Default);
         }
+        
         public GDTask OnEnterTreeAsync()
         {
             if (calledEnterTree)

@@ -115,7 +115,13 @@ public class GDTaskTest_Observable
     {
         protected override void UpdateValueInternal(int newValue)
         {
+            var invocationQueue = new Queue<IObserver<int>>();
             foreach (var observer in _observers)
+            {
+                invocationQueue.Enqueue(observer);
+            }
+            _observers.Clear();
+            while (invocationQueue.TryDequeue(out var observer))
             {
                 observer.OnNext(newValue);
             }
@@ -126,12 +132,18 @@ public class GDTaskTest_Observable
     {
         protected override void UpdateValueInternal(int newValue)
         {
+            var invocationQueue = new Queue<IObserver<int>>();
             foreach (var observer in _observers)
+            {
+                invocationQueue.Enqueue(observer);
+            }
+            _observers.Clear();
+            while (invocationQueue.TryDequeue(out var observer))
             {
                 observer.OnNext(newValue * 2);
                 observer.OnNext(newValue);
                 observer.OnCompleted();
-            } 
+            }
         }
     }
     
