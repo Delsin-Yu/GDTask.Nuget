@@ -15,7 +15,7 @@
     <Title>GDTask</Title>
     <Version>1.0.0</Version>
     <Description />
-    <Authors>Fractural</Authors>
+    <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
 
     <PackageId>GDTask</PackageId>
     <PackageReleaseNotes>GDTask release.</PackageReleaseNotes>
@@ -25,7 +25,7 @@
     <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
 
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/Fractural/GDTask</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Delsin-Yu/GDTask.Nuget</RepositoryUrl>
     
     <GodotDisabledSourceGenerators>GodotPluginsInitializer</GodotDisabledSourceGenerators>
     <GodotDisabledSourceGenerators>ScriptPathAttribute</GodotDisabledSourceGenerators>

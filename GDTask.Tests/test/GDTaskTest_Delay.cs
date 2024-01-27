@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
-using Godot;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global

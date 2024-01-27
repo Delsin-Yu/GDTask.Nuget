@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using GodotTask.Tasks.Triggers;
 using Godot;
 
 namespace GodotTask.Tasks.Triggers

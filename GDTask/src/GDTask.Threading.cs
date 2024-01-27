@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 using GodotTask.Tasks.Internal;
 
 namespace GodotTask.Tasks

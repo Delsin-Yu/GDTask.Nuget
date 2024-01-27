@@ -1,9 +1,6 @@
-﻿using GodotTask.Tasks.Internal;
-using System;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Runtime.ExceptionServices;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace GodotTask.Tasks
 {
