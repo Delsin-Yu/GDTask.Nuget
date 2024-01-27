@@ -32,9 +32,15 @@ namespace Fractural.Tasks.Triggers
         /// <returns></returns>
         GDTask OnEnterTreeAsync();
     }
-    
+
     internal sealed partial class AsyncEnterTreeTrigger : AsyncTriggerBase<AsyncUnit>, IAsyncEnterTreeHandler
     {
+
+        public override void _EnterTree()
+        {
+            base._EnterTree();
+            RaiseEvent(AsyncUnit.Default);
+        }
         public GDTask OnEnterTreeAsync()
         {
             if (calledEnterTree)
@@ -46,4 +52,3 @@ namespace Fractural.Tasks.Triggers
         }
     }
 }
-
