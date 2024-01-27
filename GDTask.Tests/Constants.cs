@@ -4,7 +4,7 @@ using System.Threading;
 using GdUnit4;
 using Godot;
 
-namespace Fractural.Tasks.Tests;
+namespace GodotTasks.Tasks.Tests;
 
 internal static class Constants
 {

@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Fractural.Tasks.CompilerServices
+namespace GodotTasks.Tasks.CompilerServices
 {
     [StructLayout(LayoutKind.Auto)]
     public struct AsyncGDTaskVoidMethodBuilder

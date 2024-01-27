@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using GdUnit4;
 using GdUnit4.Exceptions;
 
-namespace Fractural.Tasks.Tests;
+namespace GodotTasks.Tasks.Tests;
 
 [TestSuite]
 public class GDTaskTest_CancellationTokenExtensions

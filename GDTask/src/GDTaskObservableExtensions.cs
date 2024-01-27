@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.ExceptionServices;
 using System.Threading;
-using Fractural.Tasks.Internal;
+using GodotTasks.Tasks.Internal;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     /// <summary>
     /// Provides extensions methods for <see cref="GDTask"/> on <see cref="IObservable{T}"/> related use cases.
@@ -306,7 +306,7 @@ namespace Fractural.Tasks
     }
 }
 
-namespace Fractural.Tasks.Internal
+namespace GodotTasks.Tasks.Internal
 {
     // Bridges for Rx.
 

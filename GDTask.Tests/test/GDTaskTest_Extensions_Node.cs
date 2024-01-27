@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using Fractural.Tasks.Triggers;
+using GodotTasks.Tasks.Triggers;
 using GdUnit4;
 using Godot;
 
-namespace Fractural.Tasks.Tests;
+namespace GodotTasks.Tasks.Tests;
 
 public class GDTaskTest_Extensions_Node
 {

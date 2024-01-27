@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace Fractural.Tasks.Internal
+namespace GodotTasks.Tasks.Internal
 {
     internal static class GodotEqualityComparer
     {

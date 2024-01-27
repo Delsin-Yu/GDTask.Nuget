@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using GdUnit4;
 
-namespace Fractural.Tasks.Tests;
+namespace GodotTasks.Tasks.Tests;
 
 public class GDTaskTest_CancellationTokenEqualityComparer
 {

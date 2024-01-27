@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace Fractural.Tasks.Internal
+namespace GodotTasks.Tasks.Internal
 {
     // optimized version of Standard Queue<T>.
     internal class MinimumQueue<T>

@@ -3,9 +3,9 @@ using System.Collections;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Fractural.Tasks.Internal;
+using GodotTasks.Tasks.Internal;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     /// <summary>
     /// Provides extensions methods for <see cref="GDTask"/>.
@@ -585,7 +585,7 @@ namespace Fractural.Tasks
             }
         }
 
-        /// <inheritdoc cref="Forget(Fractural.Tasks.GDTask)"/>
+        /// <inheritdoc cref="Forget(GDTask)"/>
         public static void Forget(this GDTask task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread = true)
         {
             if (exceptionHandler == null)
@@ -621,7 +621,7 @@ namespace Fractural.Tasks
             }
         }
 
-        /// <inheritdoc cref="Forget(Fractural.Tasks.GDTask)"/>
+        /// <inheritdoc cref="Forget(GDTask)"/>
         public static void Forget<T>(this GDTask<T> task)
         {
             var awaiter = task.GetAwaiter();
@@ -655,7 +655,7 @@ namespace Fractural.Tasks
             }
         }
 
-        /// <inheritdoc cref="Forget(Fractural.Tasks.GDTask)"/>
+        /// <inheritdoc cref="Forget(GDTask)"/>
         public static void Forget<T>(this GDTask<T> task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread = true)
         {
             if (exceptionHandler == null)
@@ -699,46 +699,46 @@ namespace Fractural.Tasks
             continuationFunction(await task);
         }
 
-        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
         public static async GDTask ContinueWith<T>(this GDTask<T> task, Func<T, GDTask> continuationFunction)
         {
             await continuationFunction(await task);
         }
 
-        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
         public static async GDTask<TReturn> ContinueWith<T, TReturn>(this GDTask<T> task, Func<T, TReturn> continuationFunction)
         {
             return continuationFunction(await task);
         }
 
-        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
         public static async GDTask<TReturn> ContinueWith<T, TReturn>(this GDTask<T> task, Func<T, GDTask<TReturn>> continuationFunction)
         {
             return await continuationFunction(await task);
         }
 
-        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
         public static async GDTask ContinueWith(this GDTask task, Action continuationFunction)
         {
             await task;
             continuationFunction();
         }
 
-        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
         public static async GDTask ContinueWith(this GDTask task, Func<GDTask> continuationFunction)
         {
             await task;
             await continuationFunction();
         }
 
-        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
         public static async GDTask<T> ContinueWith<T>(this GDTask task, Func<T> continuationFunction)
         {
             await task;
             return continuationFunction();
         }
 
-        /// <inheritdoc cref="ContinueWith{T}(Fractural.Tasks.GDTask{T},System.Action{T})"/>
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
         public static async GDTask<T> ContinueWith<T>(this GDTask task, Func<GDTask<T>> continuationFunction)
         {
             await task;
@@ -753,55 +753,55 @@ namespace Fractural.Tasks
             return await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
         public static async GDTask Unwrap(this GDTask<GDTask> task)
         {
             await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
         public static async GDTask<T> Unwrap<T>(this Task<GDTask<T>> task)
         {
             return await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
         public static async GDTask<T> Unwrap<T>(this Task<GDTask<T>> task, bool continueOnCapturedContext)
         {
             return await await task.ConfigureAwait(continueOnCapturedContext);
         }
 
-        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
         public static async GDTask Unwrap(this Task<GDTask> task)
         {
             await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
         public static async GDTask Unwrap(this Task<GDTask> task, bool continueOnCapturedContext)
         {
             await await task.ConfigureAwait(continueOnCapturedContext);
         }
 
-        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
         public static async GDTask<T> Unwrap<T>(this GDTask<Task<T>> task)
         {
             return await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
         public static async GDTask<T> Unwrap<T>(this GDTask<Task<T>> task, bool continueOnCapturedContext)
         {
             return await (await task).ConfigureAwait(continueOnCapturedContext);
         }
 
-        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
         public static async GDTask Unwrap(this GDTask<Task> task)
         {
             await await task;
         }
 
-        /// <inheritdoc cref="Unwrap{T}(Fractural.Tasks.GDTask{Fractural.Tasks.GDTask{T}})"/>
+        /// <inheritdoc cref="Unwrap{T}(GDTask{T})"/>
         public static async GDTask Unwrap(this GDTask<Task> task, bool continueOnCapturedContext)
         {
             await (await task).ConfigureAwait(continueOnCapturedContext);

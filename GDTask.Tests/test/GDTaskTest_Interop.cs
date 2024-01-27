@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using GdUnit4;
 
-namespace Fractural.Tasks.Tests;
+namespace GodotTasks.Tasks.Tests;
 
 [TestSuite]
 public class GDTaskTest_Interop

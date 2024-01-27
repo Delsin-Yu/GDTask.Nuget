@@ -2,7 +2,7 @@
 using System.Threading;
 using Godot;
 
-namespace Fractural.Tasks.Triggers
+namespace GodotTasks.Tasks.Triggers
 {
     internal abstract partial class AsyncTriggerBase<T> : Node
     {

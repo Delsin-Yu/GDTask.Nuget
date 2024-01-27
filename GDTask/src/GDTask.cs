@@ -1,12 +1,12 @@
-using Fractural.Tasks.CompilerServices;
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using GodotTasks.Tasks.CompilerServices;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     internal static class AwaiterActions
     {

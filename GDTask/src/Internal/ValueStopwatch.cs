@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Fractural.Tasks.Internal
+namespace GodotTasks.Tasks.Internal
 {
     internal readonly struct ValueStopwatch
     {

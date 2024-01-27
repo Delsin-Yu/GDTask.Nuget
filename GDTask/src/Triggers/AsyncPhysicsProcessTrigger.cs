@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Fractural.Tasks.Triggers
+namespace GodotTasks.Tasks.Triggers
 {
     
     public static partial class AsyncTriggerExtensions

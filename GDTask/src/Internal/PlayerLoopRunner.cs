@@ -2,7 +2,7 @@
 using Godot;
 using System;
 
-namespace Fractural.Tasks.Internal
+namespace GodotTasks.Tasks.Internal
 {
     internal sealed class PlayerLoopRunner
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Fractural.Tasks.Internal;
+using GodotTasks.Tasks.Internal;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     public partial struct GDTask
     {

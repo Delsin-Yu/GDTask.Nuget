@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Fractural.Tasks.Internal
+namespace GodotTasks.Tasks.Internal
 {
     // Add, Remove, Enumerate with sweep. All operations are thread safe(in spinlock).
     internal class WeakDictionary<TKey, TValue>

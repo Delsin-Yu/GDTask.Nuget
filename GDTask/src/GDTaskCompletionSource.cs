@@ -5,9 +5,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Fractural.Tasks.Internal;
+using GodotTasks.Tasks.Internal;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     internal interface IResolvePromise
     {

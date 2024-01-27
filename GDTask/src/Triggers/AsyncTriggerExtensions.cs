@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
-using Fractural.Tasks.Triggers;
+using GodotTasks.Tasks.Triggers;
 using Godot;
 
-namespace Fractural.Tasks.Triggers
+namespace GodotTasks.Tasks.Triggers
 {
     public static partial class AsyncTriggerExtensions
     {

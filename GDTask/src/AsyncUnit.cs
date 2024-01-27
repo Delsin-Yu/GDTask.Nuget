@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     public readonly struct AsyncUnit : IEquatable<AsyncUnit>
     {

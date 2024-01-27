@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     public partial struct GDTask
     {

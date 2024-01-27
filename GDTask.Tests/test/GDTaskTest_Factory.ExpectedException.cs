@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fractural.Tasks.Tests;
+namespace GodotTasks.Tasks.Tests;
 
 public class ExpectedException : Exception
 {

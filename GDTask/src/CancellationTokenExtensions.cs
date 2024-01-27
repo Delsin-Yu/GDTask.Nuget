@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     /// <summary>
     /// Provides extensions methods for <see cref="GDTask"/> on <see cref="CancellationToken"/> related use cases.

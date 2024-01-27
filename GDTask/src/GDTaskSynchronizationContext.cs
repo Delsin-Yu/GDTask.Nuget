@@ -3,7 +3,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     /// <summary>
     /// Provides the functionality for propagating a synchronization context in <see cref="GDTask"/> synchronization models.

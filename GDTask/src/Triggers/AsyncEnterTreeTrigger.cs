@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using Godot;
 
-namespace Fractural.Tasks.Triggers
+namespace GodotTasks.Tasks.Triggers
 {
     /// Provides async extensions methods for <see cref="Node"/>.
     public static partial class AsyncTriggerExtensions

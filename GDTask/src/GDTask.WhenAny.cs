@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Fractural.Tasks.Internal;
+using GodotTasks.Tasks.Internal;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     public partial struct GDTask
     {
@@ -17,13 +17,13 @@ namespace Fractural.Tasks
             return new GDTask<(bool, T)>(new WhenAnyLRPromise<T>(leftTask, rightTask), 0);
         }
 
-        /// <inheritdoc cref="WhenAny{T}(Fractural.Tasks.GDTask{T},Fractural.Tasks.GDTask)"/>
+        /// <inheritdoc cref="WhenAny{T}(GDTask{T},GDTask)"/>
         public static GDTask<(int winArgumentIndex, T result)> WhenAny<T>(params GDTask<T>[] tasks)
         {
             return new GDTask<(int, T)>(new WhenAnyPromise<T>(tasks, tasks.Length), 0);
         }
 
-        /// <inheritdoc cref="WhenAny{T}(Fractural.Tasks.GDTask{T},Fractural.Tasks.GDTask)"/>
+        /// <inheritdoc cref="WhenAny{T}(GDTask{T},GDTask)"/>
         public static GDTask<(int winArgumentIndex, T result)> WhenAny<T>(IEnumerable<GDTask<T>> tasks)
         {
             using (var span = ArrayPoolUtil.Materialize(tasks))
@@ -41,7 +41,7 @@ namespace Fractural.Tasks
             return new GDTask<int>(new WhenAnyPromise(tasks, tasks.Length), 0);
         }
 
-        /// <inheritdoc cref="WhenAny(Fractural.Tasks.GDTask[])"/>
+        /// <inheritdoc cref="WhenAny(GDTask[])"/>
         public static GDTask<int> WhenAny(IEnumerable<GDTask> tasks)
         {
             using (var span = ArrayPoolUtil.Materialize(tasks))

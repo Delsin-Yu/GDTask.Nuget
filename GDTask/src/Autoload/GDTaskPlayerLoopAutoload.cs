@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Fractural.Tasks.Internal;
 using Godot;
+using GodotTasks.Tasks.Internal;
 
 [assembly: InternalsVisibleTo("GDTask.Tests")]
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     /// <summary>
     /// Indicates one of the functions from the player loop.

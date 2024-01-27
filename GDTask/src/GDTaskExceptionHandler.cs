@@ -2,7 +2,7 @@
 using System.Threading;
 using Godot;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
 
     /// <summary>

@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System;
-using Fractural.Tasks.Internal;
 using Godot;
+using GodotTasks.Tasks.Internal;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     internal abstract class PlayerLoopTimer : IDisposable, IPlayerLoopItem
     {

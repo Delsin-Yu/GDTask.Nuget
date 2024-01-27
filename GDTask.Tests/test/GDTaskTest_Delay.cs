@@ -8,7 +8,7 @@ using Godot;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
-namespace Fractural.Tasks.Tests;
+namespace GodotTasks.Tasks.Tests;
 
 [TestSuite]
 public class GDTaskTest_Delay

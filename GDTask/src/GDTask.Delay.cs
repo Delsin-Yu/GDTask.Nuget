@@ -1,11 +1,11 @@
-﻿using Fractural.Tasks.Internal;
-using System;
+﻿using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Godot;
+using GodotTasks.Tasks.Internal;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     /// <summary>
     /// Indicates the time provider used for Delaying

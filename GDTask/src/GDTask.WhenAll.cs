@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Fractural.Tasks.Internal;
+using GodotTasks.Tasks.Internal;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     public partial struct GDTask
     {
@@ -23,7 +23,7 @@ namespace Fractural.Tasks
             return new GDTask<T[]>(new WhenAllPromise<T>(tasks, tasks.Length), 0);
         }
 
-        /// <inheritdoc cref="WhenAll{T}(Fractural.Tasks.GDTask{T}[])"/>
+        /// <inheritdoc cref="WhenAll{T}(GDTask{T}[])"/>
         public static GDTask<T[]> WhenAll<T>(IEnumerable<GDTask<T>> tasks)
         {
             using (var span = ArrayPoolUtil.Materialize(tasks))
@@ -48,7 +48,7 @@ namespace Fractural.Tasks
             return new GDTask(new WhenAllPromise(tasks, tasks.Length), 0);
         }
 
-        /// <inheritdoc cref="WhenAll(Fractural.Tasks.GDTask[])"/>
+        /// <inheritdoc cref="WhenAll(GDTask[])"/>
         public static GDTask WhenAll(IEnumerable<GDTask> tasks)
         {
             using (var span = ArrayPoolUtil.Materialize(tasks))

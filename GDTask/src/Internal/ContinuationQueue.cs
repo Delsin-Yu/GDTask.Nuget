@@ -2,7 +2,7 @@
 using System;
 using System.Threading;
 
-namespace Fractural.Tasks.Internal
+namespace GodotTasks.Tasks.Internal
 {
     internal sealed class ContinuationQueue
     {

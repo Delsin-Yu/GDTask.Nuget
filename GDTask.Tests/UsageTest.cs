@@ -4,11 +4,11 @@ using System.Linq;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
-using Fractural.Tasks.Triggers;
+using GodotTasks.Tasks.Triggers;
 using Godot;
 using Environment = System.Environment;
 
-namespace Fractural.Tasks.Tests;
+namespace GodotTasks.Tasks.Tests;
 
 public class UsageTest
 {

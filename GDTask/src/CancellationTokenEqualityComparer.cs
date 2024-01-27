@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
     /// <summary>
     /// <see cref="System.Collections.Generic.IEqualityComparer{CancellationToken}" /> to support the comparison of <see cref="CancellationToken"/> for equality.

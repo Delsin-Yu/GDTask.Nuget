@@ -1,10 +1,10 @@
 ﻿using System.Threading;
-using Fractural.Tasks.Triggers;
+using GodotTasks.Tasks.Triggers;
 using System;
-using Fractural.Tasks.Internal;
+using GodotTasks.Tasks.Internal;
 using Godot;
 
-namespace Fractural.Tasks
+namespace GodotTasks.Tasks
 {
 
     /// <summary>
@@ -18,7 +18,7 @@ namespace Fractural.Tasks
             cts.Cancel();
         }
 
-        /// <inheritdoc cref="CancelAfterSlim(System.Threading.CancellationTokenSource,int,Fractural.Tasks.DelayType,Fractural.Tasks.PlayerLoopTiming)"/>
+        /// <inheritdoc cref="CancelAfterSlim(System.Threading.CancellationTokenSource,int,DelayType,PlayerLoopTiming)"/>
         public static IDisposable CancelAfterSlim(this CancellationTokenSource cts, int millisecondsDelay, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process)
         {
             return CancelAfterSlim(cts, TimeSpan.FromMilliseconds(millisecondsDelay), delayType, delayTiming);
