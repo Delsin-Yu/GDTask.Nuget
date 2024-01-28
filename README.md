@@ -12,7 +12,6 @@
 ### Efficient allocation free async/await integration for Godot
 
 - Struct based GDTask\<T\> and custom AsyncMethodBuilder to achieve zero allocation.
-- PlayerLoop based task(GDTask.Yield, GDTask.Delay, GDTask.DelayFrame, etc..).
 - Provides awaitable functionality for certain Engine event functions.
 - Runs completely on Godot PlayerLoop so doesn't use threads.
 - Highly compatible behaviour with Task/ValueTask/IValueTaskSource.
