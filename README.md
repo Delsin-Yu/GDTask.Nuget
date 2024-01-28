@@ -10,8 +10,9 @@
 > Clarification: Contents in the abstract section is mostly migrated from the [Cysharp's UniTask library for Unity](https://github.com/Cysharp/UniTask)
 
 ### Efficient allocation free async/await integration for Godot
-- Struct based GDTask<T> and custom AsyncMethodBuilder to achieve zero allocation.
-- PlayerLoop based task(GDTask.Yield, GDTask.Delay, GDT~~~~ask.DelayFrame, etc..).
+
+- Struct based GDTask\<T\> and custom AsyncMethodBuilder to achieve zero allocation.
+- PlayerLoop based task(GDTask.Yield, GDTask.Delay, GDTask.DelayFrame, etc..).
 - Provides awaitable functionality for certain Engine event functions.
 - Runs completely on Godot PlayerLoop so doesn't use threads.
 - Highly compatible behaviour with Task/ValueTask/IValueTaskSource.
@@ -21,6 +22,7 @@
 - Based on the [task-like custom async method builder feature.](https://github.com/dotnet/roslyn/blob/main/docs/features/task-types.md) of C# 7.0, GDTask does not use [Threads](https://learn.microsoft.com/en-us/dotnet/standard/threading/using-threads-and-threading), [SynchronizationContext](https://learn.microsoft.com/en-us/dotnet/api/system.threading.synchronizationcontext), or [ExecutionContext](https://learn.microsoft.com/en-us/dotnet/api/system.threading.executioncontext). Instead, it dispatches the asynchronous tasks onto a standalone singleton node [GDTaskPlayerLoopRunner](https://github.com/Delsin-Yu/GDTask.Nuget/blob/main/GDTask/src/Autoload/GDTaskPlayerLoopRunner.cs), which results in better performance, and lower allocation.
 
 ## Installation via Nuget
+
 For .Net CLI
 > dotnet add package GDTask
 
@@ -28,7 +30,9 @@ For Package Manager Console:
 > NuGet\Install-Package GDTask
 
 ## Basic API usage
+
 For more detailed usage, see **[Unit Tests](https://github.com/Delsin-Yu/GDTask.Nuget/tree/main/GDTask.Tests/test)**.
+
 ```csharp
 using GodotTasks.Tasks;
 
@@ -142,6 +146,7 @@ public async GDTask ApiUsage()
     await node.OnPredeleteAsync();
 }
 ```
+
 ## Compare with Standard .Net Task API
 
 > Clarification: Contents in the compare section is mostly migrated from the [Cysharp's UniTask library for Unity](https://github.com/Cysharp/UniTask)
