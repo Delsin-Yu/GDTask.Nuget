@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>12</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Nullable>disable</Nullable>
     <CopyAllFiles>true</CopyAllFiles>
@@ -13,48 +13,34 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <Title>GDTask</Title>
-    <Version>1.0.0</Version>
-    <Description />
-    <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
-
     <PackageId>GDTask</PackageId>
-    <PackageReleaseNotes>GDTask release.</PackageReleaseNotes>
-    <PackageTags />
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageVersion>0.0.1</PackageVersion>
+    <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
+    <Description>Provides an efficient async/await integration to Godot 4.x</Description>
     <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
-
-    <RepositoryType>git</RepositoryType>
+    <PackageIcon>Logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Delsin-Yu/GDTask.Nuget</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Godot GDTask GodotTask Task Async</PackageTags>
+    <PackageReleaseNotes>The initial release of the GDTask nuget package.</PackageReleaseNotes>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     
-    <GodotDisabledSourceGenerators>GodotPluginsInitializer</GodotDisabledSourceGenerators>
-    <GodotDisabledSourceGenerators>ScriptPathAttribute</GodotDisabledSourceGenerators>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    
+    <IsGodotToolsProject>true</IsGodotToolsProject>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="../Logo.png" Pack="true" PackagePath="\" />
     <None Include="../README.md" Pack="true" PackagePath="\" />
     <None Include="../LICENSE.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Dependencies go here. -->
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_3_0))" Include="GodotSharp" Version="4.3.0"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_2_1))" Include="GodotSharp" Version="4.2.1"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_2_0))" Include="GodotSharp" Version="4.2.0"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_1_3))" Include="GodotSharp" Version="4.1.3"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_1_2))" Include="GodotSharp" Version="4.1.2"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_1_1))" Include="GodotSharp" Version="4.1.1"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_1_0))" Include="GodotSharp" Version="4.1.0"/>
-    
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_3_0))" Include="Godot.SourceGenerators" Version="4.3.0"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_2_1))" Include="Godot.SourceGenerators" Version="4.2.1"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_2_0))" Include="Godot.SourceGenerators" Version="4.2.0"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_1_3))" Include="Godot.SourceGenerators" Version="4.1.3"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_1_2))" Include="Godot.SourceGenerators" Version="4.1.2"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_1_1))" Include="Godot.SourceGenerators" Version="4.1.1"/>
-    <PackageReference Condition="$(DefineConstants.Contains(GODOT4_1_0))" Include="Godot.SourceGenerators" Version="4.1.0"/>
-    
-    <PackageReference Include="GodotSharp" Version="4.*"/>
-    <PackageReference Include="Godot.SourceGenerators" Version="4.*"/>
+    <PackageReference Include="GodotSharp" Version="4.0.0"/>
+    <PackageReference Include="Godot.SourceGenerators" Version="4.0.0"/>
   </ItemGroup>
 </Project>
