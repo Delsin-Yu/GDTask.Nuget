@@ -69,11 +69,15 @@ namespace GodotTask.Tasks
                 if (s_Global != null) return s_Global;
 
                 var newInstance = new GDTaskPlayerLoopRunner();
-                newInstance.Initialize();
+                Dispatcher.SynchronizationContext.Send(instance =>
+                {
+                    var runner = ((GDTaskPlayerLoopRunner)instance)!;
+                    runner.Initialize();
+                }, newInstance);
                 var root = ((SceneTree)Engine.GetMainLoop()).Root;
                 root.CallDeferred(Node.MethodName.AddChild, newInstance);
                 root.CallDeferred(Node.MethodName.MoveChild, newInstance, 0);
-                newInstance.Name = "GDTaskPlayerLoopAutoload";
+                newInstance.Name = "GDTaskPlayerLoopRunner";
                 s_Global = newInstance;
 
                 return s_Global;
