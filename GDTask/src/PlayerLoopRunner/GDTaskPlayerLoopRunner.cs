@@ -75,8 +75,7 @@ namespace GodotTask.Tasks
                     runner.Initialize();
                 }, newInstance);
                 var root = ((SceneTree)Engine.GetMainLoop()).Root;
-                root.CallDeferred(Node.MethodName.AddChild, newInstance);
-                root.CallDeferred(Node.MethodName.MoveChild, newInstance, 0);
+                root.CallDeferred(Node.MethodName.AddChild, newInstance, false, Variant.From(InternalMode.Front));
                 newInstance.Name = "GDTaskPlayerLoopRunner";
                 s_Global = newInstance;
 
