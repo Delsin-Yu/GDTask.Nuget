@@ -1,8 +1,10 @@
 # GDTask.Nuget
+[![GitHub Release](https://img.shields.io/github/v/release/Delsin-Yu/GDTask.Nuget)](https://github.com/Delsin-Yu/GDTask.Nuget/releases/Latest)
 [![NuGet Version](https://img.shields.io/nuget/v/GDTask)](https://www.nuget.org/packages/GDTask)
 ![NuGet Downloads](https://img.shields.io/nuget/dt/GDtask)
 [![Stars](https://img.shields.io/github/stars/Delsin-Yu/GDTask.Nuget?color=brightgreen)](https://github.com/Delsin-Yu/GDTask.Nuget/stargazers)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Delsin-Yu/GDTask.Nuget/blob/master/LICENSE)
+
 - Ported and Tested in Godot 4.2 with .Net module.
 - This is the Nuget Package version based on code from:
   - **[Atlinx's GDTask addon for Godot](https://github.com/Fractural/GDTask)**
@@ -26,10 +28,14 @@
 ## Installation via Nuget
 
 For .Net CLI
-> dotnet add package GDTask
+```
+dotnet add package GDTask
+```
 
 For Package Manager Console:
-> NuGet\Install-Package GDTask
+```
+NuGet\Install-Package GDTask
+```
 
 ## Basic API usage
 
