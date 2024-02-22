@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../GDTask/GDTask.csproj" />
-    <PackageReference Include="gdUnit4.api" Version="4.2.0-rc*" />
+    <PackageReference Include="gdUnit4.api" Version="4.2.0-rc.202402212033" />
     <PackageReference Include="System.Reactive" Version="*" />
   </ItemGroup>
 </Project>
