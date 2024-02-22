@@ -2,7 +2,7 @@
 using System;
 using System.Threading;
 
-namespace GodotTask.Tasks.Internal
+namespace GodotTask.Internal
 {
     internal sealed class ContinuationQueue
     {

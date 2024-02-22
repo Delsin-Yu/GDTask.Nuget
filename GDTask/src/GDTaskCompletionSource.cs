@@ -6,7 +6,7 @@ using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     internal interface IResolvePromise
     {

@@ -2,7 +2,7 @@
 
 using System;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     public readonly struct AsyncUnit : IEquatable<AsyncUnit>
     {

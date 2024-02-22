@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using Godot;
 
-namespace GodotTask.Tasks.Triggers
+namespace GodotTask.Triggers
 {
     public static partial class AsyncTriggerExtensions
     {

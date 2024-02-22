@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     /// <summary>
     /// <see cref="System.Collections.Generic.IEqualityComparer{CancellationToken}" /> to support the comparison of <see cref="CancellationToken"/> for equality.

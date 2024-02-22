@@ -2,9 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Godot;
-using GodotTask.Tasks.Internal;
+using GodotTask.Internal;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     /// <summary>
     /// Indicates the time provider used for Delaying

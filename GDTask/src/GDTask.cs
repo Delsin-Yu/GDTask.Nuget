@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
-using GodotTask.Tasks.CompilerServices;
+using GodotTask.CompilerServices;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     internal static class AwaiterActions
     {

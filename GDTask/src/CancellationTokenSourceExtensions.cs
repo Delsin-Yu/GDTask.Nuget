@@ -1,9 +1,9 @@
 ﻿using System.Threading;
-using GodotTask.Tasks.Triggers;
+using GodotTask.Triggers;
 using System;
 using Godot;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
 
     /// <summary>

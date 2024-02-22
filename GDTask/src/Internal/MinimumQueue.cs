@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace GodotTask.Tasks.Internal
+namespace GodotTask.Internal
 {
     // optimized version of Standard Queue<T>.
     internal class MinimumQueue<T>

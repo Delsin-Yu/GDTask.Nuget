@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Threading;
-using GodotTask.Tasks.Internal;
+using GodotTask.Internal;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     /// <summary>
     /// Provides extensions methods for <see cref="GDTask"/> on <see cref="IObservable{T}"/> related use cases.
@@ -304,7 +304,7 @@ namespace GodotTask.Tasks
     }
 }
 
-namespace GodotTask.Tasks.Internal
+namespace GodotTask.Internal
 {
     // Bridges for Rx.
 

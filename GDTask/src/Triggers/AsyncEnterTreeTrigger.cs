@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace GodotTask.Tasks.Triggers
+namespace GodotTask.Triggers
 {
     /// Provides async extensions methods for <see cref="Node"/>.
     public static partial class AsyncTriggerExtensions

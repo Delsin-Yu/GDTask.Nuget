@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using GodotTask.Tasks.Triggers;
+using GodotTask.Triggers;
 using GdUnit4;
 using Godot;
 
-namespace GodotTask.Tasks.Tests;
+namespace GodotTask.Tests;
 
 public class GDTaskTest_Extensions_Node
 {

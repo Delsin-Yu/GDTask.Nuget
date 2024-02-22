@@ -3,7 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace GodotTask.Tasks.Internal
+namespace GodotTask.Internal
 {
     internal static class ArrayPoolUtil
     {

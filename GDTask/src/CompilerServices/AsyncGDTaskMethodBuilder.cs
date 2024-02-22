@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace GodotTask.Tasks.CompilerServices
+namespace GodotTask.CompilerServices
 {
     [StructLayout(LayoutKind.Auto)]
     public struct AsyncGDTaskMethodBuilder

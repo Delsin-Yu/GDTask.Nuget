@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GodotTask.Tasks.Tests;
+namespace GodotTask.Tests;
 
 public class ExpectedException : Exception
 {

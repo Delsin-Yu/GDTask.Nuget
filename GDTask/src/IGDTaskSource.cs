@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     /// <summary>
     /// Represents the current status of a <see cref="GDTask"/>

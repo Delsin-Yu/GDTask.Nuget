@@ -2,7 +2,7 @@
 using System.Threading;
 using Godot;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     internal interface ITriggerHandler<T>
     {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using GdUnit4;
 
-namespace GodotTask.Tasks.Tests;
+namespace GodotTask.Tests;
 
 [TestSuite]
 public class GDTaskTest_Interop

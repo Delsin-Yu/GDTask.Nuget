@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace GodotTask.Tasks.CompilerServices
+namespace GodotTask.CompilerServices
 {
     internal interface IStateMachineRunner
     {

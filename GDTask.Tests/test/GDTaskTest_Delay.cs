@@ -6,7 +6,7 @@ using GdUnit4;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
-namespace GodotTask.Tasks.Tests;
+namespace GodotTask.Tests;
 
 [TestSuite]
 public class GDTaskTest_Delay

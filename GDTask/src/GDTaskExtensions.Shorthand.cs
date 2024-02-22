@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     public static partial class GDTaskExtensions
     {

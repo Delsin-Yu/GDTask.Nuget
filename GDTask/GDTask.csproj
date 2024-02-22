@@ -14,7 +14,7 @@
 
     <Title>GDTask</Title>
     <PackageId>GDTask</PackageId>
-    <PackageVersion>0.0.3</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
     <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
     <Description>Provides an efficient async/await integration to Godot 4.x</Description>
     <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
@@ -23,7 +23,7 @@
     <RepositoryUrl>https://github.com/Delsin-Yu/GDTask.Nuget</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Godot GDTask GodotTask Task Async</PackageTags>
-    <PackageReleaseNotes>GDTaskPlayerLoopRunner now uses internal mode when adding to the scene tree.</PackageReleaseNotes>
+    <PackageReleaseNotes>Migrate all APIs under `GodotTask.Tasks` namespace to `GodotTask` root namespace.</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     
     <IncludeSymbols>true</IncludeSymbols>

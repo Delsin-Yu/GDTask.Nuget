@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using GdUnit4;
 using GdUnit4.Exceptions;
 
-namespace GodotTask.Tasks.Tests;
+namespace GodotTask.Tests;
 
 [TestSuite]
 public class GDTaskTest_Threading

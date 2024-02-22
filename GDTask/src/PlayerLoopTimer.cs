@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System;
 using Godot;
-using GodotTask.Tasks.Internal;
+using GodotTask.Internal;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     internal abstract class PlayerLoopTimer : IDisposable, IPlayerLoopItem
     {

@@ -2,9 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Threading;
-using GodotTask.Tasks.Internal;
+using GodotTask.Internal;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     public partial struct GDTask
     {

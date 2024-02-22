@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     /// <summary>
     /// Provides extensions methods for <see cref="GDTask"/> on <see cref="CancellationToken"/> related use cases.

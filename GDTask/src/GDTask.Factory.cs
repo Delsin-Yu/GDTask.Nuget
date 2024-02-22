@@ -2,7 +2,7 @@
 using System.Runtime.ExceptionServices;
 using System.Threading;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     public partial struct GDTask
     {
@@ -487,7 +487,7 @@ namespace GodotTask.Tasks
 
     internal static class CompletedTasks
     {
-        public static readonly GDTask<AsyncUnit> AsyncUnit = GDTask.FromResult(Tasks.AsyncUnit.Default);
+        public static readonly GDTask<AsyncUnit> AsyncUnit = GDTask.FromResult(GodotTask.AsyncUnit.Default);
         public static readonly GDTask<bool> True = GDTask.FromResult(true);
         public static readonly GDTask<bool> False = GDTask.FromResult(false);
         public static readonly GDTask<int> Zero = GDTask.FromResult(0);

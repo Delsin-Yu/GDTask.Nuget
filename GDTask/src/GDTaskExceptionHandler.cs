@@ -1,7 +1,7 @@
 ﻿using System;
 using Godot;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
 
     /// <summary>

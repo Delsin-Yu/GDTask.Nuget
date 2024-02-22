@@ -12,7 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace GodotTask.Tasks.Internal
+namespace GodotTask.Internal
 {
     internal static partial class DiagnosticsExtensions
     {

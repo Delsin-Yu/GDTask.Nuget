@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 
-namespace GodotTask.Tasks.Internal
+namespace GodotTask.Internal
 {
     internal static class StateTuple
     {

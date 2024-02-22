@@ -3,9 +3,9 @@
 #pragma warning disable CA1822
 
 using System.Runtime.CompilerServices;
-using GodotTask.Tasks.CompilerServices;
+using GodotTask.CompilerServices;
 
-namespace GodotTask.Tasks
+namespace GodotTask
 {
     [AsyncMethodBuilder(typeof(AsyncGDTaskVoidMethodBuilder))]
     public readonly struct GDTaskVoid

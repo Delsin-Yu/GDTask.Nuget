@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using GodotTask.Tasks.Triggers;
+using GodotTask.Triggers;
 using Godot;
 using Environment = System.Environment;
 
-namespace GodotTask.Tasks.Tests;
+namespace GodotTask.Tests;
 
 public class ApiUsageClass
 {

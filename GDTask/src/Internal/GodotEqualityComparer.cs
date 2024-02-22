@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace GodotTask.Tasks.Internal
+namespace GodotTask.Internal
 {
     internal static class GodotEqualityComparer
     {
