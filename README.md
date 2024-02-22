@@ -1,9 +1,9 @@
 # GDTask.Nuget
-[![GitHub Release](https://img.shields.io/github/v/release/Delsin-Yu/GDTask.Nuget)](https://github.com/Delsin-Yu/GDTask.Nuget/releases/Latest)
+[![GitHub Release](https://img.shields.io/github/v/release/Delsin-Yu/GDTask.Nuget)](https://github.com/Delsin-Yu/GDTask.Nuget/releases/latest)
 [![NuGet Version](https://img.shields.io/nuget/v/GDTask)](https://www.nuget.org/packages/GDTask)
 ![NuGet Downloads](https://img.shields.io/nuget/dt/GDtask)
 [![Stars](https://img.shields.io/github/stars/Delsin-Yu/GDTask.Nuget?color=brightgreen)](https://github.com/Delsin-Yu/GDTask.Nuget/stargazers)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Delsin-Yu/GDTask.Nuget/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Delsin-Yu/GDTask.Nuget/blob/main/LICENSE)
 
 - Ported and Tested in Godot 4.2 with .Net module.
 - This is the Nuget Package version based on code from:
