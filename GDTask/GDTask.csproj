@@ -14,16 +14,16 @@
 
     <Title>GDTask</Title>
     <PackageId>GDTask</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.1.0</PackageVersion>
     <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
-    <Description>Provides an efficient async/await integration to Godot 4.x</Description>
+    <Description>Provides an efficient async/await integration to Godot 4.1+</Description>
     <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
     <PackageIcon>Logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Delsin-Yu/GDTask.Nuget</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Godot GDTask GodotTask Task Async</PackageTags>
-    <PackageReleaseNotes>Migrate all APIs under `GodotTask.Tasks` namespace to `GodotTask` root namespace.</PackageReleaseNotes>
+    <PackageReleaseNotes>Implements `GDTask Tracker` feature, when calling `TaskTracker.ShowTrackerWindow()` in your code base, the GDTask system will create(or reuse) a `GDTask Tracker` window for inspecting / diagnosing (leaked) `GDTasks`.</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     
     <IncludeSymbols>true</IncludeSymbols>
@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GodotSharp" Version="4.0.0"/>
-    <PackageReference Include="Godot.SourceGenerators" Version="4.0.0"/>
+    <PackageReference Include="GodotSharp" Version="4.1.0"/>
+    <PackageReference Include="Godot.SourceGenerators" Version="4.1.0"/>
   </ItemGroup>
 </Project>

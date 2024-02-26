@@ -1,161 +1,72 @@
-﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
+using System.Runtime.CompilerServices;
 using System.Threading;
+using GDTask.Internal;
 using GodotTask.Internal;
 
 namespace GodotTask
 {
     /// <summary>
-    /// TODO: Tracking active tasks
+    /// A conditional component that tracks and logs active tasks.
     /// </summary>
-    public static class TaskTracker
+    public static partial class TaskTracker
     {
-#if DEBUG
+        /// <summary>
+        /// Enable tracking for active tasks.
+        /// </summary>
+        public static bool EnableTracking { get => _enableTracking.Value; set => _enableTracking.Value = value; }
+
+        /// <summary>
+        /// Record StackTrace for tracked tasks.
+        /// </summary>
+        public static bool EnableStackTrace { get => _enableStackTrace.Value; set => _enableStackTrace.Value = value; }
+
+        /// <summary>
+        /// Shows the task tracker window if not already.
+        /// </summary>
+        /// <remarks>
+        /// This also sets <see cref="EnableTracking"/> to true.
+        /// </remarks>
+        public static void ShowTrackerWindow()
+        {
+            EnableTracking = true;
+            TaskTrackerWindow.Launch();
+        }
 
         private static int trackingId = 0;
+        internal static readonly ObservableProperty _enableTracking = new(false);
+        internal static readonly ObservableProperty _enableStackTrace = new(true);
 
-        public const string EnableAutoReloadKey = "GDTaskTrackerWindow_EnableAutoReloadKey";
-        public const string EnableTrackingKey = "GDTaskTrackerWindow_EnableTrackingKey";
-        public const string EnableStackTraceKey = "GDTaskTrackerWindow_EnableStackTraceKey";
+        private static readonly ConditionalWeakTable<IGDTaskSource, TrackingData> tracking = new();
 
-        public static class EditorEnableState
-        {
-            private static bool enableAutoReload;
-            public static bool EnableAutoReload
-            {
-                get => enableAutoReload;
-                set => enableAutoReload = value;
-                //UnityEditor.EditorPrefs.SetBool(EnableAutoReloadKey, value);
-            }
-
-            private static bool enableTracking;
-            public static bool EnableTracking
-            {
-                get => enableTracking;
-                set => enableTracking = value;
-                //UnityEditor.EditorPrefs.SetBool(EnableTrackingKey, value);
-            }
-
-            private static bool enableStackTrace;
-            public static bool EnableStackTrace
-            {
-                get => enableStackTrace;
-                set => enableStackTrace = value;
-                //UnityEditor.EditorPrefs.SetBool(EnableStackTraceKey, value);
-            }
-        }
-
-#endif
-
-
-        private static List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>> listPool = new List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>>();
-
-        private static readonly WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)> tracking = new WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>();
-
-        [Conditional("DEBUG")]
         internal static void TrackActiveTask(IGDTaskSource task, int skipFrame)
         {
-#if DEBUG
-            dirty = true;
-            if (!EditorEnableState.EnableTracking) return;
-            var stackTrace = EditorEnableState.EnableStackTrace ? new StackTrace(skipFrame, true).CleanupAsyncStackTrace() : "";
+            if (!_enableTracking.Value) return;
+            var stackTrace = _enableStackTrace.Value ? new StackTrace(skipFrame, true).ToString()[6..] : "";
 
             string typeName;
-            if (EditorEnableState.EnableStackTrace)
-            {
-                var sb = new StringBuilder();
-                TypeBeautify(task.GetType(), sb);
-                typeName = sb.ToString();
-            }
-            else
-            {
-                typeName = task.GetType().Name;
-            }
-            tracking.TryAdd(task, (typeName, Interlocked.Increment(ref trackingId), DateTime.UtcNow, stackTrace));
-#endif
+            if (_enableStackTrace.Value) typeName = TypePrinter.ConstructTypeName(task.GetType());
+            else typeName = task.GetType().Name;
+            var trackingData = new TrackingData(typeName, Interlocked.Increment(ref trackingId), DateTime.UtcNow, stackTrace, task.UnsafeGetStatus);
+            tracking.AddOrUpdate(task, trackingData);
+            TaskTrackerWindow.TryAddItem(trackingData);
         }
 
-        [Conditional("DEBUG")]
         internal static void RemoveTracking(IGDTaskSource task)
         {
-#if DEBUG
-            dirty = true;
-            if (!EditorEnableState.EnableTracking) return;
-            var success = tracking.TryRemove(task);
-#endif
+            if (!_enableTracking.Value) return;
+            if (!tracking.TryGetValue(task, out var trackingData)) return;
+            tracking.Remove(task);
+            TaskTrackerWindow.TryRemoveItem(trackingData);
         }
 
-        private static bool dirty;
-
-        public static bool CheckAndResetDirty()
+        internal static IEnumerable<TrackingData> GetAllExistingTrackingData()
         {
-            var current = dirty;
-            dirty = false;
-            return current;
-        }
-
-        /// <summary>(trackingId, awaiterType, awaiterStatus, createdTime, stackTrace)</summary>
-        public static void ForEachActiveTask(Action<int, string, GDTaskStatus, DateTime, string> action)
-        {
-            lock (listPool)
+            foreach (var (_, trackingData) in tracking)
             {
-                var count = tracking.ToList(ref listPool, clear: false);
-                try
-                {
-                    for (int i = 0; i < count; i++)
-                    {
-                        action(listPool[i].Value.trackingId, listPool[i].Value.formattedType, listPool[i].Key.UnsafeGetStatus(), listPool[i].Value.addTime, listPool[i].Value.stackTrace);
-                        listPool[i] = default;
-                    }
-                }
-                catch
-                {
-                    listPool.Clear();
-                    throw;
-                }
-            }
-        }
-
-        private static void TypeBeautify(Type type, StringBuilder sb)
-        {
-            if (type.IsNested)
-            {
-                // TypeBeautify(type.DeclaringType, sb);
-                sb.Append(type.DeclaringType.Name.ToString());
-                sb.Append(".");
-            }
-
-            if (type.IsGenericType)
-            {
-                var genericsStart = type.Name.IndexOf("`");
-                if (genericsStart != -1)
-                {
-                    sb.Append(type.Name.Substring(0, genericsStart));
-                }
-                else
-                {
-                    sb.Append(type.Name);
-                }
-                sb.Append("<");
-                var first = true;
-                foreach (var item in type.GetGenericArguments())
-                {
-                    if (!first)
-                    {
-                        sb.Append(", ");
-                    }
-                    first = false;
-                    TypeBeautify(item, sb);
-                }
-                sb.Append(">");
-            }
-            else
-            {
-                sb.Append(type.Name);
+                yield return trackingData;
             }
         }
     }
