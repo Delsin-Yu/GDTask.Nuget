@@ -12,14 +12,14 @@
 
 ## Abstract
 
-> Clarification: Contents in the abstract section is mostly migrated from the [Cysharp's UniTask library for Unity](https://github.com/Cysharp/UniTask)
+> Clarification: Contents in the abstract section are mostly migrated from the [Cysharp's UniTask library for Unity](https://github.com/Cysharp/UniTask)
 
 ### Efficient allocation free async/await integration for Godot
 
-- Struct based `GDTask<T>` and custom AsyncMethodBuilder to achieve zero allocation.
-- Provides awaitable functionality for certain Engine event functions.
+- Struct-based `GDTask<T>` and custom AsyncMethodBuilder to achieve zero allocation.
+- Provides `awaitable` functionality for certain Engine event functions.
 - Runs completely on Godot PlayerLoop so doesn't use threads.
-- Highly compatible behaviour with Task/ValueTask/IValueTaskSource.
+- Highly compatible behavior with Task/ValueTask/IValueTaskSource.
 
 ### GDTask Under the hood
 
@@ -157,26 +157,28 @@ public async GDTask ApiUsage()
 
 ## Task Profiling
 
-> Clarification: Contents in the task profiling section is mostly migrated from the [Cysharp's UniTask library for Unity](https://github.com/Cysharp/UniTask)
+> Clarification: Contents in the task profiling section are mostly migrated from the [Cysharp's UniTask library for Unity](https://github.com/Cysharp/UniTask)
 
-When calling `TaskTracker.ShowTrackerWindow()` in your code base, the GDTask system will create(or reuse) a `GDTask Tracker` window for inspecting / diagnosing (leaked)~~~~ `GDTasks`.
+When calling `TaskTracker.ShowTrackerWindow()` in your code base, the GDTask system will create(or reuse) a `GDTask Tracker` window for inspecting/diagnosing (leaked) `GDTasks`.
+
+![Image](https://github.com/Delsin-Yu/GDTask.Nuget/blob/main/Readme-Images/GDTaskTracker.png)
 
 | Name              | Description                                                                                                                                                                                                              |
 |:------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Enable Tracking   | Enable the tracking system for collecting status for future started `GDTasks`, this is on by default when calling `TaskTracker.ShowTrackerWindow()`, you may also alter this value through `TaskTracker.EnableTracking`. | 
-| Enable StackTrace | Records and show stack traces for the active `GDTasks`, you may also alter this value through `TaskTracker.EnableStackTrace`.                                                                                            |                                                                                                                                                             | 
+| Enable StackTrace | Records and show stack traces for the active `GDTasks`, you may also alter this value through `TaskTracker.EnableStackTrace`.                                                                                            |
 | GC Collect        | Invokes `GC.Collect()` manually.                                                                                                                                                                                         | 
 
-> - Do keep in mind this feature is for debugging purposes and it has performance penalties, so stay cautious when calling `TaskTracker.ShowTrackerWindow()` under production environment.
+> - Do keep in mind this feature is for debugging purposes and it has performance penalties, so stay cautious when calling `TaskTracker.ShowTrackerWindow()` under the production environment.
 > - The background status collection system does not start if you have never called `TaskTracker.ShowTrackerWindow()`.
-> - Closing an active `GDTask Tracker` window does not stop the background status collection system, remember to toggle off `Enable Tracking` or sets `TaskTracker.EnableTracking` to `false` in your code.
+> - Closing an active `GDTask Tracker` window does not stop the background status collection system, remember to toggle off `Enable Tracking` or set `TaskTracker.EnableTracking` to `false` in your code.
 > - Godot Games embeds sub-windows by default, you can disable the `Embed Subwindows` option located in `ProjectSettings (Advanced Settings enabled)Display/Window/Subwindows/Embed Subwindows` for them to become Standalone Windows.
 > - This window reacts to the `window closing command` (`NotificationWMCloseRequest`) correctly so it closes itself when you click the close button, to relaunch this window simply call `TaskTracker.ShowTrackerWindow()` again.
 
 
 ## Compare with Standard .Net Task API
 
-> Clarification: Contents in the compare section is mostly migrated from the [Cysharp's UniTask library for Unity](https://github.com/Cysharp/UniTask)
+> Clarification: Contents in the compare section are mostly migrated from the [Cysharp's UniTask library for Unity](https://github.com/Cysharp/UniTask)
 
 Same as the `Standard .Net Task APIs`, `CancellationToken` and `CancellationTokenSource` are widely used by the GDTask APIs as well.<br>
 Otherwise, the following table shows the GDTask APIs provided that are meant to replace the usage of standard .Net Task APIs.
