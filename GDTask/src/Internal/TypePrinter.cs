@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GDTask.Internal;
+namespace GodotTask.Internal;
 
 internal class TypePrinter
 {
@@ -45,7 +45,7 @@ internal class TypePrinter
         };
     }
     
-    public static string ConstructTypeName(Type? type)
+    internal static string ConstructTypeName(Type? type)
     {
         // return type.Name; <=== Implement Conditional Compiling
         
