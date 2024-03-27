@@ -82,6 +82,12 @@ namespace GodotTask.Internal
                 case PlayerLoopTiming.Process:
                     Process();
                     break;
+                case PlayerLoopTiming.IsolatedProcess:
+                    IsolatedProcess();
+                    break;
+                case PlayerLoopTiming.IsolatedPhysicsProcess:
+                    IsolatedPhysicsProcess();
+                    break;
             }
 #else
             RunCore();
@@ -90,7 +96,8 @@ namespace GodotTask.Internal
 
         private void PhysicsProcess() => RunCore();
         private void Process() => RunCore();
-
+        private void IsolatedPhysicsProcess() => RunCore();
+        private void IsolatedProcess() => RunCore();
 
         [System.Diagnostics.DebuggerHidden]
         private void RunCore()

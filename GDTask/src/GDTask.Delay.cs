@@ -605,7 +605,7 @@ namespace GodotTask
                     }
                 }
 
-                elapsed += timing == PlayerLoopTiming.Process ? 
+                elapsed += timing is PlayerLoopTiming.Process or PlayerLoopTiming.IsolatedProcess ? 
                     GDTaskPlayerLoopRunner.Global.DeltaTime : 
                     GDTaskPlayerLoopRunner.Global.PhysicsDeltaTime;
                 

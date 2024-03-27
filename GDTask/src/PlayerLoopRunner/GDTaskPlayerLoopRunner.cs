@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Godot;
+using GodotTask.CompilerServices;
 using GodotTask.Internal;
 
 [assembly: InternalsVisibleTo("GDTask.Tests")]
@@ -21,6 +22,16 @@ namespace GodotTask
         /// The <see cref="Node._PhysicsProcess"/> from the player loop.
         /// </summary>
         PhysicsProcess = 1,
+        
+        /// <summary>
+        /// The <see cref="Node._Process"/> from the player loop, but also runs when the scene tree has paused.
+        /// </summary>
+        IsolatedProcess = 2,
+        
+        /// <summary>
+        /// The <see cref="Node._PhysicsProcess"/> from the player loop, but also runs when the scene tree has paused.
+        /// </summary>
+        IsolatedPhysicsProcess = 3,
     }
 
     internal interface IPlayerLoopItem
@@ -69,6 +80,7 @@ namespace GodotTask
                 if (s_Global != null) return s_Global;
 
                 var newInstance = new GDTaskPlayerLoopRunner();
+                var isolatedPlayerLoopRunner = new IsolatedGDTaskPlayerLoopRunner(newInstance);
                 Dispatcher.SynchronizationContext.Send(instance =>
                 {
                     var runner = ((GDTaskPlayerLoopRunner)instance)!;
@@ -77,6 +89,7 @@ namespace GodotTask
                 var root = ((SceneTree)Engine.GetMainLoop()).Root;
                 root.CallDeferred(Node.MethodName.AddChild, newInstance, false, Variant.From(InternalMode.Front));
                 newInstance.Name = "GDTaskPlayerLoopRunner";
+                newInstance.AddChild(isolatedPlayerLoopRunner);
                 s_Global = newInstance;
 
                 return s_Global;
@@ -89,7 +102,8 @@ namespace GodotTask
         private int mainThreadId;
         private ContinuationQueue[] yielders;
         private PlayerLoopRunner[] runners;
-
+        
+        
         public override void _Ready()
         {
             if (s_Global == null)
@@ -111,10 +125,14 @@ namespace GodotTask
             yielders = new[] {
                 new ContinuationQueue(PlayerLoopTiming.Process),
                 new ContinuationQueue(PlayerLoopTiming.PhysicsProcess),
+                new ContinuationQueue(PlayerLoopTiming.IsolatedProcess),
+                new ContinuationQueue(PlayerLoopTiming.IsolatedPhysicsProcess),
             };
             runners = new[] {
                 new PlayerLoopRunner(PlayerLoopTiming.Process),
                 new PlayerLoopRunner(PlayerLoopTiming.PhysicsProcess),
+                new PlayerLoopRunner(PlayerLoopTiming.IsolatedProcess),
+                new PlayerLoopRunner(PlayerLoopTiming.IsolatedPhysicsProcess),
             };
         }
 
@@ -144,6 +162,18 @@ namespace GodotTask
         {
             yielders[(int)PlayerLoopTiming.PhysicsProcess].Run();
             runners[(int)PlayerLoopTiming.PhysicsProcess].Run();
+        }
+
+        public void PauseProcess()
+        {
+            yielders[(int)PlayerLoopTiming.IsolatedProcess].Run();
+            runners[(int)PlayerLoopTiming.IsolatedProcess].Run();
+        }
+
+        public void PausePhysicsProcess()
+        {
+            yielders[(int)PlayerLoopTiming.IsolatedPhysicsProcess].Run();
+            runners[(int)PlayerLoopTiming.IsolatedPhysicsProcess].Run();
         }
     }
 }
