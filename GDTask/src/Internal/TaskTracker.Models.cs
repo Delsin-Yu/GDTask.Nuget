@@ -32,7 +32,7 @@ public static partial class TaskTracker
             }
         }
 
-        private IObserver<bool>? _singleSubscriber;
+        private IObserver<bool> _singleSubscriber;
 
         private bool _value;
 

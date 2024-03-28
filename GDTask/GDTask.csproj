@@ -14,7 +14,7 @@
 
     <Title>GDTask</Title>
     <PackageId>GDTask</PackageId>
-    <PackageVersion>1.2.0</PackageVersion>
+    <PackageVersion>1.2.1</PackageVersion>
     <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
     <Description>Provides an efficient async/await integration to Godot 4.1+</Description>
     <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
@@ -23,7 +23,7 @@
     <RepositoryUrl>https://github.com/Delsin-Yu/GDTask.Nuget</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Godot GDTask GodotTask Task Async</PackageTags>
-    <PackageReleaseNotes>Fix an issue that accidentally exposes the `GDTask.Internal` namespace, which causes inconveniences when referencing the `GDTask` type.</PackageReleaseNotes>
+    <PackageReleaseNotes>The `PlayerLoopTiming` enum now has `IsolatedProcess` and `IsolatedPhysicsProcess` for running async APIs when the scene tree has paused.</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     
     <IncludeSymbols>true</IncludeSymbols>

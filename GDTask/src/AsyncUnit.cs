@@ -14,7 +14,7 @@ namespace GodotTask
 
         public override string ToString() => "()";
 
-        public override bool Equals(object? obj) => obj is AsyncUnit;
+        public override bool Equals(object obj) => obj is AsyncUnit;
 
         public static bool operator ==(AsyncUnit left, AsyncUnit right) => true;
 

@@ -2,7 +2,7 @@
 
 namespace GodotTask.CompilerServices;
 
-internal class IsolatedGDTaskPlayerLoopRunner : Node
+internal partial class IsolatedGDTaskPlayerLoopRunner : Node
 {
     private readonly GDTaskPlayerLoopRunner _playerLoopRunner;
 

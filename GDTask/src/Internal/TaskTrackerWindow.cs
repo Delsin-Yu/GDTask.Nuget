@@ -8,11 +8,11 @@ namespace GodotTask;
 
 internal partial class TaskTrackerWindow : Window
 {
-    private static TaskTrackerWindow? _instance;
-    private static StringBuilder? _stringBuilder;
+    private static TaskTrackerWindow _instance;
+    private static StringBuilder _stringBuilder;
     
 #if !NET7_0_OR_GREATER
-    private static Regex _removeHrefLabel = new("<a href.+>(.+)</a>", RegexOptions.Compiled);
+    private static readonly Regex _removeHrefLabel = new("<a href.+>(.+)</a>", RegexOptions.Compiled);
 #endif
     
 #if NET7_0_OR_GREATER
@@ -58,7 +58,7 @@ internal partial class TaskTrackerWindow : Window
             var trackingDataMap = _instance._trackingDataMap;
             var treeItemMap = _instance._treeItemMap;
             var tree = _instance._tree;
-            TreeItem? treeItem;
+            TreeItem treeItem;
             if (!trackingDataMap.TryGetValue(trackingData, out treeItem))
             {
                 treeItem = tree.CreateItem(_instance._rootTreeItem, trackingData.TrackingId);
