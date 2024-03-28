@@ -1,4 +1,5 @@
 # GDTask.Nuget
+
 [![GitHub Release](https://img.shields.io/github/v/release/Delsin-Yu/GDTask.Nuget)](https://github.com/Delsin-Yu/GDTask.Nuget/releases/latest)
 [![NuGet Version](https://img.shields.io/nuget/v/GDTask)](https://www.nuget.org/packages/GDTask)
 ![NuGet Downloads](https://img.shields.io/nuget/dt/GDtask)
@@ -9,6 +10,24 @@
 - This is the Nuget Package version based on code from:
   - **[Atlinx's GDTask addon for Godot](https://github.com/Fractural/GDTask)**
   - **[Cysharp's UniTask library for Unity](https://github.com/Cysharp/UniTask)**
+
+---
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of Contents
+
+- [Abstract](#abstract)
+  - [Efficient allocation free async/await integration for Godot](#efficient-allocation-free-asyncawait-integration-for-godot)
+  - [GDTask Under the hood](#gdtask-under-the-hood)
+- [Installation via Nuget](#installation-via-nuget)
+- [Basic API usage](#basic-api-usage)
+- [Task Profiling](#task-profiling)
+- [Compare with Standard .Net Task API](#compare-with-standard-net-task-api)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+---
 
 ## Abstract
 
@@ -28,11 +47,13 @@
 ## Installation via Nuget
 
 For .Net CLI
+
 ```
 dotnet add package GDTask
 ```
 
 For Package Manager Console:
+
 ```
 NuGet\Install-Package GDTask
 ```
@@ -165,16 +186,15 @@ When calling `TaskTracker.ShowTrackerWindow()` in your code base, the GDTask sys
 
 | Name              | Description                                                                                                                                                                                                              |
 |:------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Enable Tracking   | Enable the tracking system for collecting status for future started `GDTasks`, this is on by default when calling `TaskTracker.ShowTrackerWindow()`, you may also alter this value through `TaskTracker.EnableTracking`. | 
+| Enable Tracking   | Enable the tracking system for collecting status for future started `GDTasks`, this is on by default when calling `TaskTracker.ShowTrackerWindow()`, you may also alter this value through `TaskTracker.EnableTracking`. |
 | Enable StackTrace | Records and show stack traces for the active `GDTasks`, you may also alter this value through `TaskTracker.EnableStackTrace`.                                                                                            |
-| GC Collect        | Invokes `GC.Collect()` manually.                                                                                                                                                                                         | 
+| GC Collect        | Invokes `GC.Collect()` manually.                                                                                                                                                                                         |
 
 > - Do keep in mind this feature is for debugging purposes and it has performance penalties, so stay cautious when calling `TaskTracker.ShowTrackerWindow()` under the production environment.
 > - The background status collection system does not start if you have never called `TaskTracker.ShowTrackerWindow()`.
 > - Closing an active `GDTask Tracker` window does not stop the background status collection system, remember to toggle off `Enable Tracking` or set `TaskTracker.EnableTracking` to `false` in your code.
 > - Godot Games embeds sub-windows by default, you can disable the `Embed Subwindows` option located in `ProjectSettings (Advanced Settings enabled)Display/Window/Subwindows/Embed Subwindows` for them to become Standalone Windows.
 > - This window reacts to the `window closing command` (`NotificationWMCloseRequest`) correctly so it closes itself when you click the close button, to relaunch this window simply call `TaskTracker.ShowTrackerWindow()` again.
-
 
 ## Compare with Standard .Net Task API
 
