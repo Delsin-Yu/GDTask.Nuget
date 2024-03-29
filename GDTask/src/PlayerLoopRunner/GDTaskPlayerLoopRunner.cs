@@ -77,6 +77,7 @@ namespace GodotTask
         {
             get
             {
+                RuntimeChecker.ThrowIfEditor();
                 if (s_Global != null) return s_Global;
 
                 var newInstance = new GDTaskPlayerLoopRunner();

@@ -1,5 +1,6 @@
 ﻿using System;
 using Godot;
+using GodotTask.Internal;
 
 namespace GodotTask.Triggers
 {
@@ -27,6 +28,7 @@ namespace GodotTask.Triggers
 
 		internal static T GetOrCreateChild<T>(this Node node) where T : Node, new()
 		{
+			RuntimeChecker.ThrowIfEditor();
 			T child = GetChild<T>(node);
 			if (child == null)
 				child = CreateChild<T>(node);
