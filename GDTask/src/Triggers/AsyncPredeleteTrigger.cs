@@ -61,11 +61,6 @@ namespace GodotTask.Triggers
                     cancellationTokenSource = new CancellationTokenSource();
                 }
 
-                if (!enterTreeCalled)
-                {
-                    GDTaskPlayerLoopRunner.AddAction(PlayerLoopTiming.Process, new AwakeMonitor(this));
-                }
-
                 return cancellationTokenSource.Token;
             }
         }
@@ -103,27 +98,6 @@ namespace GodotTask.Triggers
             }, tcs);
 
             return tcs.Task;
-        }
-
-        private class AwakeMonitor : IPlayerLoopItem
-        {
-            private readonly AsyncPredeleteTrigger trigger;
-
-            public AwakeMonitor(AsyncPredeleteTrigger trigger)
-            {
-                this.trigger = trigger;
-            }
-
-            public bool MoveNext()
-            {
-                if (trigger.predeleteCalled) return false;
-                if (!IsInstanceValid(trigger))
-                {
-                    trigger.OnPredelete();
-                    return false;
-                }
-                return true;
-            }
         }
     }
 }

@@ -9,7 +9,7 @@ namespace GodotTask.Triggers
         private TriggerEvent<T> triggerEvent;
 
         internal protected bool calledEnterTree;
-        internal protected bool calledDestroy;
+        internal protected bool calledPredelete;
 
         public override void _EnterTree()
         {
@@ -19,61 +19,30 @@ namespace GodotTask.Triggers
         public override void _Notification(int what)
         {
             if (what == NotificationPredelete)
-                OnDestroy();
+                OnPredelete();
         }
 
-        private void OnDestroy()
+        private void OnPredelete()
         {
-            if (calledDestroy) return;
-            calledDestroy = true;
+            if (calledPredelete) return;
+            calledPredelete = true;
 
             triggerEvent.SetCompleted();
         }
 
         internal void AddHandler(ITriggerHandler<T> handler)
         {
-            if (!calledEnterTree)
-            {
-                GDTaskPlayerLoopRunner.AddAction(PlayerLoopTiming.Process, new EnterTreeMonitor(this));
-            }
-
             triggerEvent.Add(handler);
         }
 
         internal void RemoveHandler(ITriggerHandler<T> handler)
         {
-            if (!calledEnterTree)
-            {
-                GDTaskPlayerLoopRunner.AddAction(PlayerLoopTiming.Process, new EnterTreeMonitor(this));
-            }
-
             triggerEvent.Remove(handler);
         }
 
         protected void RaiseEvent(T value)
         {
             triggerEvent.SetResult(value);
-        }
-
-        private class EnterTreeMonitor : IPlayerLoopItem
-        {
-            private readonly AsyncTriggerBase<T> trigger;
-
-            public EnterTreeMonitor(AsyncTriggerBase<T> trigger)
-            {
-                this.trigger = trigger;
-            }
-
-            public bool MoveNext()
-            {
-                if (trigger.calledEnterTree) return false;
-                if (!IsInstanceValid(trigger))
-                {
-                    trigger.OnDestroy();
-                    return false;
-                }
-                return true;
-            }
         }
     }
 
