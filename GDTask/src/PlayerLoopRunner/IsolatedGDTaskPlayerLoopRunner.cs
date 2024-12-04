@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace GodotTask.CompilerServices;
+namespace GodotTask;
 
 internal partial class IsolatedGDTaskPlayerLoopRunner : Node
 {
