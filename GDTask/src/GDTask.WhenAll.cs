@@ -19,15 +19,25 @@ namespace GodotTask
             {
                 return FromResult(Array.Empty<T>());
             }
-
-            return new GDTask<T[]>(new WhenAllPromise<T>(tasks, tasks.Length), 0);
+            return new GDTask<T[]>(new WhenAllPromise<T>(tasks), 0);
         }
 
         /// <inheritdoc cref="WhenAll{T}(GDTask{T}[])"/>
+        public static GDTask<T[]> WhenAll<T>(params ReadOnlySpan<GDTask<T>> tasks)
+        {
+            if (tasks.Length == 0)
+            {
+                return FromResult(Array.Empty<T>());
+            }
+            return new GDTask<T[]>(new WhenAllPromise<T>(tasks), 0);
+        }
+
+        
+        /// <inheritdoc cref="WhenAll{T}(GDTask{T}[])"/>
         public static GDTask<T[]> WhenAll<T>(IEnumerable<GDTask<T>> tasks)
         {
-            using var span = ArrayPoolUtil.Materialize(tasks);
-            var promise = new WhenAllPromise<T>(span.Array, span.Length); // consumed array in constructor.
+            using var usage = EnumerableUtils.ToSpan(tasks, out var span);
+            var promise = new WhenAllPromise<T>(span); // consumed array in constructor.
             return new GDTask<T[]>(promise, 0);
         }
 
@@ -43,14 +53,25 @@ namespace GodotTask
                 return CompletedTask;
             }
 
-            return new GDTask(new WhenAllPromise(tasks, tasks.Length), 0);
+            return new GDTask(new WhenAllPromise(tasks), 0);
+        }
+        
+        /// <inheritdoc cref="WhenAll(GDTask[])"/>
+        public static GDTask WhenAll(params ReadOnlySpan<GDTask> tasks)
+        {
+            if (tasks.Length == 0)
+            {
+                return CompletedTask;
+            }
+
+            return new GDTask(new WhenAllPromise(tasks), 0);
         }
 
         /// <inheritdoc cref="WhenAll(GDTask[])"/>
         public static GDTask WhenAll(IEnumerable<GDTask> tasks)
         {
-            using var span = ArrayPoolUtil.Materialize(tasks);
-            var promise = new WhenAllPromise(span.Array, span.Length); // consumed array in constructor.
+            using var usage = EnumerableUtils.ToSpan(tasks, out var span);
+            var promise = new WhenAllPromise(span); // consumed array in constructor.
             return new GDTask(promise, 0);
         }
 
@@ -60,22 +81,22 @@ namespace GodotTask
             private int completeCount;
             private GDTaskCompletionSourceCore<T[]> core; // don't reset(called after GetResult, will invoke TrySetException.)
 
-            public WhenAllPromise(GDTask<T>[] tasks, int tasksLength)
+            public WhenAllPromise(ReadOnlySpan<GDTask<T>> tasks)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
                 completeCount = 0;
 
-                if (tasksLength == 0)
+                if (tasks.Length == 0)
                 {
                     result = Array.Empty<T>();
                     core.TrySetResult(result);
                     return;
                 }
 
-                result = new T[tasksLength];
+                result = new T[tasks.Length];
 
-                for (int i = 0; i < tasksLength; i++)
+                for (int i = 0; i < tasks.Length; i++)
                 {
                     GDTask<T>.Awaiter awaiter;
                     try
@@ -155,11 +176,11 @@ namespace GodotTask
             private readonly int tasksLength;
             private GDTaskCompletionSourceCore<AsyncUnit> core; // don't reset(called after GetResult, will invoke TrySetException.)
 
-            public WhenAllPromise(GDTask[] tasks, int tasksLength)
+            public WhenAllPromise(ReadOnlySpan<GDTask> tasks)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
-                this.tasksLength = tasksLength;
+                this.tasksLength = tasks.Length;
                 completeCount = 0;
 
                 if (tasksLength == 0)

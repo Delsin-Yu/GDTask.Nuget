@@ -162,7 +162,7 @@ namespace GodotTask
             }
 
             /// <summary>
-            /// Ends the await on the completed <see cref="SwitchToMainThreadAwaitable"/>.
+            /// Ends the awaiting on the completed <see cref="SwitchToMainThreadAwaitable"/>.
             /// </summary>
             public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 
@@ -234,7 +234,7 @@ namespace GodotTask
             public bool IsCompleted => GDTaskPlayerLoopRunner.MainThreadId == Environment.CurrentManagedThreadId;
 
             /// <summary>
-            /// Ends the await on the completed <see cref="ReturnToMainThread"/>.
+            /// Ends the awaiting on the completed <see cref="ReturnToMainThread"/>.
             /// </summary>
             public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 
@@ -350,7 +350,7 @@ namespace GodotTask
             public bool IsCompleted => false;
             
             /// <summary>
-            /// Ends the await on the completed <see cref="SwitchToSynchronizationContextAwaitable"/>.
+            /// Ends the awaiting on the completed <see cref="SwitchToSynchronizationContextAwaitable"/>.
             /// </summary>
             public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 
@@ -450,7 +450,7 @@ namespace GodotTask
             }
 
             /// <summary>
-            /// Ends the await on the completed <see cref="ReturnToSynchronizationContext"/>.
+            /// Ends the awaiting on the completed <see cref="ReturnToSynchronizationContext"/>.
             /// </summary>
             public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 

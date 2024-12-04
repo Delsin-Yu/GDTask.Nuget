@@ -661,7 +661,7 @@ namespace GodotTask
                 Interlocked.CompareExchange(ref gate, new object(), null);
             }
 
-            var lockGate = Thread.VolatileRead(ref gate);
+            var lockGate = Volatile.Read(ref gate);
             lock (lockGate) // wait TrySignalCompletion, after status is not pending.
             {
                 if ((GDTaskStatus)intStatus != GDTaskStatus.Pending)
@@ -696,7 +696,7 @@ namespace GodotTask
                     Interlocked.CompareExchange(ref gate, new object(), null);
                 }
 
-                var lockGate = Thread.VolatileRead(ref gate);
+                var lockGate = Volatile.Read(ref gate);
                 lock (lockGate) // wait OnCompleted.
                 {
                     if (singleContinuation != null)
@@ -741,7 +741,13 @@ namespace GodotTask
         private CancellationToken cancellationToken;
         private T result;
         private ExceptionHolder exception;
+        
+#if NET9_0_OR_GREATER
+        private Lock gate;
+#else
         private object gate;
+#endif
+
         private Action<object> singleContinuation;
         private object singleState;
         private List<(Action<object>, object)> secondaryContinuationList;
@@ -846,10 +852,14 @@ namespace GodotTask
         {
             if (gate == null)
             {
+#if NET9_0_OR_GREATER
+                Interlocked.CompareExchange(ref gate, new Lock(), null);
+#else
                 Interlocked.CompareExchange(ref gate, new object(), null);
+#endif
             }
 
-            var lockGate = Thread.VolatileRead(ref gate);
+            var lockGate = Volatile.Read(ref gate);
             lock (lockGate) // wait TrySignalCompletion, after status is not pending.
             {
                 if ((GDTaskStatus)intStatus != GDTaskStatus.Pending)
@@ -881,10 +891,14 @@ namespace GodotTask
             {
                 if (gate == null)
                 {
+#if NET9_0_OR_GREATER
+                    Interlocked.CompareExchange(ref gate, new Lock(), null);
+#else
                     Interlocked.CompareExchange(ref gate, new object(), null);
+#endif
                 }
 
-                var lockGate = Thread.VolatileRead(ref gate);
+                var lockGate = Volatile.Read(ref gate);
                 lock (lockGate) // wait OnCompleted.
                 {
                     if (singleContinuation != null)

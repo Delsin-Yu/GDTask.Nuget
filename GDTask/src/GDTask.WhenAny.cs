@@ -20,14 +20,20 @@ namespace GodotTask
         /// <inheritdoc cref="WhenAny{T}(GDTask{T},GDTask)"/>
         public static GDTask<(int winArgumentIndex, T result)> WhenAny<T>(params GDTask<T>[] tasks)
         {
-            return new GDTask<(int, T)>(new WhenAnyPromise<T>(tasks, tasks.Length), 0);
+            return new GDTask<(int, T)>(new WhenAnyPromise<T>(tasks.AsSpan()), 0);
+        } 
+        
+        /// <inheritdoc cref="WhenAny{T}(GDTask{T},GDTask)"/>
+        public static GDTask<(int winArgumentIndex, T result)> WhenAny<T>(params ReadOnlySpan<GDTask<T>> tasks)
+        {
+            return new GDTask<(int, T)>(new WhenAnyPromise<T>(tasks), 0);
         }
 
         /// <inheritdoc cref="WhenAny{T}(GDTask{T},GDTask)"/>
         public static GDTask<(int winArgumentIndex, T result)> WhenAny<T>(IEnumerable<GDTask<T>> tasks)
         {
-            using var span = ArrayPoolUtil.Materialize(tasks);
-            return new GDTask<(int, T)>(new WhenAnyPromise<T>(span.Array, span.Length), 0);
+            using var usage = EnumerableUtils.ToSpan(tasks, out var span);
+            return new GDTask<(int, T)>(new WhenAnyPromise<T>(span), 0);
         }
 
         /// <summary>
@@ -36,14 +42,20 @@ namespace GodotTask
         /// <returns>A task that evaluates the index of the first completed task.</returns>
         public static GDTask<int> WhenAny(params GDTask[] tasks)
         {
-            return new GDTask<int>(new WhenAnyPromise(tasks, tasks.Length), 0);
+            return new GDTask<int>(new WhenAnyPromise(tasks.AsSpan()), 0);
+        }     
+        
+        /// <inheritdoc cref="WhenAny(GDTask[])"/>
+        public static GDTask<int> WhenAny(params ReadOnlySpan<GDTask> tasks)
+        {
+            return new GDTask<int>(new WhenAnyPromise(tasks), 0);
         }
 
         /// <inheritdoc cref="WhenAny(GDTask[])"/>
         public static GDTask<int> WhenAny(IEnumerable<GDTask> tasks)
         {
-            using var span = ArrayPoolUtil.Materialize(tasks);
-            return new GDTask<int>(new WhenAnyPromise(span.Array, span.Length), 0);
+            using var usage = EnumerableUtils.ToSpan(tasks, out var span);
+            return new GDTask<int>(new WhenAnyPromise(span), 0);
         }
 
         private sealed class WhenAnyLRPromise<T> : IGDTaskSource<(bool, T)>
@@ -179,16 +191,16 @@ namespace GodotTask
             private int completedCount;
             private GDTaskCompletionSourceCore<(int, T)> core;
 
-            public WhenAnyPromise(GDTask<T>[] tasks, int tasksLength)
+            public WhenAnyPromise(ReadOnlySpan<GDTask<T>> tasks)
             {
-                if (tasksLength == 0)
+                if (tasks.Length == 0)
                 {
                     throw new ArgumentException("The tasks argument contains no tasks.");
                 }
 
                 TaskTracker.TrackActiveTask(this, 3);
 
-                for (int i = 0; i < tasksLength; i++)
+                for (int i = 0; i < tasks.Length; i++)
                 {
                     GDTask<T>.Awaiter awaiter;
                     try
@@ -268,16 +280,16 @@ namespace GodotTask
             private int completedCount;
             private GDTaskCompletionSourceCore<int> core;
 
-            public WhenAnyPromise(GDTask[] tasks, int tasksLength)
+            public WhenAnyPromise(ReadOnlySpan<GDTask> tasks)
             {
-                if (tasksLength == 0)
+                if (tasks.Length == 0)
                 {
                     throw new ArgumentException("The tasks argument contains no tasks.");
                 }
 
                 TaskTracker.TrackActiveTask(this, 3);
 
-                for (int i = 0; i < tasksLength; i++)
+                for (int i = 0; i < tasks.Length; i++)
                 {
                     Awaiter awaiter;
                     try

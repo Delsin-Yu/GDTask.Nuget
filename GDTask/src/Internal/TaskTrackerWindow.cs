@@ -13,9 +13,7 @@ internal partial class TaskTrackerWindow : Window
     
 #if !NET7_0_OR_GREATER
     private static readonly Regex _removeHrefLabel = new("<a href.+>(.+)</a>", RegexOptions.Compiled);
-#endif
-    
-#if NET7_0_OR_GREATER
+#else
     [GeneratedRegex("<a href.+>(.+)</a>")]
     private static partial Regex GetRemoveHrefLabelRegex();
 #endif

@@ -2,113 +2,77 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
-namespace GodotTask.Internal
+namespace GodotTask.Internal;
+
+
+internal class EnumerableUtils
 {
-    internal static class ArrayPoolUtil
+    public readonly ref struct ArrayPoolUsage<T>(T[] arrayPoolArray) : IDisposable
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void EnsureCapacity<T>(ref T[] array, int index, ArrayPool<T> pool)
+        public void Dispose()
         {
-            if (array.Length <= index)
-            {
-                EnsureCapacityCore(ref array, index, pool);
-            }
+            if(arrayPoolArray is null) return;
+            ArrayPool<T>.Shared.Return(arrayPoolArray);
         }
+    }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void EnsureCapacityCore<T>(ref T[] array, int index, ArrayPool<T> pool)
+    public static ArrayPoolUsage<T> ToSpan<T>(IEnumerable<T> enumerable, out ReadOnlySpan<T> span)
+    {
+        switch (enumerable)
         {
-            if (array.Length <= index)
+            case T[] array:
             {
-                var newSize = array.Length * 2;
-                var newArray = pool.Rent((index < newSize) ? newSize : (index * 2));
-                Array.Copy(array, 0, newArray, 0, array.Length);
-
-                pool.Return(array, clearArray: !RuntimeHelpersAbstraction.IsWellKnownNoReferenceContainsType<T>());
-
-                array = newArray;
+                span = array.AsSpan();
+                return new(null);
             }
-        }
-
-        public static RentArray<T> Materialize<T>(IEnumerable<T> source)
-        {
-            if (source is T[] array)
+            case List<T> list:
             {
-                return new RentArray<T>(array, array.Length, null);
+                span = CollectionsMarshal.AsSpan(list);
+                return new(null);
             }
-
-            var defaultCount = 32;
-            if (source is ICollection<T> coll)
+            case ICollection<T> collection:
             {
-                if (coll.Count == 0)
+                var count = collection.Count;
+                var arrayPoolArray = ArrayPool<T>.Shared.Rent(count);
+                collection.CopyTo(arrayPoolArray, 0);
+                span = arrayPoolArray.AsSpan(0, count);
+                return new(arrayPoolArray);
+            }
+            case IReadOnlyCollection<T> readOnlyCollection:
+            {
+                var count = readOnlyCollection.Count;
+                var arrayPoolArray = ArrayPool<T>.Shared.Rent(count);
+                span = arrayPoolArray.AsSpan(0, count);
+                var i = 0;
+                foreach (var item in enumerable)
                 {
-                    return new RentArray<T>(Array.Empty<T>(), 0, null);
+                    arrayPoolArray[i++] = item;
                 }
-
-                defaultCount = coll.Count;
+                return new(arrayPoolArray);
+            }
+            default:
+            {
+                var rentSize = 32;
                 var pool = ArrayPool<T>.Shared;
-                var buffer = pool.Rent(defaultCount);
-                coll.CopyTo(buffer, 0);
-                return new RentArray<T>(buffer, coll.Count, pool);
-            }
-            else if (source is IReadOnlyCollection<T> readOnlyCollection)
-            {
-                defaultCount = readOnlyCollection.Count;
-            }
-
-            if (defaultCount == 0)
-            {
-                return new RentArray<T>(Array.Empty<T>(), 0, null);
-            }
-
-            {
-                var pool = ArrayPool<T>.Shared;
-
-                var index = 0;
-                var buffer = pool.Rent(defaultCount);
-                foreach (var item in source)
+                var arrayPoolArray = pool.Rent(rentSize);
+                var i = 0;
+                foreach (var item in enumerable)
                 {
-                    EnsureCapacity(ref buffer, index, pool);
-                    buffer[index++] = item;
-                }
-
-                return new RentArray<T>(buffer, index, pool);
-            }
-        }
-
-        public struct RentArray<T> : IDisposable
-        {
-            public readonly T[] Array;
-            public readonly int Length;
-            private ArrayPool<T> pool;
-
-            public RentArray(T[] array, int length, ArrayPool<T> pool)
-            {
-                Array = array;
-                Length = length;
-                this.pool = pool;
-            }
-
-            public void Dispose()
-            {
-                DisposeManually(!RuntimeHelpersAbstraction.IsWellKnownNoReferenceContainsType<T>());
-            }
-
-            public void DisposeManually(bool clearArray)
-            {
-                if (pool != null)
-                {
-                    if (clearArray)
+                    if (arrayPoolArray.Length <= i)
                     {
-                        System.Array.Clear(Array, 0, Length);
+                        rentSize *= 2;
+                        var newArray = pool.Rent(rentSize);
+                        Array.Copy(arrayPoolArray, newArray, i);
+                        pool.Return(arrayPoolArray, clearArray: !RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+                        arrayPoolArray = newArray;
                     }
-
-                    pool.Return(Array, clearArray: false);
-                    pool = null;
+                    arrayPoolArray[i++] = item;
                 }
+                span = arrayPoolArray.AsSpan(0, i);
+                return new(arrayPoolArray);
             }
         }
     }
 }
-
