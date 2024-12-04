@@ -24,7 +24,7 @@ namespace GodotTask
     /// </summary>
     [AsyncMethodBuilder(typeof(AsyncGDTaskMethodBuilder))]
     [StructLayout(LayoutKind.Auto)]
-    public readonly partial struct GDTask
+    public readonly partial struct GDTask : IGDTask
     {
         private readonly IGDTaskSource source;
         private readonly short token;
@@ -60,6 +60,8 @@ namespace GodotTask
         {
             return new Awaiter(this);
         }
+
+        IGDTaskAwaiter IGDTask.GetAwaiter() => GetAwaiter();
 
         /// <summary>
         /// returns (bool IsCanceled) instead of throws OperationCanceledException.
@@ -279,7 +281,7 @@ namespace GodotTask
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="GDTask"/>.
         /// </summary>
-        public readonly struct Awaiter : ICriticalNotifyCompletion
+        public readonly struct Awaiter : IGDTaskAwaiter
         {
             private readonly GDTask task;
 
@@ -294,7 +296,7 @@ namespace GodotTask
             }
 
             /// <summary>
-            /// Gets whether this <see cref="GDTask">Task</see> has completed.
+            /// Gets whether this <see cref="GDTask"/> has completed.
             /// </summary>
             public bool IsCompleted
             {
@@ -304,7 +306,7 @@ namespace GodotTask
             }
 
             /// <summary>
-            /// Ends the await on the completed <see cref="GDTask"/>.
+            /// Ends the awaiting on the completed <see cref="GDTask"/>.
             /// </summary>
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -312,6 +314,12 @@ namespace GodotTask
             {
                 if (task.source == null) return;
                 task.source.GetResult(task.token);
+            }
+
+            object IGDTaskAwaiter.GetResult()
+            {
+                GetResult();
+                return null;
             }
 
             /// <summary>
@@ -373,7 +381,7 @@ namespace GodotTask
     /// <typeparam name="T">Return value of the task</typeparam>
     [AsyncMethodBuilder(typeof(AsyncGDTaskMethodBuilder<>))]
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct GDTask<T>
+    public readonly struct GDTask<T> : IGDTask
     {
         private readonly IGDTaskSource<T> source;
         private readonly T result;
@@ -417,6 +425,8 @@ namespace GodotTask
             return new Awaiter(this);
         }
 
+        IGDTaskAwaiter IGDTask.GetAwaiter() => GetAwaiter();
+         
         /// <summary>
         /// Creates a <see cref="GDTask{T}"/> allows to await multiple times.
         /// </summary>
@@ -582,7 +592,7 @@ namespace GodotTask
                     }
                 }
             }
-
+            
             void IGDTaskSource.GetResult(short token)
             {
                 GetResult(token);
@@ -624,7 +634,7 @@ namespace GodotTask
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="GDTask{T}"/>.
         /// </summary>
-        public readonly struct Awaiter : ICriticalNotifyCompletion
+        public readonly struct Awaiter : IGDTaskAwaiter
         {
             private readonly GDTask<T> task;
 
@@ -649,7 +659,7 @@ namespace GodotTask
             }
 
             /// <summary>
-            /// Ends the await on the completed <see cref="GDTask{T}"/>.
+            /// Ends the awaiting on the completed <see cref="GDTask{T}"/>.
             /// </summary>
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -664,6 +674,11 @@ namespace GodotTask
                 {
                     return s.GetResult(task.token);
                 }
+            }
+            
+            object IGDTaskAwaiter.GetResult()
+            {
+                return GetResult();
             }
 
             /// <summary>
