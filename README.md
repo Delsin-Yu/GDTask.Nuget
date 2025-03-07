@@ -6,7 +6,7 @@
 [![Stars](https://img.shields.io/github/stars/Delsin-Yu/GDTask.Nuget?color=brightgreen)](https://github.com/Delsin-Yu/GDTask.Nuget/stargazers)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Delsin-Yu/GDTask.Nuget/blob/main/LICENSE)
 
-- Ported and Tested in Godot 4.2 with .Net module.
+- Ported and Tested in Godot 4.4 with .Net module.
 - This is the Nuget Package version based on code from:
   - **[Atlinx's GDTask addon for Godot](https://github.com/Fractural/GDTask)**
   - **[Cysharp's UniTask library for Unity](https://github.com/Cysharp/UniTask)**
