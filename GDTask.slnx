@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="GDTask.Nuget.Test/GDTask.Tests.csproj">
+    <BuildType Project="Debug" />
+  </Project>
+  <Project Path="GDTask/GDTask.csproj" />
+</Solution>
