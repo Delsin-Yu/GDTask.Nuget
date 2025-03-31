@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
     <EnableDynamicLoading>true</EnableDynamicLoading>
@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GodotSharp" Version="4.1.0"/>
-    <PackageReference Include="Godot.SourceGenerators" Version="4.1.0"/>
+    <PackageReference Include="GodotSharp" Version="[4.1.0]"/>
+    <PackageReference Include="Godot.SourceGenerators" Version="[4.1.0]"/>
   </ItemGroup>
 </Project>
