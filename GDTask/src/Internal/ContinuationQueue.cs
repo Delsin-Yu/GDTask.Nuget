@@ -82,29 +82,32 @@ namespace GodotTask.Internal
             return rest;
         }
 
-        // delegate entrypoint.
+        // Delegate entrypoint.
         public void Run()
         {
-            // for debugging, create named stacktrace.
-#if DEBUG
-            switch (timing)
+            // For debugging, create named stacktrace.
+            if (Engine.IsEditorHint())
             {
-                case PlayerLoopTiming.PhysicsProcess:
-                    PhysicsProcess();
-                    break;
-                case PlayerLoopTiming.Process:
-                    Process();
-                    break;
-                case PlayerLoopTiming.IsolatedProcess:
-                    IsolatedProcess();
-                    break;
-                case PlayerLoopTiming.IsolatedPhysicsProcess:
-                    IsolatedPhysicsProcess();
-                    break;
+                switch (timing)
+                {
+                    case PlayerLoopTiming.PhysicsProcess:
+                        PhysicsProcess();
+                        break;
+                    case PlayerLoopTiming.Process:
+                        Process();
+                        break;
+                    case PlayerLoopTiming.IsolatedProcess:
+                        IsolatedProcess();
+                        break;
+                    case PlayerLoopTiming.IsolatedPhysicsProcess:
+                        IsolatedPhysicsProcess();
+                        break;
+                }
             }
-#else
-            RunCore();
-#endif
+            else
+            {
+                RunCore();
+            }
         }
 
         private void PhysicsProcess() => RunCore();
