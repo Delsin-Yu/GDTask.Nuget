@@ -15,7 +15,7 @@
 
     <Title>GDTask</Title>
     <PackageId>GDTask</PackageId>
-    <PackageVersion>1.4.0</PackageVersion>
+    <PackageVersion>1.4.1</PackageVersion>
     <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
     <Description>Provides an efficient async/await integration to Godot 4.1+</Description>
     <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
@@ -24,7 +24,7 @@
     <RepositoryUrl>https://github.com/Delsin-Yu/GDTask.Nuget</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Godot GDTask GodotTask Task Async</PackageTags>
-    <PackageReleaseNotes>Add target argument to WaitUntil, WaitWhile, WaitUntilCanceled;Add AsGDTask extension utilities to SignalAwaiter type.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix package version got incorrectly pinned;Add target argument to WaitUntil, WaitWhile, WaitUntilCanceled;Add AsGDTask extension utilities to SignalAwaiter type.</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     
     <IncludeSymbols>true</IncludeSymbols>
