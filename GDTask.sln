@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GDTask", "GDTask\GDTask.csproj", "{3A8E50C1-6413-4778-BC54-22A610CD1B3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GDTask.Tests", "GDTask.Nuget.Test\GDTask.Tests.csproj", "{CA9BC468-0EEC-4E91-9465-563E4BCFEC54}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GDTask.Tests", "GDTask.Tests\GDTask.Tests.csproj", "{CA9BC468-0EEC-4E91-9465-563E4BCFEC54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
