@@ -101,16 +101,5 @@ namespace GodotTask.CompilerServices
         {
             // don't use boxed stateMachine.
         }
-
-        // Important for IDE debugger.
-        private object debuggingId;
-        private object ObjectIdForDebugger
-        {
-            get
-            {
-                debuggingId ??= new object();
-                return debuggingId;
-            }
-        }
     }
 }

@@ -170,10 +170,6 @@ namespace GodotTask
             // Force use Realtime in editor.
             if (GDTaskPlayerLoopRunner.IsMainThread && Engine.IsEditorHint())
             {
-                if (delayType != DelayType.Realtime)
-                {
-                    GD.Print("When running by the editor's main thread, delayType must be DelayType.Realtime!");
-                }
                 delayType = DelayType.Realtime;
             }
 

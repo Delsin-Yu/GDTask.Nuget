@@ -115,17 +115,6 @@ namespace GodotTask.CompilerServices
         {
             // don't use boxed stateMachine.
         }
-
-        // Important for IDE debugger.
-        private object debuggingId;
-        private object ObjectIdForDebugger
-        {
-            get
-            {
-                debuggingId ??= new object();
-                return debuggingId;
-            }
-        }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -240,17 +229,6 @@ namespace GodotTask.CompilerServices
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
             // don't use boxed stateMachine.
-        }
-
-        // Important for IDE debugger.
-        private object debuggingId;
-        private object ObjectIdForDebugger
-        {
-            get
-            {
-                debuggingId ??= new object();
-                return debuggingId;
-            }
         }
     }
 }

@@ -72,39 +72,6 @@ namespace GodotTask.Internal
         // Delegate entrypoint.
         public void Run()
         {
-            // For debugging, create named stacktrace.
-            if (Engine.IsEditorHint())
-            {
-                switch (timing)
-                {
-                    case PlayerLoopTiming.PhysicsProcess:
-                        PhysicsProcess();
-                        break;
-                    case PlayerLoopTiming.Process:
-                        Process();
-                        break;
-                    case PlayerLoopTiming.IsolatedProcess:
-                        IsolatedProcess();
-                        break;
-                    case PlayerLoopTiming.IsolatedPhysicsProcess:
-                        IsolatedPhysicsProcess();
-                        break;
-                }
-            }
-            else
-            {
-                RunCore();
-            }
-        }
-
-        private void PhysicsProcess() => RunCore();
-        private void Process() => RunCore();
-        private void IsolatedPhysicsProcess() => RunCore();
-        private void IsolatedProcess() => RunCore();
-
-        [System.Diagnostics.DebuggerHidden]
-        private void RunCore()
-        {
             lock (runningAndQueueLock)
             {
                 running = true;
