@@ -34,13 +34,15 @@ internal static class Constants
     internal static GDTask DelayRealtimeWithReturn(int multiplier = 1, CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan * multiplier, DelayType.Realtime, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
     internal static GDTask<int> DelayWithReturn(CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
 
-    internal static Node CreateTestNode(string nodeName)
+    internal static TNode CreateTestNode<TNode>(string nodeName) where TNode : Node, new()
     {
-        var node = new Node { Name = nodeName };
+        var node = new TNode { Name = nodeName };
         var root = ((SceneTree)Engine.GetMainLoop()).Root;
         root.CallDeferred(Node.MethodName.AddChild, node);
         return node;
     }
+    
+    internal static Node CreateTestNode(string nodeName) => CreateTestNode<Node>(nodeName);
     
     internal static CancellationToken CreateCanceledToken() => new(true);
 }
