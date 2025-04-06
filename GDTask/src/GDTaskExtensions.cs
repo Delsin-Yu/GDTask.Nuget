@@ -40,7 +40,7 @@ namespace GodotTask
             return promise.Task;
         }
 
-        /// <inheritdoc cref="AsGDTask{T}"/>
+        /// <inheritdoc cref="AsGDTask{T}(Task{T},bool)"/>
         public static GDTask AsGDTask(this Task task, bool useCurrentSynchronizationContext = true)
         {
             var promise = new GDTaskCompletionSource();
