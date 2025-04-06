@@ -167,17 +167,11 @@ namespace GodotTask
                 throw new ArgumentOutOfRangeException("Delay does not allow minus delayTimeSpan. delayTimeSpan:" + delayTimeSpan);
             }
 
-#if DEBUG
-            // force use Realtime.
+            // Force use Realtime in editor.
             if (GDTaskPlayerLoopRunner.IsMainThread && Engine.IsEditorHint())
             {
-                if (delayType != DelayType.Realtime)
-                {
-                    GD.Print("When running by the editor's main thread, delayType must be DelayType.Realtime!");
-                }
                 delayType = DelayType.Realtime;
             }
-#endif
 
             switch (delayType)
             {
@@ -472,22 +466,10 @@ namespace GodotTask
                         return false;
                     }
 
-                    // skip in initial frame.
+                    // Skip in initial frame.
                     if (isMainThread && initialFrame == Engine.GetProcessFrames())
                     {
-#if DEBUG
-                        // force use Realtime.
-                        if (GDTaskPlayerLoopRunner.IsMainThread && Engine.IsEditorHint())
-                        {
-                            //goto ++currentFrameCount
-                        }
-                        else
-                        {
-                            return true;
-                        }
-#else
                         return true;
-#endif
                     }
                 }
 

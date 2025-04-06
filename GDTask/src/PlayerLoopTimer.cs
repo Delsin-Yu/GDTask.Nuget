@@ -28,13 +28,11 @@ namespace GodotTask
 
         public static PlayerLoopTimer Create(TimeSpan interval, bool periodic, DelayType delayType, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
         {
-#if DEBUG
-            // force use Realtime.
+            // Force use Realtime.
             if (GDTaskPlayerLoopRunner.IsMainThread && Engine.IsEditorHint())
             {
                 delayType = DelayType.Realtime;
             }
-#endif
 
             switch (delayType)
             {
