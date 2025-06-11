@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
     <EnableDynamicLoading>true</EnableDynamicLoading>
@@ -10,11 +10,12 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <OutputPath>./nupkg</OutputPath>
     <DebugType>portable</DebugType>
+    <IsTrimmable>true</IsTrimmable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <Title>GDTask</Title>
     <PackageId>GDTask</PackageId>
-    <PackageVersion>1.3.0</PackageVersion>
+    <PackageVersion>1.4.1</PackageVersion>
     <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
     <Description>Provides an efficient async/await integration to Godot 4.1+</Description>
     <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
@@ -23,7 +24,7 @@
     <RepositoryUrl>https://github.com/Delsin-Yu/GDTask.Nuget</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Godot GDTask GodotTask Task Async</PackageTags>
-    <PackageReleaseNotes>Add support for dotnet 9; Make GDTask and GDTaskT implements IGDTask interface.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fix package version got incorrectly pinned;Add target argument to WaitUntil, WaitWhile, WaitUntilCanceled;Add AsGDTask extension utilities to SignalAwaiter type.</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     
     <IncludeSymbols>true</IncludeSymbols>

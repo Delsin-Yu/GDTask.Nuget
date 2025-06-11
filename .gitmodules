@@ -1,4 +1,0 @@
-[submodule "GDTask.Nuget.Test"]
-	path = GDTask.Nuget.Test
-	url = https://github.com/Delsin-Yu/GDTask.Nuget.Test.git
-	branch = main
