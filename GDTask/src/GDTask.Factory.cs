@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 
@@ -180,13 +180,13 @@ namespace GodotTask
         /// <summary>
         /// Creates a task that never completes, with specified <see cref="CancellationToken"/>.
         /// </summary>
-        public static GDTask Never(CancellationToken cancellationToken)
+        public static GDTask Never(CancellationToken cancellationToken = default)
         {
             return new GDTask<AsyncUnit>(new NeverPromise<AsyncUnit>(cancellationToken), 0);
         }
 
         /// <inheritdoc cref="Never"/>
-        public static GDTask<T> Never<T>(CancellationToken cancellationToken)
+        public static GDTask<T> Never<T>(CancellationToken cancellationToken = default)
         {
             return new GDTask<T>(new NeverPromise<T>(cancellationToken), 0);
         }
