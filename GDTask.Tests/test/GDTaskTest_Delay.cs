@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
-using Godot;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -40,7 +39,7 @@ public class GDTaskTest_Delay
             return;
         }
 
-        throw new GdUnit4.Exceptions.TestFailedException("Yield Instructions not canceled");
+        throw new TestFailedException("Yield Instructions not canceled");
     }
 
     [TestCase]
@@ -57,7 +56,7 @@ public class GDTaskTest_Delay
             return;
         }
 
-        throw new GdUnit4.Exceptions.TestFailedException("Yield Instructions not canceled");
+        throw new TestFailedException("Yield Instructions not canceled");
     }
 
     [TestCase]
@@ -94,7 +93,7 @@ public class GDTaskTest_Delay
             return;
         }
 
-        throw new GdUnit4.Exceptions.TestFailedException("NextFrame Instructions not canceled");
+        throw new TestFailedException("NextFrame Instructions not canceled");
     }
 
     [TestCase]
@@ -111,7 +110,7 @@ public class GDTaskTest_Delay
             return;
         }
 
-        throw new GdUnit4.Exceptions.TestFailedException("NextFrame Instructions not canceled");
+        throw new TestFailedException("NextFrame Instructions not canceled");
     }
 
     [TestCase]
@@ -148,7 +147,7 @@ public class GDTaskTest_Delay
             return;
         }
 
-        throw new GdUnit4.Exceptions.TestFailedException("DelayFrame Instructions not canceled");
+        throw new TestFailedException("DelayFrame Instructions not canceled");
     }
 
     [TestCase]
@@ -165,7 +164,7 @@ public class GDTaskTest_Delay
             return;
         }
 
-        throw new GdUnit4.Exceptions.TestFailedException("DelayFrame Instructions not canceled");
+        throw new TestFailedException("DelayFrame Instructions not canceled");
     }
 
     [TestCase]
@@ -217,7 +216,7 @@ public class GDTaskTest_Delay
             return;
         }
 
-        throw new GdUnit4.Exceptions.TestFailedException("Delay Instructions not canceled");
+        throw new TestFailedException("Delay Instructions not canceled");
     }
 
     [TestCase]
@@ -235,7 +234,7 @@ public class GDTaskTest_Delay
             return;
         }
 
-        throw new GdUnit4.Exceptions.TestFailedException("Delay Instructions not canceled");
+        throw new TestFailedException("Delay Instructions not canceled");
     }
 
     [TestCase]
@@ -267,7 +266,7 @@ public class GDTaskTest_Delay
             return;
         }
 
-        throw new GdUnit4.Exceptions.TestFailedException("Delay Instructions not canceled");
+        throw new TestFailedException("Delay Instructions not canceled");
     }
 
     [TestCase]
@@ -285,6 +284,6 @@ public class GDTaskTest_Delay
             return;
         }
 
-        throw new GdUnit4.Exceptions.TestFailedException("Delay Instructions not canceled");
+        throw new TestFailedException("Delay Instructions not canceled");
     }
 }

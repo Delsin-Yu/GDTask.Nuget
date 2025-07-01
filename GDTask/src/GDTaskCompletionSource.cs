@@ -558,7 +558,28 @@ namespace GodotTask
         }
     }
 
-    internal class GDTaskCompletionSource : IGDTaskSource, IPromise
+    /// <summary>
+    /// Represents the producer side of a <see cref="GDTask"/> unbound to a
+    /// delegate, providing access to the consumer side through the <see cref="GDTask"/> property.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// It is often the case that a <see cref="GDTask"/> is desired to
+    /// represent another asynchronous operation.
+    /// <see cref="GDTaskCompletionSource">GDTaskCompletionSource</see> is provided for this purpose. It enables
+    /// the creation of a task that can be handed out to consumers, and those consumers can use the members
+    /// of the task as they would any other. However, unlike most tasks, the state of a task created by a
+    /// GDTaskCompletionSource is controlled explicitly by the methods on GDTaskCompletionSource. This enables the
+    /// completion of the external asynchronous operation to be propagated to the underlying GDTask. The
+    /// separation also ensures that consumers are not able to transition the state without access to the
+    /// corresponding GDTaskCompletionSource.
+    /// </para>
+    /// <para>
+    /// All members of <see cref="GDTaskCompletionSource"/> are thread-safe
+    /// and may be used from multiple threads concurrently.
+    /// </para>
+    /// </remarks>
+    public class GDTaskCompletionSource : IGDTaskSource, IPromise
     {
         private CancellationToken cancellationToken;
         private ExceptionHolder exception;
@@ -570,6 +591,9 @@ namespace GodotTask
         private int intStatus; // GDTaskStatus
         private bool handled = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GDTaskCompletionSource"/> class.
+        /// </summary>
         public GDTaskCompletionSource()
         {
             TaskTracker.TrackActiveTask(this, 2);
@@ -585,18 +609,36 @@ namespace GodotTask
             }
         }
 
+        /// <summary>
+        /// Gets the <see cref="GDTask"/> created
+        /// by this <see cref="GDTaskCompletionSource"/>.
+        /// </summary>
+        /// <remarks>
+        /// This property enables a consumer access to the <see cref="GDTask"/> that is controlled by this instance.
+        /// The <see cref="TrySetResult"/>, <see cref="TrySetException(Exception)"/>,
+        /// and <see cref="TrySetCanceled"/> methods (and their "Try" variants) on this instance all result in the relevant state
+        /// transitions on this underlying GDTask.
+        /// </remarks>
         public GDTask Task
         {
             [DebuggerHidden]
             get => new(this, 0);
         }
 
+        /// <summary>
+        /// Attempts to transition the underlying <see cref="GDTask"/> into the <see cref="GDTaskStatus.Succeeded"/> state.
+        /// </summary>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
         [DebuggerHidden]
         public bool TrySetResult()
         {
             return TrySignalCompletion(GDTaskStatus.Succeeded);
         }
 
+        /// <summary>
+        /// Attempts to transition the underlying <see cref="GDTask"/> into the <see cref="GDTaskStatus.Canceled"/> state.
+        /// </summary>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
         [DebuggerHidden]
         public bool TrySetCanceled(CancellationToken cancellationToken = default)
         {
@@ -606,6 +648,11 @@ namespace GodotTask
             return TrySignalCompletion(GDTaskStatus.Canceled);
         }
 
+        /// <summary>
+        /// Attempts to transition the underlying <see cref="GDTask"/> into the <see cref="GDTaskStatus.Faulted"/> state.
+        /// </summary>
+        /// <param name="exception">The exception to bind to this <see cref="GDTask"/>.</param>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
         [DebuggerHidden]
         public bool TrySetException(Exception exception)
         {
@@ -620,6 +667,13 @@ namespace GodotTask
             return TrySignalCompletion(GDTaskStatus.Faulted);
         }
 
+        /// <summary>
+        /// Gets the result of the underlying <see cref="GDTask"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method is used by the compiler to implement the await operator.
+        /// It is not intended to be called directly by user code.
+        /// </remarks>
         [DebuggerHidden]
         public void GetResult(short token)
         {
@@ -641,18 +695,40 @@ namespace GodotTask
             }
         }
 
+        /// <summary>
+        /// Gets the status of the underlying <see cref="GDTask"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method is used by the compiler to implement the await operator.
+        /// It is not intended to be called directly by user code.
+        /// </remarks>
         [DebuggerHidden]
         public GDTaskStatus GetStatus(short token)
         {
             return (GDTaskStatus)intStatus;
         }
 
+        /// <summary>
+        /// Gets the status of the underlying <see cref="GDTask"/> without validating the token
+        /// or checking if the task is completed.
+        /// </summary>
+        /// <remarks>
+        /// This method is used by the compiler to implement the await operator.
+        /// It is not intended to be called directly by user code.
+        /// </remarks>
         [DebuggerHidden]
         public GDTaskStatus UnsafeGetStatus()
         {
             return (GDTaskStatus)intStatus;
         }
 
+        /// <summary>
+        /// Schedules the continuation action for this operation.
+        /// </summary>
+        /// <remarks>
+        /// This method is used by the compiler to implement the await operator.
+        /// It is not intended to be called directly by user code.
+        /// </remarks>
         [DebuggerHidden]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
@@ -736,7 +812,22 @@ namespace GodotTask
         }
     }
 
-    internal class GDTaskCompletionSource<T> : IGDTaskSource<T>, IPromise<T>
+    /// <summary>
+    /// Represents the producer side of a <see cref="GDTask{T}"/> unbound to a delegate,
+    /// providing access to the consumer side through the <see cref="GDTask{T}"/> property.
+    /// </summary>
+    /// <remarks>
+    /// It is often the case that a <see cref="GDTask{T}"/> is desired to represent another asynchronous operation.
+    /// <see cref="GDTaskCompletionSource{T}">GDTaskCompletionSource{T}</see> is provided for this purpose. It enables
+    /// the creation of a task that can be handed out to consumers, and those consumers can use the members
+    /// of the task as they would any other. However, unlike most tasks, the state of a task created by a
+    /// GDTaskCompletionSource{T} is controlled explicitly by the methods on GDTaskCompletionSource{T}. This enables the
+    /// completion of the external asynchronous operation to be propagated to the underlying GDTask{T}. The
+    /// separation also ensures that consumers are not able to transition the state without access to the
+    /// corresponding GDTaskCompletionSource{T}.
+    /// </remarks>
+    /// <typeparam name="T">The type of the result value associated with this GDTask.</typeparam>
+    public class GDTaskCompletionSource<T> : IGDTaskSource<T>, IPromise<T>
     {
         private CancellationToken cancellationToken;
         private T result;
@@ -755,6 +846,7 @@ namespace GodotTask
         private int intStatus; // GDTaskStatus
         private bool handled = false;
 
+        /// <summary> Initializes a new instance of the <see cref="GDTaskCompletionSource{T}"/> class.</summary>
         public GDTaskCompletionSource()
         {
             TaskTracker.TrackActiveTask(this, 2);
@@ -770,12 +862,27 @@ namespace GodotTask
             }
         }
 
+        /// <summary>
+        /// Gets the <see cref="GDTask{T}"/> created
+        /// by this <see cref="GDTaskCompletionSource{T}"/>.
+        /// </summary>
+        /// <remarks>
+        /// This property enables a consumer access to the <see cref="GDTask{T}"/> that is controlled by this instance.
+        /// The <see cref="TrySetResult"/>, <see cref="TrySetException
+        /// (Exception)"/>, and <see cref="TrySetCanceled"/> methods (and their "Try" variants) on this instance
+        /// all result in the relevant state transitions on this underlying GDTask{T}.
+        /// </remarks>
         public GDTask<T> Task
         {
             [DebuggerHidden]
             get => new(this, 0);
         }
 
+        /// <summary>
+        /// Attempts to transition the underlying <see cref="GDTask{T}"/> into the <see cref="GDTaskStatus.Succeeded"/> state.
+        /// </summary>
+        /// <param name="result">The result to set.</param>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
         [DebuggerHidden]
         public bool TrySetResult(T result)
         {
@@ -785,6 +892,11 @@ namespace GodotTask
             return TrySignalCompletion(GDTaskStatus.Succeeded);
         }
 
+        /// <summary>
+        /// Attempts to transition the underlying <see cref="GDTask{T}"/> into the <see cref="GDTaskStatus.Canceled"/> state.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token to set.</param>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
         [DebuggerHidden]
         public bool TrySetCanceled(CancellationToken cancellationToken = default)
         {
@@ -794,6 +906,11 @@ namespace GodotTask
             return TrySignalCompletion(GDTaskStatus.Canceled);
         }
 
+        /// <summary>
+        /// Attempts to transition the underlying <see cref="GDTask{T}"/> into the <see cref="GDTaskStatus.Faulted"/> state.
+        /// </summary>
+        /// <param name="exception">The exception to set.</param>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
         [DebuggerHidden]
         public bool TrySetException(Exception exception)
         {
@@ -808,6 +925,15 @@ namespace GodotTask
             return TrySignalCompletion(GDTaskStatus.Faulted);
         }
 
+        /// <summary>
+        /// Gets the result of the underlying <see cref="GDTask{T}"/>.
+        /// </summary>
+        /// <param name="token">The token to use for the operation.</param>
+        /// <returns>The result of the operation.</returns>
+        /// <remarks>
+        /// This method is used by the compiler to implement the await operator.
+        /// It is not intended to be called directly by user code.
+        /// </remarks>
         [DebuggerHidden]
         public T GetResult(short token)
         {
@@ -835,18 +961,44 @@ namespace GodotTask
             GetResult(token);
         }
 
+        /// <summary>
+        /// Gets the status of the underlying <see cref="GDTask{T}"/>.
+        /// </summary>
+        /// <returns>The status of the task.</returns>
+        /// <remarks>
+        /// This method is used by the compiler to implement the await operator.
+        /// It is not intended to be called directly by user code.
+        /// </remarks>
         [DebuggerHidden]
         public GDTaskStatus GetStatus(short token)
         {
             return (GDTaskStatus)intStatus;
         }
 
+        /// <summary>
+        /// Gets the status of the underlying <see cref="GDTask{T}"/> without
+        /// </summary>
+        /// <returns>The status of the task.</returns>
+        /// <remarks>
+        /// This method is used by the compiler to implement the await operator.
+        /// It is not intended to be called directly by user code.
+        /// </remarks>
         [DebuggerHidden]
         public GDTaskStatus UnsafeGetStatus()
         {
             return (GDTaskStatus)intStatus;
         }
 
+        /// <summary>
+        /// Schedules the continuation action for this operation.
+        /// </summary>
+        /// <param name="continuation">The continuation action to schedule.</param>
+        /// <param name="state">The state to pass to the continuation action.</param>
+        /// <param name="token">The token to use for the operation.</param>
+        /// <remarks>
+        /// This method is used by the compiler to implement the await operator.
+        /// It is not intended to be called directly by user code.
+        /// </remarks>
         [DebuggerHidden]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {

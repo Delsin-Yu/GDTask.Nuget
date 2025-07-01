@@ -5,6 +5,7 @@
     <LangVersion>13</LangVersion>
     <RootNamespace>GDTask.Tests</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../GDTask/GDTask.csproj" />

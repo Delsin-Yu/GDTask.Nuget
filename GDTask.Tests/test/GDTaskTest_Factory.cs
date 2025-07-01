@@ -5,7 +5,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
-using GdUnit4.Exceptions;
 
 namespace GodotTask.Tests;
 
@@ -179,7 +178,7 @@ public partial class GDTaskTest_Factory
     public static async Task GDTask_Void_Token()
     {
         var finished = false;
-        OperationCanceledException exception = null;
+        OperationCanceledException? exception = null;
         GDTask.Void(
             async cancellationToken =>
             {
@@ -226,7 +225,7 @@ public partial class GDTaskTest_Factory
     public static async Task GDTask_Action_Token()
     {
         var finished = false;
-        OperationCanceledException exception = null;
+        OperationCanceledException? exception = null;
         var call = GDTask.Action(
             async cancellationToken =>
             {

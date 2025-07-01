@@ -32,6 +32,10 @@ enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
 import/blender/enabled=false
 import/fbx/enabled=false
 
+[gdunit4]
+
+settings/test/test_timeout_seconds=5
+
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true

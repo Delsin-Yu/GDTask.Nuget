@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
-using GdUnit4.Exceptions;
 
 namespace GodotTask.Tests;
 

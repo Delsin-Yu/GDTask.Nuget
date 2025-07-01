@@ -9,7 +9,7 @@ namespace GodotTask.Tests;
 internal static class Constants
 {
     internal const int ReturnValue = 5;
-    internal const int DelayTime = 100;
+    internal const int DelayTime = 500;
     internal const int DelayFrames = 5;
 
     internal static readonly TimeSpan DelayTimeSpan = TimeSpan.FromMilliseconds(DelayTime);

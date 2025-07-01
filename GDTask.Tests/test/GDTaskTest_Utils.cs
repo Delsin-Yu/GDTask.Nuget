@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
-using GdUnit4.Exceptions;
 
 namespace GodotTask.Tests;
 
@@ -138,7 +137,7 @@ public class GDTaskTest_Utils
     {
         await GDTask.SwitchToMainThread();
 
-        Exception exception = null;
+        Exception? exception = null;
         Constants.Throw().Forget(exp => exception = exp);
         await GDTask.WaitUntil(() => exception != null);
         Assertions.AssertThat(exception is ExpectedException);
@@ -149,7 +148,7 @@ public class GDTaskTest_Utils
     {
         await GDTask.SwitchToMainThread();
 
-        Exception exception = null;
+        Exception? exception = null;
         Constants.ThrowT().Forget(exp => exception = exp);
         await GDTask.WaitUntil(() => exception != null);
         Assertions.AssertThat(exception is ExpectedException);
