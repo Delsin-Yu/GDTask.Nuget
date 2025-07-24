@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using GodotTask.Internal;
@@ -705,6 +705,30 @@ namespace GodotTask
         public static async GDTask<TReturn> ContinueWith<T, TReturn>(this GDTask<T> task, Func<T, GDTask<TReturn>> continuationFunction)
         {
             return await continuationFunction(await task);
+        }
+
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
+        public static async GDTask ContinueWith<T>(this GDTask<T> task, Action continuationFunction) {
+            await task;
+            continuationFunction();
+        }
+
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
+        public static async GDTask ContinueWith<T>(this GDTask<T> task, Func<GDTask> continuationFunction) {
+            await task;
+            await continuationFunction();
+        }
+
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
+        public static async GDTask<TR> ContinueWith<T, TR>(this GDTask<T> task, Func<TR> continuationFunction) {
+            await task;
+            return continuationFunction();
+        }
+
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
+        public static async GDTask<TR> ContinueWith<T, TR>(this GDTask<T> task, Func<GDTask<TR>> continuationFunction) {
+            await task;
+            return await continuationFunction();
         }
 
         /// <inheritdoc cref="ContinueWith{T}(GDTask{T},System.Action{T})"/>
