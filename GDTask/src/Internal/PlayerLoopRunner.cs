@@ -8,23 +8,14 @@ namespace GodotTask.Internal
     {
         private const int InitialSize = 16;
 
-        private readonly PlayerLoopTiming timing;
         private readonly object runningAndQueueLock = new object();
         private readonly object arrayLock = new object();
-        private readonly Action<Exception> unhandledExceptionCallback;
+        private readonly Action<Exception> unhandledExceptionCallback= ex => GD.PrintErr(ex);
 
         private int tail = 0;
         private bool running = false;
         private IPlayerLoopItem[] loopItems = new IPlayerLoopItem[InitialSize];
         private readonly MinimumQueue<IPlayerLoopItem> waitQueue = new MinimumQueue<IPlayerLoopItem>(InitialSize);
-
-
-
-        public PlayerLoopRunner(PlayerLoopTiming timing)
-        {
-            unhandledExceptionCallback = ex => GD.PrintErr(ex);
-            this.timing = timing;
-        }
 
         public void AddAction(IPlayerLoopItem item)
         {

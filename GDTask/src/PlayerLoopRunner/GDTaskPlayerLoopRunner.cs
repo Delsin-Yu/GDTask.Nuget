@@ -49,7 +49,9 @@ namespace GodotTask
         public static void AddAction(PlayerLoopTiming timing, IPlayerLoopItem action) => Global.LocalAddAction(timing, action);
         public static void ThrowInvalidLoopTiming(PlayerLoopTiming playerLoopTiming) => throw new InvalidOperationException("Target playerLoopTiming is not injected. Please check PlayerLoopHelper.Initialize. PlayerLoopTiming:" + playerLoopTiming);
         public static void AddContinuation(PlayerLoopTiming timing, Action continuation) => Global.LocalAddContinuation(timing, continuation);
-
+        public static void AddDeferredAction(IPlayerLoopItem action) => Global.LocalAddDeferredAction(action);
+        public static void AddDeferredContinuation(Action continuation) => Global.LocalAddDeferredContinuation(continuation);
+        
         public void LocalAddAction(PlayerLoopTiming timing, IPlayerLoopItem action)
         {
             var runner = runners[(int)timing];
@@ -69,6 +71,16 @@ namespace GodotTask
                 ThrowInvalidLoopTiming(timing);
             }
             q!.Enqueue(continuation);
+        }
+        
+        public void LocalAddDeferredAction(IPlayerLoopItem action)
+        {
+            deferredRunner.AddAction(action);
+        }
+        
+        public void LocalAddDeferredContinuation(Action continuation)
+        {
+            deferredYielder.Enqueue(continuation);
         }
 
         private GDTaskPlayerLoopRunner() { }
@@ -103,7 +115,9 @@ namespace GodotTask
         private static GDTaskPlayerLoopRunner s_Global;
         private int mainThreadId;
         private ContinuationQueue[] yielders;
+        private ContinuationQueue deferredYielder;
         private PlayerLoopRunner[] runners;
+        private PlayerLoopRunner deferredRunner;
         
         
         public override void _Ready()
@@ -124,18 +138,10 @@ namespace GodotTask
         private void Initialize()
         {
             mainThreadId = System.Environment.CurrentManagedThreadId;
-            yielders = new[] {
-                new ContinuationQueue(PlayerLoopTiming.Process),
-                new ContinuationQueue(PlayerLoopTiming.PhysicsProcess),
-                new ContinuationQueue(PlayerLoopTiming.IsolatedProcess),
-                new ContinuationQueue(PlayerLoopTiming.IsolatedPhysicsProcess),
-            };
-            runners = new[] {
-                new PlayerLoopRunner(PlayerLoopTiming.Process),
-                new PlayerLoopRunner(PlayerLoopTiming.PhysicsProcess),
-                new PlayerLoopRunner(PlayerLoopTiming.IsolatedProcess),
-                new PlayerLoopRunner(PlayerLoopTiming.IsolatedPhysicsProcess),
-            };
+            yielders = [new(), new(), new(), new()];
+            runners = [new(), new(), new(), new()];
+            deferredYielder = new();
+            deferredRunner = new();
         }
 
         public override void _Notification(int what)
@@ -158,6 +164,7 @@ namespace GodotTask
         {
             yielders[(int)PlayerLoopTiming.Process].Run();
             runners[(int)PlayerLoopTiming.Process].Run();
+            CallDeferred(MethodName.DeferredProcess);
         }
 
         public override void _PhysicsProcess(double delta)
@@ -176,6 +183,12 @@ namespace GodotTask
         {
             yielders[(int)PlayerLoopTiming.IsolatedPhysicsProcess].Run();
             runners[(int)PlayerLoopTiming.IsolatedPhysicsProcess].Run();
+        }
+
+        public void DeferredProcess()
+        {
+            deferredYielder.Run();
+            deferredRunner.Run();
         }
     }
 }

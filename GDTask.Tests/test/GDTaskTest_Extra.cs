@@ -10,6 +10,8 @@ public class GDTaskTest_Extra
     [TestCase]
     public static async Task FirstCallIsSwitchToThreadIssue()
     {
+        await GDTask.NextFrame();
+        
         var mainThreadId = System.Environment.CurrentManagedThreadId;
         Assertions.AssertThat(Thread.CurrentThread.IsThreadPoolThread).IsFalse();
 

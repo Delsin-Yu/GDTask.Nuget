@@ -9,8 +9,6 @@ namespace GodotTask.Internal
         private const int MaxArrayLength = 0X7FEFFFFF;
         private const int InitialSize = 16;
 
-        private readonly PlayerLoopTiming timing;
-
         private SpinLock gate = new SpinLock(false);
         private bool dequeuing = false;
 
@@ -19,12 +17,7 @@ namespace GodotTask.Internal
 
         private int waitingListCount = 0;
         private Action[] waitingList = new Action[InitialSize];
-
-        public ContinuationQueue(PlayerLoopTiming timing)
-        {
-            this.timing = timing;
-        }
-
+        
         public void Enqueue(Action continuation)
         {
             bool lockTaken = false;

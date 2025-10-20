@@ -15,7 +15,7 @@
 
     <Title>GDTask</Title>
     <PackageId>GDTask</PackageId>
-    <PackageVersion>1.5.0</PackageVersion>
+    <PackageVersion>1.6.0</PackageVersion>
     <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
     <Description>Provides an efficient async/await integration to Godot 4.1+</Description>
     <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
