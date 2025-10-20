@@ -29,3 +29,4 @@ tests/metadata.json
 # MacOS
 .DS_Store
 GDTask/nupkg
+GDTask.Tests/reports

@@ -1,2 +1,2 @@
-﻿global using TestFailedException = GdUnit4.Exceptions.TestFailedException;
+﻿global using TestFailedException = GdUnit4.Core.Execution.Exceptions.TestFailedException;
 

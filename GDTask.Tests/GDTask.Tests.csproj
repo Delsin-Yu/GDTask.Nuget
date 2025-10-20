@@ -1,4 +1,4 @@
-<Project Sdk="Godot.NET.Sdk/4.4.0">
+<Project Sdk="Godot.NET.Sdk/4.5.1">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../GDTask/GDTask.csproj" />
-    <PackageReference Include="gdUnit4.api" Version="4.3.1" />
+    <PackageReference Include="gdUnit4.api" Version="5.0.0" />
     <PackageReference Include="System.Reactive" Version="*" />
   </ItemGroup>
 </Project>
