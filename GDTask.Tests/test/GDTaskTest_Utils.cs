@@ -192,6 +192,7 @@ public class GDTaskTest_Utils
         await GDTask.SwitchToMainThread();
         var result = -1;
         await Constants.DelayWithReturn().ContinueWith((Action<int>)(value => result = value));
+        await Constants.DelayWithReturn().ContinueWith(() => { });
         Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
     }
 
@@ -199,8 +200,10 @@ public class GDTaskTest_Utils
     public static async Task GDTaskT_ContinueWithT()
     {
         await GDTask.SwitchToMainThread();
-        var result = await Constants.DelayWithReturn().ContinueWith(value => value);
-        Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
+        var result1 = await Constants.DelayWithReturn().ContinueWith(value => value);
+        var result2 = await Constants.DelayWithReturn().ContinueWith(() => Constants.ReturnValue);
+        Assertions.AssertThat(result1).IsEqual(Constants.ReturnValue);
+        Assertions.AssertThat(result2).IsEqual(Constants.ReturnValue);
     }
 
     [TestCase]
@@ -215,6 +218,7 @@ public class GDTaskTest_Utils
                 return Constants.Delay();
             }
         );
+        await Constants.DelayWithReturn().ContinueWith(() => Constants.Delay());
         Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
     }
 
