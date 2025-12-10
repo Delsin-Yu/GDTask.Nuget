@@ -1,6 +1,5 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
-
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -88,8 +87,8 @@ public class GDTaskTest_Core
         Assertions.AssertThat(gdTask.ToString()).IsEqual($"({GDTaskStatus.Pending})");
         await gdTask;
     }
-
-    [TestCase, RequireGodotRuntime]
+    
+    [TestCase]
     public static async Task GDTaskT_Result()
     {
         await Constants.WaitForTaskReadyAsync();

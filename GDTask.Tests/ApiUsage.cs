@@ -19,11 +19,11 @@ public partial class ApiUsage : Node
 	public static async GDTask ApiUsage_Method()
 	{
 		// Delay the execution after frame(s).
-		await GDTask.DelayFrame(100); 
-		
+		await GDTask.DelayFrame(100);
+
 		// Delay the execution after delayTimeSpan.
 		await GDTask.Delay(TimeSpan.FromSeconds(10), DelayType.Realtime);
-    
+
 		// Delay the execution until the next Process.
 		await GDTask.Yield(PlayerLoopTiming.Process);
 

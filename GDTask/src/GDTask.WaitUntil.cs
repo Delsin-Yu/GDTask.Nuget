@@ -73,6 +73,7 @@ namespace GodotTask
             private GodotObject target;
             private Func<bool> predicate;
             private CancellationToken cancellationToken;
+            private CancellationToken globalCancellationToken;
 
             private GDTaskCompletionSourceCore<object> core;
 
@@ -95,6 +96,7 @@ namespace GodotTask
                 result.target = target;
                 result.predicate = predicate;
                 result.cancellationToken = cancellationToken;
+                result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
 
                 TaskTracker.TrackActiveTask(result, 3);
 
@@ -136,6 +138,12 @@ namespace GodotTask
                 if (cancellationToken.IsCancellationRequested || (target is not null && !GodotObject.IsInstanceValid(target))) // Cancel when destroyed
                 {
                     core.TrySetCanceled(cancellationToken);
+                    return false;
+                }
+
+                if (globalCancellationToken.IsCancellationRequested)
+                {
+                    core.TrySetCanceled();
                     return false;
                 }
 
@@ -180,6 +188,7 @@ namespace GodotTask
             private GodotObject target;
             private Func<bool> predicate;
             private CancellationToken cancellationToken;
+            private CancellationToken globalCancellationToken;
 
             private GDTaskCompletionSourceCore<object> core;
 
@@ -202,6 +211,7 @@ namespace GodotTask
                 result.target = target;
                 result.predicate = predicate;
                 result.cancellationToken = cancellationToken;
+                result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
 
                 TaskTracker.TrackActiveTask(result, 3);
 
@@ -246,6 +256,12 @@ namespace GodotTask
                     return false;
                 }
 
+                if (globalCancellationToken.IsCancellationRequested)
+                {
+                    core.TrySetCanceled();
+                    return false;
+                }
+
                 try
                 {
                     if (predicate())
@@ -286,6 +302,7 @@ namespace GodotTask
 
             private GodotObject target;
             private CancellationToken cancellationToken;
+            private CancellationToken globalCancellationToken;
 
             private GDTaskCompletionSourceCore<object> core;
 
@@ -307,6 +324,7 @@ namespace GodotTask
 
                 result.target = target;
                 result.cancellationToken = cancellationToken;
+                result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
 
                 TaskTracker.TrackActiveTask(result, 3);
 
@@ -351,6 +369,12 @@ namespace GodotTask
                     return false;
                 }
 
+                if (globalCancellationToken.IsCancellationRequested)
+                {
+                    core.TrySetCanceled();
+                    return false;
+                }
+
                 return true;
             }
 
@@ -381,6 +405,7 @@ namespace GodotTask
             private Func<T, U> monitorFunction;
             private IEqualityComparer<U> equalityComparer;
             private CancellationToken cancellationToken;
+            private CancellationToken globalCancellationToken;
 
             private GDTaskCompletionSourceCore<U> core;
 
@@ -406,6 +431,7 @@ namespace GodotTask
                 result.currentValue = monitorFunction(target);
                 result.equalityComparer = equalityComparer ?? GodotEqualityComparer.GetDefault<U>();
                 result.cancellationToken = cancellationToken;
+                result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
 
                 TaskTracker.TrackActiveTask(result, 3);
 
@@ -452,6 +478,12 @@ namespace GodotTask
                 if (cancellationToken.IsCancellationRequested || (target is not null && !GodotObject.IsInstanceValid(targetGodotObject))) // Cancel when destroyed
                 {
                     core.TrySetCanceled(cancellationToken);
+                    return false;
+                }
+
+                if (globalCancellationToken.IsCancellationRequested)
+                {
+                    core.TrySetCanceled();
                     return false;
                 }
 
@@ -504,6 +536,7 @@ namespace GodotTask
             private Func<T, U> monitorFunction;
             private IEqualityComparer<U> equalityComparer;
             private CancellationToken cancellationToken;
+            private CancellationToken globalCancellationToken;
 
             private GDTaskCompletionSourceCore<U> core;
 
@@ -528,6 +561,7 @@ namespace GodotTask
                 result.currentValue = monitorFunction(target);
                 result.equalityComparer = equalityComparer ?? GodotEqualityComparer.GetDefault<U>();
                 result.cancellationToken = cancellationToken;
+                result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
 
                 TaskTracker.TrackActiveTask(result, 3);
 
@@ -574,6 +608,12 @@ namespace GodotTask
                 if (cancellationToken.IsCancellationRequested || !target.TryGetTarget(out var t)) // doesn't find = cancel.
                 {
                     core.TrySetCanceled(cancellationToken);
+                    return false;
+                }
+
+                if (globalCancellationToken.IsCancellationRequested)
+                {
+                    core.TrySetCanceled();
                     return false;
                 }
 
