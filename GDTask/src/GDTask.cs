@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
+using Godot;
 using GodotTask.CompilerServices;
 
 namespace GodotTask
@@ -82,6 +83,14 @@ namespace GodotTask
         {
             if (source == null) return "()";
             return $"({source.UnsafeGetStatus()})";
+        }
+
+        /// <summary>
+        /// Returns the <see cref="GDTaskPlayerLoopRunner"/> node.<br/>
+        /// To stop every running <see cref="GDTask"/>, run <see cref="Node.QueueFree"/> on the node.
+        /// </summary>
+        public static Node GetPlayerLoopRunner() {
+            return GDTaskPlayerLoopRunner.Global;
         }
 
         /// <summary>
