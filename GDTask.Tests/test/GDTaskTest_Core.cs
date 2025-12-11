@@ -1,5 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
@@ -87,7 +88,35 @@ public class GDTaskTest_Core
         Assertions.AssertThat(gdTask.ToString()).IsEqual($"({GDTaskStatus.Pending})");
         await gdTask;
     }
-    
+
+    [TestCase]
+    public static async Task GDTask_CancelAllTasks()
+    {
+        var number = 0;
+        async GDTask delayIncrementNumberTwice()
+        {
+            await GDTask.Delay(TimeSpan.FromSeconds(0.2));
+            number++;
+            await GDTask.Delay(TimeSpan.FromSeconds(0.2));
+            number++;
+        }
+
+        var canceled = false;
+        try
+        {
+            var task = delayIncrementNumberTwice();
+            await GDTask.Delay(TimeSpan.FromSeconds(0.3));
+            GDTask.CancelAllTasks();
+            await task;
+        }
+        catch (OperationCanceledException)
+        {
+            canceled = true;
+        }
+        Assertions.AssertThat(canceled).IsTrue();
+        Assertions.AssertThat(number).IsEqual(1);
+    }
+
     [TestCase]
     public static async Task GDTaskT_Result()
     {
