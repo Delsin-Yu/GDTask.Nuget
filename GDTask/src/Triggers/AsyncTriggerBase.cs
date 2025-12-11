@@ -1,7 +1,6 @@
 ﻿using Godot;
 using System;
 using System.Threading;
-using static Godot.HttpRequest;
 
 namespace GodotTask.Triggers
 {
