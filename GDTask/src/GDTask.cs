@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Godot;
 using GodotTask.CompilerServices;
 
@@ -86,11 +87,19 @@ namespace GodotTask
         }
 
         /// <summary>
-        /// Returns the <see cref="GDTaskPlayerLoopRunner"/> node.<br/>
-        /// To stop every running <see cref="GDTask"/>, run <see cref="Node.QueueFree"/> on the node.
+        /// Cancels every running <see cref="GDTask"/>, causing them to throw an <see cref="OperationCanceledException"/>.<br/>
+        /// This is equivalent to calling <see cref="CancellationTokenSource.Cancel()"/> for each <see cref="GDTask"/>.
         /// </summary>
-        public static Node GetPlayerLoopRunner() {
-            return GDTaskPlayerLoopRunner.Global;
+        public static void CancelAllTasks() {
+            GDTaskPlayerLoopRunner.CancelAllTasks();
+        }
+
+        /// <summary>
+        /// Aborts every running <see cref="GDTask"/>, causing them to stop their execution irrecoverably.<br/>
+        /// Prefer <see cref="CancelAllTasks()"/> which causes tasks to throw an <see cref="OperationCanceledException"/>.
+        /// </summary>
+        public static void AbortAllTasks() {
+            GDTaskPlayerLoopRunner.Global.QueueFree();
         }
 
         /// <summary>

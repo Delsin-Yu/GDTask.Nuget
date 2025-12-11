@@ -113,12 +113,12 @@ namespace GodotTask
         public double PhysicsDeltaTime => GetPhysicsProcessDeltaTime();
 
         private static GDTaskPlayerLoopRunner s_Global;
+        private static long globalCancelCounter;
         private int mainThreadId;
         private ContinuationQueue[] yielders;
         private ContinuationQueue deferredYielder;
         private PlayerLoopRunner[] runners;
         private PlayerLoopRunner deferredRunner;
-        
         
         public override void _Ready()
         {
@@ -190,6 +190,14 @@ namespace GodotTask
             deferredYielder.Run();
             deferredRunner.Run();
         }
+
+        public static void CancelAllTasks()
+        {
+            Interlocked.Increment(ref globalCancelCounter);
+        }
+        public static long GetGlobalCancelCounter()
+        {
+            return Interlocked.Read(ref globalCancelCounter);
+        }
     }
 }
-

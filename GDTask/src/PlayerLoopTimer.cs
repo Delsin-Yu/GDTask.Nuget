@@ -1,13 +1,14 @@
-﻿using System.Threading;
-using System;
-using Godot;
+﻿using Godot;
 using GodotTask.Internal;
+using System;
+using System.Threading;
 
 namespace GodotTask
 {
     internal abstract class PlayerLoopTimer : IDisposable, IPlayerLoopItem
     {
         private readonly CancellationToken cancellationToken;
+        private readonly long expectedGlobalCancelCounter;
         private readonly Action<object> timerCallback;
         private readonly object state;
         private readonly PlayerLoopTiming playerLoopTiming;
@@ -22,6 +23,7 @@ namespace GodotTask
             this.periodic = periodic;
             this.playerLoopTiming = playerLoopTiming;
             this.cancellationToken = cancellationToken;
+            expectedGlobalCancelCounter = GDTaskPlayerLoopRunner.GetGlobalCancelCounter();
             this.timerCallback = timerCallback;
             this.state = state;
         }
@@ -111,6 +113,11 @@ namespace GodotTask
                 return false;
             }
             if (cancellationToken.IsCancellationRequested)
+            {
+                isRunning = false;
+                return false;
+            }
+            if (expectedGlobalCancelCounter < GDTaskPlayerLoopRunner.GetGlobalCancelCounter())
             {
                 isRunning = false;
                 return false;

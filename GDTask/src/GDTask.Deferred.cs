@@ -31,6 +31,7 @@ public partial struct GDTask
         }
 
         private CancellationToken cancellationToken;
+        private long expectedGlobalCancelCounter;
         private GDTaskCompletionSourceCore<object> core;
 
         private DeferredPromise()
@@ -49,8 +50,9 @@ public partial struct GDTask
             {
                 result = new DeferredPromise();
             }
-
+            
             result.cancellationToken = cancellationToken;
+            result.expectedGlobalCancelCounter = GDTaskPlayerLoopRunner.GetGlobalCancelCounter();
             
             TaskTracker.TrackActiveTask(result, 3);
             
@@ -92,6 +94,12 @@ public partial struct GDTask
             if (cancellationToken.IsCancellationRequested)
             {
                 core.TrySetCanceled(cancellationToken);
+                return false;
+            }
+
+            if (expectedGlobalCancelCounter < GDTaskPlayerLoopRunner.GetGlobalCancelCounter())
+            {
+                core.TrySetCanceled();
                 return false;
             }
 

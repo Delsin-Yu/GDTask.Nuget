@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Godot;
+using System;
 using System.Threading;
-using Godot;
+using static Godot.HttpRequest;
 
 namespace GodotTask.Triggers
 {
@@ -65,6 +66,7 @@ namespace GodotTask.Triggers
         private readonly AsyncTriggerBase<T> trigger;
 
         private CancellationToken cancellationToken;
+        private long expectedGlobalCancelCounter;
         private CancellationTokenRegistration registration;
         private bool isDisposed;
         private bool callOnce;
@@ -86,6 +88,7 @@ namespace GodotTask.Triggers
 
             this.trigger = trigger;
             cancellationToken = default;
+            expectedGlobalCancelCounter = GDTaskPlayerLoopRunner.GetGlobalCancelCounter();
             registration = default;
             this.callOnce = callOnce;
 
@@ -97,6 +100,11 @@ namespace GodotTask.Triggers
         internal AsyncTriggerHandler(AsyncTriggerBase<T> trigger, CancellationToken cancellationToken, bool callOnce)
         {
             if (cancellationToken.IsCancellationRequested)
+            {
+                isDisposed = true;
+                return;
+            }
+            if (expectedGlobalCancelCounter < GDTaskPlayerLoopRunner.GetGlobalCancelCounter())
             {
                 isDisposed = true;
                 return;
