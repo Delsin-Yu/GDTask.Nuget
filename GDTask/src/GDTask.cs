@@ -87,19 +87,11 @@ namespace GodotTask
         }
 
         /// <summary>
-        /// Cancels every running <see cref="GDTask"/>, causing them to throw an <see cref="OperationCanceledException"/>.<br/>
-        /// This is equivalent to calling <see cref="CancellationTokenSource.Cancel()"/> for each <see cref="GDTask"/>.
+        /// Cancels all running <see cref="GDTask"/>s, causing them to throw an <see cref="OperationCanceledException"/>.<br/>
+        /// This is equivalent to calling <see cref="CancellationTokenSource.Cancel()"/> for each <see cref="GDTask"/>'s <see cref="CancellationToken"/>.
         /// </summary>
         public static void CancelAllTasks() {
             GDTaskPlayerLoopRunner.CancelAllTasks();
-        }
-
-        /// <summary>
-        /// Aborts every running <see cref="GDTask"/>, causing them to stop their execution irrecoverably.<br/>
-        /// Prefer <see cref="CancelAllTasks()"/> which causes tasks to throw an <see cref="OperationCanceledException"/>.
-        /// </summary>
-        public static void AbortAllTasks() {
-            GDTaskPlayerLoopRunner.Global.QueueFree();
         }
 
         /// <summary>
