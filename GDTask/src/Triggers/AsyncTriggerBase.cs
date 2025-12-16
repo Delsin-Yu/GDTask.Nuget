@@ -103,14 +103,10 @@ namespace GodotTask.Triggers
                 isDisposed = true;
                 return;
             }
-            if (expectedGlobalCancelCounter < GDTaskPlayerLoopRunner.GetGlobalCancelCounter())
-            {
-                isDisposed = true;
-                return;
-            }
 
             this.trigger = trigger;
             this.cancellationToken = cancellationToken;
+            expectedGlobalCancelCounter = GDTaskPlayerLoopRunner.GetGlobalCancelCounter();
             this.callOnce = callOnce;
 
             trigger.AddHandler(this);
