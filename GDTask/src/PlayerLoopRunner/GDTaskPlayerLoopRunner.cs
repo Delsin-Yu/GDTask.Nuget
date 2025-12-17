@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Godot;
-using GodotTask.CompilerServices;
 using GodotTask.Internal;
 
 [assembly: InternalsVisibleTo("GDTask.Tests")]
@@ -113,7 +112,7 @@ namespace GodotTask
         public double PhysicsDeltaTime => GetPhysicsProcessDeltaTime();
 
         private static GDTaskPlayerLoopRunner s_Global;
-        private static long globalCancelCounter;
+        private static CancellationTokenSource globalCancellationTokenSource = new();
         private int mainThreadId;
         private ContinuationQueue[] yielders;
         private ContinuationQueue deferredYielder;
@@ -193,11 +192,13 @@ namespace GodotTask
 
         public static void CancelAllTasks()
         {
-            Interlocked.Increment(ref globalCancelCounter);
+            var oldGlobalCancellationTokenSource = Interlocked.Exchange(ref globalCancellationTokenSource, new CancellationTokenSource());
+            oldGlobalCancellationTokenSource.Cancel();
+            oldGlobalCancellationTokenSource.Dispose();
         }
-        public static long GetGlobalCancelCounter()
+        public static CancellationToken GetGlobalCancellationToken()
         {
-            return Interlocked.Read(ref globalCancelCounter);
+            return globalCancellationTokenSource.Token;
         }
     }
 }

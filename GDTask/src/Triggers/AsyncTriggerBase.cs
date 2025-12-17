@@ -65,7 +65,7 @@ namespace GodotTask.Triggers
         private readonly AsyncTriggerBase<T> trigger;
 
         private CancellationToken cancellationToken;
-        private long expectedGlobalCancelCounter;
+        private CancellationToken globalCancellationToken;
         private CancellationTokenRegistration registration;
         private bool isDisposed;
         private bool callOnce;
@@ -87,7 +87,7 @@ namespace GodotTask.Triggers
 
             this.trigger = trigger;
             cancellationToken = default;
-            expectedGlobalCancelCounter = GDTaskPlayerLoopRunner.GetGlobalCancelCounter();
+            globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
             registration = default;
             this.callOnce = callOnce;
 
@@ -106,7 +106,7 @@ namespace GodotTask.Triggers
 
             this.trigger = trigger;
             this.cancellationToken = cancellationToken;
-            expectedGlobalCancelCounter = GDTaskPlayerLoopRunner.GetGlobalCancelCounter();
+            globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
             this.callOnce = callOnce;
 
             trigger.AddHandler(this);
