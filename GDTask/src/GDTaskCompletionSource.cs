@@ -583,7 +583,13 @@ namespace GodotTask
     {
         private CancellationToken cancellationToken;
         private ExceptionHolder exception;
+
+#if NET9_0_OR_GREATER
+        private Lock gate;
+#else
         private object gate;
+#endif
+
         private Action<object> singleContinuation;
         private object singleState;
         private List<(Action<object>, object)> secondaryContinuationList;
@@ -734,7 +740,11 @@ namespace GodotTask
         {
             if (gate == null)
             {
+#if NET9_0_OR_GREATER
+                Interlocked.CompareExchange(ref gate, new Lock(), null);
+#else
                 Interlocked.CompareExchange(ref gate, new object(), null);
+#endif
             }
 
             var lockGate = Volatile.Read(ref gate);
@@ -769,7 +779,11 @@ namespace GodotTask
             {
                 if (gate == null)
                 {
+#if NET9_0_OR_GREATER
+                    Interlocked.CompareExchange(ref gate, new Lock(), null);
+#else
                     Interlocked.CompareExchange(ref gate, new object(), null);
+#endif
                 }
 
                 var lockGate = Volatile.Read(ref gate);
