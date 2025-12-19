@@ -31,6 +31,7 @@ public partial struct GDTask
         }
 
         private CancellationToken cancellationToken;
+        private CancellationToken globalCancellationToken;
         private GDTaskCompletionSourceCore<object> core;
 
         private DeferredPromise()
@@ -49,8 +50,9 @@ public partial struct GDTask
             {
                 result = new DeferredPromise();
             }
-
+            
             result.cancellationToken = cancellationToken;
+            result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
             
             TaskTracker.TrackActiveTask(result, 3);
             
@@ -95,6 +97,12 @@ public partial struct GDTask
                 return false;
             }
 
+            if (globalCancellationToken.IsCancellationRequested)
+            {
+                core.TrySetCanceled();
+                return false;
+            }
+
             core.TrySetResult(null);
             return false;
         }
@@ -113,10 +121,19 @@ public partial struct GDTask
     /// </summary>
     public readonly struct DeferredAwaitable
     {
+        private readonly CancellationToken globalCancellationToken;
+
+        /// <summary>
+        /// Initializes the <see cref="DeferredAwaitable"/>.
+        /// </summary>
+        public DeferredAwaitable() {
+            globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
+        }
+
         /// <summary>
         /// Gets an awaiter used to await this <see cref="DeferredAwaitable"/>.
         /// </summary>
-        public Awaiter GetAwaiter() => new Awaiter();
+        public Awaiter GetAwaiter() => new Awaiter(globalCancellationToken);
 
         /// <summary>
         /// Creates a <see cref="GDTask"/> that represents this <see cref="DeferredAwaitable"/>.
@@ -131,10 +148,21 @@ public partial struct GDTask
         /// </summary>
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
+            private readonly CancellationToken globalCancellationToken;
+
             /// <summary>
-            /// Do nothing
+            /// Initializes the <see cref="Awaiter"/>.
             /// </summary>
-            public void GetResult() { }
+            internal Awaiter(CancellationToken globalCancellationToken) {
+                this.globalCancellationToken = globalCancellationToken;
+            }
+
+            /// <summary>
+            /// Ends the awaiting on the completed <see cref="DeferredAwaitable"/>.
+            /// </summary>
+            public void GetResult() {
+                globalCancellationToken.ThrowIfCancellationRequested();
+            }
             
             /// <summary>
             /// Gets whether this <see cref="YieldAwaitable">Task</see> has completed, always returns false.

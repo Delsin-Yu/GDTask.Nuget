@@ -113,17 +113,19 @@ namespace GodotTask
     {
         private readonly PlayerLoopTiming playerLoopTiming;
         private readonly CancellationToken cancellationToken;
+        private readonly CancellationToken globalCancellationToken;
 
         internal SwitchToMainThreadAwaitable(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
         {
             this.playerLoopTiming = playerLoopTiming;
             this.cancellationToken = cancellationToken;
+            globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
         }
 
         /// <summary>
         /// Gets an awaiter used to await this <see cref="SwitchToMainThreadAwaitable"/>.
         /// </summary>
-        public Awaiter GetAwaiter() => new Awaiter(playerLoopTiming, cancellationToken);
+        public Awaiter GetAwaiter() => new Awaiter(playerLoopTiming, cancellationToken, globalCancellationToken);
 
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="SwitchToMainThreadAwaitable"/>.
@@ -132,14 +134,13 @@ namespace GodotTask
         {
             private readonly PlayerLoopTiming playerLoopTiming;
             private readonly CancellationToken cancellationToken;
-            
-            /// <summary>
-            /// Initializes the <see cref="Awaiter"/>.
-            /// </summary>
-            public Awaiter(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
+            private readonly CancellationToken globalCancellationToken;
+
+            internal Awaiter(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, CancellationToken globalCancellationToken)
             {
                 this.playerLoopTiming = playerLoopTiming;
                 this.cancellationToken = cancellationToken;
+                this.globalCancellationToken = globalCancellationToken;
             }
 
             /// <summary>
@@ -164,7 +165,10 @@ namespace GodotTask
             /// <summary>
             /// Ends the awaiting on the completed <see cref="SwitchToMainThreadAwaitable"/>.
             /// </summary>
-            public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
+            public void GetResult() {
+                cancellationToken.ThrowIfCancellationRequested();
+                globalCancellationToken.ThrowIfCancellationRequested();
+            }
 
             /// <summary>
             /// Schedules the continuation onto the <see cref="SwitchToMainThreadAwaitable"/> associated with this <see cref="Awaiter"/>.
@@ -191,11 +195,13 @@ namespace GodotTask
     {
         private readonly PlayerLoopTiming playerLoopTiming;
         private readonly CancellationToken cancellationToken;
+        private readonly CancellationToken globalCancellationToken;
 
         internal ReturnToMainThread(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
         {
             this.playerLoopTiming = playerLoopTiming;
             this.cancellationToken = cancellationToken;
+            this.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
         }
 
         /// <summary>
@@ -203,7 +209,7 @@ namespace GodotTask
         /// </summary>
         public Awaiter DisposeAsync()
         {
-            return new Awaiter(playerLoopTiming, cancellationToken); // run immediate.
+            return new Awaiter(playerLoopTiming, cancellationToken, globalCancellationToken); // run immediate.
         }
 
         /// <summary>
@@ -213,14 +219,13 @@ namespace GodotTask
         {
             private readonly PlayerLoopTiming timing;
             private readonly CancellationToken cancellationToken;
+            private readonly CancellationToken globalCancellationToken;
 
-            /// <summary>
-            /// Initializes the <see cref="Awaiter"/>.
-            /// </summary>
-            public Awaiter(PlayerLoopTiming timing, CancellationToken cancellationToken)
+            internal Awaiter(PlayerLoopTiming timing, CancellationToken cancellationToken, CancellationToken globalCancellationToken)
             {
                 this.timing = timing;
                 this.cancellationToken = cancellationToken;
+                this.globalCancellationToken = globalCancellationToken;
             }
 
             /// <summary>
@@ -236,7 +241,10 @@ namespace GodotTask
             /// <summary>
             /// Ends the awaiting on the completed <see cref="ReturnToMainThread"/>.
             /// </summary>
-            public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
+            public void GetResult() {
+                cancellationToken.ThrowIfCancellationRequested();
+                globalCancellationToken.ThrowIfCancellationRequested();
+            }
 
             /// <summary>
             /// Schedules the continuation onto the <see cref="ReturnToMainThread"/> associated with this <see cref="Awaiter"/>.
@@ -261,6 +269,15 @@ namespace GodotTask
     /// </summary>
     public struct SwitchToThreadPoolAwaitable
     {
+        private readonly CancellationToken globalCancellationToken;
+
+        /// <summary>
+        /// Initializes the <see cref="SwitchToThreadPoolAwaitable"/>.
+        /// </summary>
+        public SwitchToThreadPoolAwaitable() {
+            globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
+        }
+
         /// <summary>
         /// Gets an awaiter used to await this <see cref="SwitchToThreadPoolAwaitable"/>.
         /// </summary>
@@ -269,9 +286,18 @@ namespace GodotTask
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="SwitchToThreadPoolAwaitable"/>.
         /// </summary>
-        public struct Awaiter : ICriticalNotifyCompletion
+        public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             private static readonly WaitCallback switchToCallback = Callback;
+
+            private readonly CancellationToken globalCancellationToken;
+
+            /// <summary>
+            /// Initializes the <see cref="Awaiter"/>.
+            /// </summary>
+            internal Awaiter(CancellationToken globalCancellationToken) {
+                this.globalCancellationToken = globalCancellationToken;
+            }
 
             /// <summary>
             /// Gets whether this <see cref="SwitchToThreadPoolAwaitable"/> has completed, always returns false.
@@ -281,7 +307,9 @@ namespace GodotTask
             /// <summary>
             /// Do nothing
             /// </summary>
-            public void GetResult() { }
+            public void GetResult() {
+                globalCancellationToken.ThrowIfCancellationRequested();
+            }
 
             /// <summary>
             /// Schedules the continuation onto the <see cref="SwitchToThreadPoolAwaitable"/> associated with this <see cref="Awaiter"/>.
@@ -314,17 +342,19 @@ namespace GodotTask
     {
         private readonly SynchronizationContext synchronizationContext;
         private readonly CancellationToken cancellationToken;
+        private readonly CancellationToken globalCancellationToken;
 
         internal SwitchToSynchronizationContextAwaitable(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
         {
             this.synchronizationContext = synchronizationContext;
             this.cancellationToken = cancellationToken;
+            globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
         }
 
         /// <summary>
         /// Gets an awaiter used to await this <see cref="SwitchToSynchronizationContextAwaitable"/>.
         /// </summary>
-        public Awaiter GetAwaiter() => new Awaiter(synchronizationContext, cancellationToken);
+        public Awaiter GetAwaiter() => new Awaiter(synchronizationContext, cancellationToken, globalCancellationToken);
 
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="SwitchToSynchronizationContextAwaitable"/>.
@@ -332,16 +362,19 @@ namespace GodotTask
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             private static readonly SendOrPostCallback switchToCallback = Callback;
+
             private readonly SynchronizationContext synchronizationContext;
             private readonly CancellationToken cancellationToken;
+            private readonly CancellationToken globalCancellationToken;
 
             /// <summary>
             /// Initializes the <see cref="Awaiter"/>.
             /// </summary>
-            public Awaiter(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
+            public Awaiter(SynchronizationContext synchronizationContext, CancellationToken cancellationToken, CancellationToken globalCancellationToken)
             {
                 this.synchronizationContext = synchronizationContext;
                 this.cancellationToken = cancellationToken;
+                this.globalCancellationToken = globalCancellationToken;
             }
 
             /// <summary>
@@ -352,7 +385,10 @@ namespace GodotTask
             /// <summary>
             /// Ends the awaiting on the completed <see cref="SwitchToSynchronizationContextAwaitable"/>.
             /// </summary>
-            public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
+            public void GetResult() {
+                cancellationToken.ThrowIfCancellationRequested();
+                globalCancellationToken.ThrowIfCancellationRequested();
+            }
 
             /// <summary>
             /// Schedules the continuation onto the <see cref="SwitchToSynchronizationContextAwaitable"/> associated with this <see cref="Awaiter"/>.
@@ -386,12 +422,14 @@ namespace GodotTask
         private readonly SynchronizationContext syncContext;
         private readonly bool dontPostWhenSameContext;
         private readonly CancellationToken cancellationToken;
+        private readonly CancellationToken globalCancellationToken;
 
         internal ReturnToSynchronizationContext(SynchronizationContext syncContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
         {
             this.syncContext = syncContext;
             this.dontPostWhenSameContext = dontPostWhenSameContext;
             this.cancellationToken = cancellationToken;
+            globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
         }
 
         /// <summary>
@@ -399,7 +437,7 @@ namespace GodotTask
         /// </summary>
         public Awaiter DisposeAsync()
         {
-            return new Awaiter(syncContext, dontPostWhenSameContext, cancellationToken);
+            return new Awaiter(syncContext, dontPostWhenSameContext, cancellationToken, globalCancellationToken);
         }
 
         /// <summary>
@@ -412,15 +450,17 @@ namespace GodotTask
             private readonly SynchronizationContext synchronizationContext;
             private readonly bool dontPostWhenSameContext;
             private readonly CancellationToken cancellationToken;
+            private readonly CancellationToken globalCancellationToken;
 
             /// <summary>
             /// Initializes the <see cref="Awaiter"/>.
             /// </summary>
-            public Awaiter(SynchronizationContext synchronizationContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
+            public Awaiter(SynchronizationContext synchronizationContext, bool dontPostWhenSameContext, CancellationToken cancellationToken, CancellationToken globalCancellationToken)
             {
                 this.synchronizationContext = synchronizationContext;
                 this.dontPostWhenSameContext = dontPostWhenSameContext;
                 this.cancellationToken = cancellationToken;
+                this.globalCancellationToken = globalCancellationToken;
             }
 
             /// <summary>
@@ -452,7 +492,10 @@ namespace GodotTask
             /// <summary>
             /// Ends the awaiting on the completed <see cref="ReturnToSynchronizationContext"/>.
             /// </summary>
-            public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
+            public void GetResult() {
+                cancellationToken.ThrowIfCancellationRequested();
+                globalCancellationToken.ThrowIfCancellationRequested();
+            }
 
             /// <summary>
             /// Schedules the continuation onto the <see cref="ReturnToSynchronizationContext"/> associated with this <see cref="Awaiter"/>.

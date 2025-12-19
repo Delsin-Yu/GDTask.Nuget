@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
+using System.Threading;
+using Godot;
 using GodotTask.CompilerServices;
 
 namespace GodotTask
@@ -83,6 +85,12 @@ namespace GodotTask
             if (source == null) return "()";
             return $"({source.UnsafeGetStatus()})";
         }
+
+        /// <summary>
+        /// Cancels all running <see cref="GDTask"/>s and throws <see cref="OperationCanceledException"/>s at their call sites;
+        /// this is equivalent to passing a <see cref="CancellationToken"/> to each <see cref="GDTask"/> and performing a cancellation.
+        /// </summary>
+        public static void CancelAllTasks() => GDTaskPlayerLoopRunner.CancelAllTasks();
 
         /// <summary>
         /// Creates a <see cref="GDTask"/> allows to await multiple times.
