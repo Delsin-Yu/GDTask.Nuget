@@ -170,7 +170,9 @@ namespace GodotTask
 
         internal CancellationTokenAwaitable(CancellationToken cancellationToken)
         {
-            this.cancellationToken = cancellationToken;
+            var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, GDTaskPlayerLoopRunner.GetGlobalCancellationToken());
+
+            this.cancellationToken = linkedTokenSource.Token;
         }
 
         /// <summary>
