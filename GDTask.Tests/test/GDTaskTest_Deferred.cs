@@ -10,20 +10,20 @@ namespace GodotTask.Tests;
 [TestSuite]
 public class GDTaskTest_Deferred
 {
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Deferred()
     {
-        await GDTask.NextFrame(PlayerLoopTiming.Process);
+        await Constants.WaitForTaskReadyAsync();
         using (new ScopedFrameCount(0, PlayerLoopTiming.Process))
         {
             await GDTask.Deferred();
         }
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Deferred_Order()
     {
-        await GDTask.NextFrame(PlayerLoopTiming.Process);
+        await Constants.WaitForTaskReadyAsync();
 
         var list = new List<string>();
         
@@ -35,10 +35,10 @@ public class GDTaskTest_Deferred
         Assertions.AssertThat(list.SequenceEqual(["Deferred", "NextFrame"])).IsTrue();
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Deferred_Token()
     {
-        await GDTask.NextFrame(PlayerLoopTiming.Process);
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         await source.CancelAsync();
         try

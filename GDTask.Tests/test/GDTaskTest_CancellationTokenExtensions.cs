@@ -8,9 +8,10 @@ namespace GodotTask.Tests;
 [TestSuite]
 public class GDTaskTest_CancellationTokenExtensions
 {
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ToCancellationToken()
     {
+        await Constants.WaitForTaskReadyAsync();
         var token = Constants.DelayRealtime().ToCancellationToken();
         using (new ScopedStopwatch())
         {
@@ -27,9 +28,10 @@ public class GDTaskTest_CancellationTokenExtensions
         throw new TestFailedException("Operation not Canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ToCancellationTokenT()
     {
+        await Constants.WaitForTaskReadyAsync();
         var token = Constants.DelayRealtimeWithReturn().ToCancellationToken();
         using (new ScopedStopwatch())
         {
@@ -46,9 +48,10 @@ public class GDTaskTest_CancellationTokenExtensions
         throw new TestFailedException("Operation not Canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ToCancellationToken_Linked()
     {
+        await Constants.WaitForTaskReadyAsync();
         var associatedToken = Constants.DelayRealtime().ToCancellationToken();
         var primaryToken = Constants.DelayRealtime(2).ToCancellationToken(associatedToken);
         using (new ScopedStopwatch())
@@ -66,9 +69,10 @@ public class GDTaskTest_CancellationTokenExtensions
         throw new TestFailedException("Operation not Canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ToCancellationTokenT_Linked()
     {
+        await Constants.WaitForTaskReadyAsync();
         var associatedToken = Constants.DelayRealtimeWithReturn().ToCancellationToken();
         var primaryToken = Constants.DelayRealtimeWithReturn(2).ToCancellationToken(associatedToken);
         using (new ScopedStopwatch())
@@ -86,9 +90,10 @@ public class GDTaskTest_CancellationTokenExtensions
         throw new TestFailedException("Operation not Canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task CancellationToken_ToGDTask()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         source.CancelAfter(Constants.DelayTimeSpan);
         var (gdTask, registration) = source.Token.ToGDTask();
@@ -96,25 +101,28 @@ public class GDTaskTest_CancellationTokenExtensions
         await registration.DisposeAsync();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task CancellationToken_WaitUntilCanceled()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         source.CancelAfter(Constants.DelayTimeSpan);
         using (new ScopedStopwatch()) await source.Token.WaitUntilCanceled();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task CancellationToken_CancelAfterSlim()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         source.CancelAfterSlim(Constants.DelayTimeSpan, DelayType.Realtime);
         using (new ScopedStopwatch()) await source.Token.WaitUntilCanceled();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task CancellationToken_RegisterRaiseCancelOnPredelete()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         var node = Constants.CreateTestNode("RegisterRaiseCancelOnPredelete");
         source.RegisterRaiseCancelOnPredelete(node);
@@ -122,9 +130,10 @@ public class GDTaskTest_CancellationTokenExtensions
         await source.Token.WaitUntilCanceled();
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task Disposable_AddTo()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         var disposable = new SimpleDisposable();
         source.CancelAfter(Constants.DelayTimeSpan);
@@ -135,9 +144,10 @@ public class GDTaskTest_CancellationTokenExtensions
         }
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_SuppressCancellationThrow()
     {
+        await Constants.WaitForTaskReadyAsync();
         var canceled = await GDTask
             .Never(Constants.Delay().ToCancellationToken())
             .SuppressCancellationThrow();

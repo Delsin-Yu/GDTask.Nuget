@@ -7,19 +7,20 @@ namespace GodotTask.Tests;
 [TestSuite]
 public class GDTaskTest_Interop
 {
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task Task_AsGDTask_CurrentContext()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         using (new ScopedStopwatch())
         {
             await Task.Delay(Constants.DelayTimeSpan).AsGDTask();
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task Task_AsGDTask_SchedulerContext()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.SwitchToThreadPool();
         using (new ScopedStopwatch())
         {
@@ -29,10 +30,10 @@ public class GDTaskTest_Interop
         Assertions.AssertThat(Thread.CurrentThread.IsThreadPoolThread);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task TaskT_AsGDTask_CurrentContext()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         int result;
         using (new ScopedStopwatch())
         {
@@ -42,7 +43,7 @@ public class GDTaskTest_Interop
         Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task TaskT_AsGDTask_SchedulerContext()
     {
         await GDTask.SwitchToThreadPool();
@@ -57,33 +58,33 @@ public class GDTaskTest_Interop
         Assertions.AssertThat(Thread.CurrentThread.IsThreadPoolThread);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_AsTask()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         using (new ScopedStopwatch()) await Constants.Delay().AsTask();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_AsTask()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         int result;
         using (new ScopedStopwatch()) result = await Constants.DelayWithReturn().AsTask();
         Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ToAsyncLazy()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         using (new ScopedStopwatch()) await Constants.Delay().ToAsyncLazy();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_ToAsyncLazy()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         int result;
         using (new ScopedStopwatch()) result = await Constants.DelayWithReturn().ToAsyncLazy();
         Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);

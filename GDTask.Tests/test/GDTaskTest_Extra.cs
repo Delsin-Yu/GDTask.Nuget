@@ -7,10 +7,10 @@ namespace GodotTask.Tests;
 [TestSuite]
 public class GDTaskTest_Extra
 {
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task FirstCallIsSwitchToThreadIssue()
     {
-        await GDTask.NextFrame();
+        await Constants.WaitForTaskReadyAsync();
         
         var mainThreadId = System.Environment.CurrentManagedThreadId;
         Assertions.AssertThat(Thread.CurrentThread.IsThreadPoolThread).IsFalse();

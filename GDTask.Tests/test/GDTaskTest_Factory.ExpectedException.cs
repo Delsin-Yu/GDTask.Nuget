@@ -2,6 +2,4 @@
 
 namespace GodotTask.Tests;
 
-public class ExpectedException : Exception
-{
-}
+public class ExpectedException : Exception;

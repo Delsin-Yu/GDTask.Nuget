@@ -7,7 +7,7 @@ namespace GodotTask.Tests;
 [TestSuite]
 public class GDTaskTest_CompletionSource
 {
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static void CompletionSource_Constructor()
     {
         var source = new GDTaskCompletionSource();
@@ -16,7 +16,7 @@ public class GDTaskTest_CompletionSource
         Assertions.AssertThat(source.Task.Status == GDTaskStatus.Pending).IsTrue();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static void CompletionSource_TrySetResult()
     {
         var source = new GDTaskCompletionSource();
@@ -24,7 +24,7 @@ public class GDTaskTest_CompletionSource
         Assertions.AssertThat(source.Task.Status == GDTaskStatus.Succeeded).IsTrue();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static void CompletionSource_TrySetException()
     {
         var source = new GDTaskCompletionSource();
@@ -43,7 +43,7 @@ public class GDTaskTest_CompletionSource
         throw new TestFailedException("ExpectedException not thrown");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static void CompletionSource_TrySetCanceled()
     {
         var source = new GDTaskCompletionSource();
@@ -62,9 +62,10 @@ public class GDTaskTest_CompletionSource
         throw new TestFailedException("OperationCanceledException not thrown");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task CompletionSource_Async()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new GDTaskCompletionSource();
         Constants.Delay().ContinueWith(() => source.TrySetResult()).Forget();
 
@@ -72,7 +73,7 @@ public class GDTaskTest_CompletionSource
         await source.Task;
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static void CompletionSourceT_Constructor()
     {
         var source = new GDTaskCompletionSource<int>();
@@ -81,7 +82,7 @@ public class GDTaskTest_CompletionSource
         Assertions.AssertThat(source.Task.Status == GDTaskStatus.Pending).IsTrue();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static void CompletionSourceT_TrySetResult()
     {
         var source = new GDTaskCompletionSource<int>();
@@ -90,7 +91,7 @@ public class GDTaskTest_CompletionSource
         Assertions.AssertThat(source.GetResult(0)).IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static void CompletionSourceT_TrySetException()
     {
         var source = new GDTaskCompletionSource<int>();
@@ -109,7 +110,7 @@ public class GDTaskTest_CompletionSource
         throw new TestFailedException("ExpectedException not thrown");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static void CompletionSourceT_TrySetCanceled()
     {
         var source = new GDTaskCompletionSource<int>();
@@ -128,9 +129,10 @@ public class GDTaskTest_CompletionSource
         throw new TestFailedException("OperationCanceledException not thrown");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task CompletionSourceT_Async()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new GDTaskCompletionSource<int>();
         Constants.Delay().ContinueWith(() => source.TrySetResult(Constants.ReturnValue)).Forget();
 

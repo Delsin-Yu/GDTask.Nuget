@@ -13,21 +13,24 @@ public class GDTaskTest_Delay
 {
 
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Yield_Process()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.Yield();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Yield_PhysicsProcess()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.Yield(PlayerLoopTiming.PhysicsProcess);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Yield_Process_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         await source.CancelAsync();
         try
@@ -42,9 +45,10 @@ public class GDTaskTest_Delay
         throw new TestFailedException("Yield Instructions not canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Yield_PhysicsProcess_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         await source.CancelAsync();
         try
@@ -59,9 +63,10 @@ public class GDTaskTest_Delay
         throw new TestFailedException("Yield Instructions not canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_NextFrame_Process()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.Process);
         using (new ScopedFrameCount(1, PlayerLoopTiming.Process))
         {
@@ -69,9 +74,10 @@ public class GDTaskTest_Delay
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_NextFrame_PhysicsProcess()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
         using (new ScopedFrameCount(1, PlayerLoopTiming.PhysicsProcess))
         {
@@ -79,9 +85,10 @@ public class GDTaskTest_Delay
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_NextFrame_Process_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         await source.CancelAsync();
         try
@@ -96,9 +103,10 @@ public class GDTaskTest_Delay
         throw new TestFailedException("NextFrame Instructions not canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_NextFrame_PhysicsProcess_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         await source.CancelAsync();
         try
@@ -113,9 +121,10 @@ public class GDTaskTest_Delay
         throw new TestFailedException("NextFrame Instructions not canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_DelayFrame_Process()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.Process);
         using (new ScopedFrameCount(Constants.DelayFrames, PlayerLoopTiming.Process))
         {
@@ -123,9 +132,10 @@ public class GDTaskTest_Delay
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_DelayFrame_PhysicsProcess()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
         using (new ScopedFrameCount(Constants.DelayFrames, PlayerLoopTiming.PhysicsProcess))
         {
@@ -133,9 +143,10 @@ public class GDTaskTest_Delay
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_DelayFrame_Process_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         await source.CancelAsync();
         try
@@ -150,9 +161,10 @@ public class GDTaskTest_Delay
         throw new TestFailedException("DelayFrame Instructions not canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_DelayFrame_PhysicsProcess_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         var source = new CancellationTokenSource();
         await source.CancelAsync();
         try
@@ -167,43 +179,48 @@ public class GDTaskTest_Delay
         throw new TestFailedException("DelayFrame Instructions not canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Delay_DeltaTime_Process()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.Process);
         using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Delay_DeltaTime_PhysicsProcess()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
         using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime, PlayerLoopTiming.PhysicsProcess);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Delay_DeltaTime_Isolated_Process()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.Process);
-        var tree =GDTaskPlayerLoopRunner.Global.GetTree();
+        var tree = GDTaskPlayerLoopRunner.Global.GetTree();
         tree.Paused = true;
         using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime, PlayerLoopTiming.IsolatedProcess);
         tree.Paused = false;
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Delay_DeltaTime_Isolated_PhysicsProcess()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
-        var tree =GDTaskPlayerLoopRunner.Global.GetTree();
+        var tree = GDTaskPlayerLoopRunner.Global.GetTree();
         tree.Paused = true;
         using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime, PlayerLoopTiming.IsolatedPhysicsProcess);
         tree.Paused = false;
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Delay_DeltaTime_Process_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.Process);
         var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -219,9 +236,10 @@ public class GDTaskTest_Delay
         throw new TestFailedException("Delay Instructions not canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Delay_DeltaTime_PhysicsProcess_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
         var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -237,23 +255,26 @@ public class GDTaskTest_Delay
         throw new TestFailedException("Delay Instructions not canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Delay_Realtime_Process()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.Process);
         using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.Realtime);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Delay_Realtime_PhysicsProcess()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
         using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.Realtime, PlayerLoopTiming.PhysicsProcess);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Delay_RealTime_Process_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.Process);
         var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -269,9 +290,10 @@ public class GDTaskTest_Delay
         throw new TestFailedException("Delay Instructions not canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Delay_RealTime_PhysicsProcess_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
         var source = new CancellationTokenSource();
         await source.CancelAsync();

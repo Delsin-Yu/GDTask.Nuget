@@ -1,5 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
+
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
@@ -10,33 +11,38 @@ namespace GodotTask.Tests;
 [TestSuite]
 public class GDTaskTest_Core
 {
-
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Status()
     {
+        await Constants.WaitForTaskReadyAsync();
         var gdTask = Constants.Delay();
         Assertions.AssertThat(gdTask.Status).Equals(GDTaskStatus.Pending);
         await gdTask;
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ToString()
     {
+        await Constants.WaitForTaskReadyAsync();
         var gdTask = Constants.Delay();
         Assertions.AssertThat(gdTask.ToString()).IsEqual($"({GDTaskStatus.Pending})");
         await gdTask;
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_GetAwaiter_OnCompleted()
     {
+        await Constants.WaitForTaskReadyAsync();
         var gdTask = Constants.Delay();
         var completed = false;
         gdTask.GetAwaiter().OnCompleted(() => completed = true);
         await GDTask.WaitUntil(() => completed);
     }
 
-    public static async Task GDTask_GetAwaiter_Target() {
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_GetAwaiter_Target()
+    {
+        await Constants.WaitForTaskReadyAsync();
         var godotObject = new GodotObject();
         var gdTask = Constants.Delay();
         gdTask.GetAwaiter().OnCompleted(() => godotObject.Free());
@@ -44,18 +50,20 @@ public class GDTaskTest_Core
         await GDTask.WaitWhile(godotObject, () => true);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_SuppressCancellationThrow()
     {
+        await Constants.WaitForTaskReadyAsync();
         var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.CancelAfter(10);
         var gdTask = Constants.Delay(cancellationTokenSource.Token).SuppressCancellationThrow();
         await gdTask;
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Preserve()
     {
+        await Constants.WaitForTaskReadyAsync();
         var gdTask = Constants.Delay();
         gdTask = gdTask.Preserve();
         await gdTask;
@@ -64,60 +72,67 @@ public class GDTaskTest_Core
         await gdTask;
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_AsAsyncUnitGDTask()
     {
+        await Constants.WaitForTaskReadyAsync();
         var asyncUnitGDTask = Constants.Delay().AsAsyncUnitGDTask();
         var result = await asyncUnitGDTask;
         Assertions.AssertThat(result).Equals(AsyncUnit.Default);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_Status()
     {
+        await Constants.WaitForTaskReadyAsync();
         var gdTask = Constants.DelayWithReturn();
         Assertions.AssertThat(gdTask.Status).Equals(GDTaskStatus.Pending);
         await gdTask;
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_ToString()
     {
+        await Constants.WaitForTaskReadyAsync();
         var gdTask = Constants.DelayWithReturn();
         Assertions.AssertThat(gdTask.ToString()).IsEqual($"({GDTaskStatus.Pending})");
         await gdTask;
     }
-    
-    [TestCase]
+
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_Result()
     {
+        await Constants.WaitForTaskReadyAsync();
         Assertions
             .AssertThat(await Constants.DelayWithReturn())
             .IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_GetAwaiter_OnCompleted()
     {
+        await Constants.WaitForTaskReadyAsync();
         var gdTask = Constants.DelayWithReturn();
         var completed = false;
         gdTask.GetAwaiter().OnCompleted(() => completed = true);
         await GDTask.WaitUntil(() => completed);
     }
-    
-    
-    [TestCase]
+
+
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_SuppressCancellationThrow()
     {
+        await Constants.WaitForTaskReadyAsync();
         var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.CancelAfter(10);
         var gdTask = Constants.DelayWithReturn(cancellationTokenSource.Token).SuppressCancellationThrow();
         await gdTask;
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_Preserve()
     {
+        await Constants.WaitForTaskReadyAsync();
         var gdTask = Constants.DelayWithReturn();
         gdTask = gdTask.Preserve();
         Assertions.AssertThat(await gdTask).IsEqual(Constants.ReturnValue);

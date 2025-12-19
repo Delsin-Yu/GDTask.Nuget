@@ -5,14 +5,14 @@ namespace GodotTask.Tests;
 
 public class GDTaskTest_CancellationTokenEqualityComparer
 {
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static void CancellationTokenEqualityComparer_None()
     {
         var result = CancellationTokenEqualityComparer.Default.Equals(CancellationToken.None, CancellationToken.None);
         Assertions.AssertThat(result).IsTrue();
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static void CancellationTokenEqualityComparer_Valid()
     {
         using var source = new CancellationTokenSource();

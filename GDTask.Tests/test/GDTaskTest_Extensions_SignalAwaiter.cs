@@ -7,10 +7,10 @@ namespace GodotTask.Tests;
 [TestSuite]
 public partial class GDTaskTest_SignalAwaiter
 {
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task SignalAwaiter_FromSignal_0Arg()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         var node = Constants.CreateTestNode<SignalTestNode>("SignalTestNode");
         
         Constants.Delay()
@@ -24,10 +24,10 @@ public partial class GDTaskTest_SignalAwaiter
         Assertions.AssertThat(result.Length).IsEqual(0);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task SignalAwaiter_FromSignal_2Args()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         var node = Constants.CreateTestNode<SignalTestNode>("SignalTestNode");
         
         Constants.Delay()
@@ -42,10 +42,10 @@ public partial class GDTaskTest_SignalAwaiter
         Assertions.AssertThat(result2).IsEqual(Constants.ReturnValue);
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task SignalAwaiter_FromSignal_0Arg_WithCtx()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         var node = Constants.CreateTestNode<SignalTestNode>("SignalTestNode");
         
         Constants.Delay()
@@ -59,10 +59,10 @@ public partial class GDTaskTest_SignalAwaiter
         Assertions.AssertThat(isCanceled).IsTrue();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task SignalAwaiter_FromSignal_2Args_WithCtx()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         var node = Constants.CreateTestNode<SignalTestNode>("SignalTestNode");
         
         Constants.Delay()
@@ -76,10 +76,10 @@ public partial class GDTaskTest_SignalAwaiter
         Assertions.AssertThat(isCanceled).IsTrue();
     }    
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task SignalAwaiter_AsGDTask_0Arg()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         var node = Constants.CreateTestNode<SignalTestNode>("SignalTestNode");
         
         Constants.Delay()
@@ -93,10 +93,10 @@ public partial class GDTaskTest_SignalAwaiter
         Assertions.AssertThat(result.Length).IsEqual(0);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task SignalAwaiter_AsGDTask_2Args()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         var node = Constants.CreateTestNode<SignalTestNode>("SignalTestNode");
         
         Constants.Delay()

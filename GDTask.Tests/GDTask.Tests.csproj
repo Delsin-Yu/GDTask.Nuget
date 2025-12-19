@@ -9,7 +9,13 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../GDTask/GDTask.csproj" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0"/>
+    <PackageReference Include="gdUnit4.analyzers" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="gdUnit4.api" Version="5.0.0" />
+    <PackageReference Include="gdUnit4.test.adapter" Version="3.0.0" />
     <PackageReference Include="System.Reactive" Version="*" />
   </ItemGroup>
 </Project>
