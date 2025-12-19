@@ -25,6 +25,7 @@ namespace GodotTask
         /// <summary>
         /// Creates a task that will complete at the next provided <see cref="PlayerLoopTiming"/> when the supplied <paramref name="predicate"/> evaluates to false, with specified <see cref="CancellationToken"/>.
         /// </summary>
+        /// <exception cref="OperationCanceledException">Throws when <paramref name="target"/> GodotObject has been freed.</exception>
         public static GDTask WaitWhile(GodotObject target, Func<bool> predicate, PlayerLoopTiming timing = PlayerLoopTiming.Process, CancellationToken cancellationToken = default)
         {
             return new GDTask(WaitWhilePromise.Create(target, predicate, timing, cancellationToken, out var token), token);
