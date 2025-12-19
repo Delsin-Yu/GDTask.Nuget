@@ -582,6 +582,7 @@ namespace GodotTask
     public class GDTaskCompletionSource : IGDTaskSource, IPromise
     {
         private CancellationToken cancellationToken;
+        private CancellationToken globalCancellationToken;
         private ExceptionHolder exception;
         private object gate;
         private Action<object> singleContinuation;
@@ -596,6 +597,8 @@ namespace GodotTask
         /// </summary>
         public GDTaskCompletionSource()
         {
+            globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
+
             TaskTracker.TrackActiveTask(this, 2);
         }
 
@@ -632,6 +635,8 @@ namespace GodotTask
         [DebuggerHidden]
         public bool TrySetResult()
         {
+            CheckGlobalCancellationToken();
+
             return TrySignalCompletion(GDTaskStatus.Succeeded);
         }
 
@@ -642,6 +647,8 @@ namespace GodotTask
         [DebuggerHidden]
         public bool TrySetCanceled(CancellationToken cancellationToken = default)
         {
+            CheckGlobalCancellationToken();
+
             if (UnsafeGetStatus() != GDTaskStatus.Pending) return false;
 
             this.cancellationToken = cancellationToken;
@@ -656,6 +663,8 @@ namespace GodotTask
         [DebuggerHidden]
         public bool TrySetException(Exception exception)
         {
+            CheckGlobalCancellationToken();
+
             if (exception is OperationCanceledException oce)
             {
                 return TrySetCanceled(oce.CancellationToken);
@@ -678,6 +687,8 @@ namespace GodotTask
         public void GetResult(short token)
         {
             MarkHandled();
+
+            CheckGlobalCancellationToken();
 
             var status = (GDTaskStatus)intStatus;
             switch (status)
@@ -705,6 +716,8 @@ namespace GodotTask
         [DebuggerHidden]
         public GDTaskStatus GetStatus(short token)
         {
+            CheckGlobalCancellationToken();
+
             return (GDTaskStatus)intStatus;
         }
 
@@ -719,6 +732,8 @@ namespace GodotTask
         [DebuggerHidden]
         public GDTaskStatus UnsafeGetStatus()
         {
+            CheckGlobalCancellationToken();
+
             return (GDTaskStatus)intStatus;
         }
 
@@ -732,6 +747,8 @@ namespace GodotTask
         [DebuggerHidden]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
+            CheckGlobalCancellationToken();
+
             if (gate == null)
             {
                 Interlocked.CompareExchange(ref gate, new object(), null);
@@ -810,6 +827,18 @@ namespace GodotTask
             }
             return false;
         }
+
+        private void CheckGlobalCancellationToken() {
+            if ((GDTaskStatus)intStatus != GDTaskStatus.Pending)
+            {
+                return;
+            }
+            if (!globalCancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+            intStatus = (int)GDTaskStatus.Canceled;
+        }
     }
 
     /// <summary>
@@ -830,6 +859,7 @@ namespace GodotTask
     public class GDTaskCompletionSource<T> : IGDTaskSource<T>, IPromise<T>
     {
         private CancellationToken cancellationToken;
+        private CancellationToken globalCancellationToken;
         private T result;
         private ExceptionHolder exception;
         
@@ -849,6 +879,8 @@ namespace GodotTask
         /// <summary> Initializes a new instance of the <see cref="GDTaskCompletionSource{T}"/> class.</summary>
         public GDTaskCompletionSource()
         {
+            globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
+
             TaskTracker.TrackActiveTask(this, 2);
         }
 
@@ -886,6 +918,8 @@ namespace GodotTask
         [DebuggerHidden]
         public bool TrySetResult(T result)
         {
+            CheckGlobalCancellationToken();
+
             if (UnsafeGetStatus() != GDTaskStatus.Pending) return false;
 
             this.result = result;
@@ -900,6 +934,8 @@ namespace GodotTask
         [DebuggerHidden]
         public bool TrySetCanceled(CancellationToken cancellationToken = default)
         {
+            CheckGlobalCancellationToken();
+
             if (UnsafeGetStatus() != GDTaskStatus.Pending) return false;
 
             this.cancellationToken = cancellationToken;
@@ -914,6 +950,8 @@ namespace GodotTask
         [DebuggerHidden]
         public bool TrySetException(Exception exception)
         {
+            CheckGlobalCancellationToken();
+
             if (exception is OperationCanceledException oce)
             {
                 return TrySetCanceled(oce.CancellationToken);
@@ -938,6 +976,8 @@ namespace GodotTask
         public T GetResult(short token)
         {
             MarkHandled();
+
+            CheckGlobalCancellationToken();
 
             var status = (GDTaskStatus)intStatus;
             switch (status)
@@ -972,6 +1012,8 @@ namespace GodotTask
         [DebuggerHidden]
         public GDTaskStatus GetStatus(short token)
         {
+            CheckGlobalCancellationToken();
+
             return (GDTaskStatus)intStatus;
         }
 
@@ -986,6 +1028,8 @@ namespace GodotTask
         [DebuggerHidden]
         public GDTaskStatus UnsafeGetStatus()
         {
+            CheckGlobalCancellationToken();
+
             return (GDTaskStatus)intStatus;
         }
 
@@ -1002,6 +1046,8 @@ namespace GodotTask
         [DebuggerHidden]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
+            CheckGlobalCancellationToken();
+
             if (gate == null)
             {
 #if NET9_0_OR_GREATER
@@ -1087,6 +1133,16 @@ namespace GodotTask
                 return true;
             }
             return false;
+        }
+
+        private void CheckGlobalCancellationToken() {
+            if ((GDTaskStatus)intStatus != GDTaskStatus.Pending) {
+                return;
+            }
+            if (!globalCancellationToken.IsCancellationRequested) {
+                return;
+            }
+            intStatus = (int)GDTaskStatus.Canceled;
         }
     }
 }
