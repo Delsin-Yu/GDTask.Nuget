@@ -564,6 +564,7 @@ public class GDTaskTest_GlobalCancellation
         Assertions.AssertThat(task1Completed).IsTrue();
         Assertions.AssertThat(task2Completed).IsFalse();
         Assertions.AssertThat(task3Completed).IsFalse();
+        Assertions.AssertThat(canceled1).IsFalse();
         Assertions.AssertThat(canceled2).IsTrue();
         Assertions.AssertThat(canceled3).IsTrue();
     }

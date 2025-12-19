@@ -88,7 +88,7 @@ public class GDTaskTest_Core
         await gdTask;
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_CancelAllTasks()
     {
         var number = 0;
