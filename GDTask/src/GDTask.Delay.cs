@@ -762,10 +762,15 @@ namespace GodotTask
     public readonly struct YieldAwaitable
     {
         private readonly PlayerLoopTiming timing;
+        private readonly CancellationToken globalCancellationToken;
 
+        /// <summary>
+        /// Initializes the <see cref="YieldAwaitable"/>.
+        /// </summary>
         internal YieldAwaitable(PlayerLoopTiming timing)
         {
             this.timing = timing;
+            globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
         }
 
         /// <summary>
@@ -773,7 +778,7 @@ namespace GodotTask
         /// </summary>
         public Awaiter GetAwaiter()
         {
-            return new Awaiter(timing);
+            return new Awaiter(timing, globalCancellationToken);
         }
 
         /// <summary>
@@ -790,13 +795,15 @@ namespace GodotTask
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             private readonly PlayerLoopTiming timing;
+            private readonly CancellationToken globalCancellationToken;
 
             /// <summary>
             /// Initializes the <see cref="Awaiter"/>.
             /// </summary>
-            public Awaiter(PlayerLoopTiming timing)
+            internal Awaiter(PlayerLoopTiming timing, CancellationToken globalCancellationToken)
             {
                 this.timing = timing;
+                this.globalCancellationToken = globalCancellationToken;
             }
 
             /// <summary>
@@ -805,9 +812,11 @@ namespace GodotTask
             public bool IsCompleted => false;
 
             /// <summary>
-            /// Do nothing
+            /// Ends the awaiting on the completed <see cref="YieldAwaitable"/>.
             /// </summary>
-            public void GetResult() { }
+            public void GetResult() {
+                globalCancellationToken.ThrowIfCancellationRequested();
+            }
 
             /// <summary>
             /// Schedules the continuation onto the <see cref="YieldAwaitable"/> associated with this <see cref="Awaiter"/>.
