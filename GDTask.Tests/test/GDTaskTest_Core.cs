@@ -1,6 +1,7 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
@@ -37,17 +38,6 @@ public class GDTaskTest_Core
         var completed = false;
         gdTask.GetAwaiter().OnCompleted(() => completed = true);
         await GDTask.WaitUntil(() => completed);
-    }
-
-    [TestCase, RequireGodotRuntime]
-    public static async Task GDTask_GetAwaiter_Target()
-    {
-        await Constants.WaitForTaskReadyAsync();
-        var godotObject = new GodotObject();
-        var gdTask = Constants.Delay();
-        gdTask.GetAwaiter().OnCompleted(() => godotObject.Free());
-        await GDTask.WaitUntil(godotObject, () => false);
-        await GDTask.WaitWhile(godotObject, () => true);
     }
 
     [TestCase, RequireGodotRuntime]

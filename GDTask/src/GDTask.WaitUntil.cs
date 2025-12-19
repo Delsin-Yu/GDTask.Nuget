@@ -9,8 +9,9 @@ namespace GodotTask
     public partial struct GDTask
     {
         /// <summary>
-        /// Creates a task that will complete at the next provided <see cref="PlayerLoopTiming"/> when the supplied <paramref name="predicate"/> evaluates to true, with specified <see cref="CancellationToken"/>.
+        /// Creates a task that will complete at the next provided <see cref="PlayerLoopTiming"/> when the supplied <paramref name="predicate"/> evaluates to true, with specified <see cref="CancellationToken"/>
         /// </summary>
+        /// <exception cref="OperationCanceledException">Throws when <paramref name="target"/> GodotObject has been freed.</exception>
         public static GDTask WaitUntil(GodotObject target, Func<bool> predicate, PlayerLoopTiming timing = PlayerLoopTiming.Process, CancellationToken cancellationToken = default)
         {
             return new GDTask(WaitUntilPromise.Create(target, predicate, timing, cancellationToken, out var token), token);

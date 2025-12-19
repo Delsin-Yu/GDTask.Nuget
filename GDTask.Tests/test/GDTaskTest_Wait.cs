@@ -1,6 +1,8 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
+using Godot;
 
 namespace GodotTask.Tests;
 
@@ -23,6 +25,42 @@ public class GDTaskTest_Wait
         var finished = true;
         Constants.Delay().ContinueWith(() => finished = false).Forget();
         await GDTask.WaitWhile(() => finished);
+    }
+    
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_WaitUntil_With_GodotObject()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var godotObject = new GodotObject();
+        godotObject.Free();
+        try
+        {
+            await GDTask.WaitUntil(godotObject, () => true);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        
+        throw new TestFailedException("Operation not Canceled");
+    }
+    
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_WaitWhile_With_GodotObject()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var godotObject = new GodotObject();
+        godotObject.Free();
+        try
+        {
+            await GDTask.WaitWhile(godotObject, () => true);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        
+        throw new TestFailedException("Operation not Canceled");
     }
     
     [TestCase, RequireGodotRuntime]
