@@ -16,6 +16,12 @@ internal static class Constants
     internal static readonly TimeSpan DelayDownToleranceSpan = TimeSpan.FromMilliseconds(DelayTime - DelayTime / 2f);
     internal static readonly TimeSpan DelayUpToleranceSpan = TimeSpan.FromMilliseconds(DelayTime + DelayTime / 2f);
 
+    internal static async GDTask WaitForTaskReadyAsync()
+    {
+        await GDTask.SwitchToMainThread();
+        await GDTask.Yield();
+    }
+    
     internal static async GDTask Throw()
     {
         await GDTask.Yield();

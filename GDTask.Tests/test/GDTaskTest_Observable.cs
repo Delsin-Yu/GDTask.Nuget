@@ -9,9 +9,10 @@ namespace GodotTask.Tests;
 [TestSuite]
 public class GDTaskTest_Observable
 {
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task Observable_ToGDTask_FirstValue()
     {
+        await Constants.WaitForTaskReadyAsync();
         var observable = new IntObservableNext();
 
         Constants
@@ -26,9 +27,10 @@ public class GDTaskTest_Observable
             .IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task Observable_ToGDTask_Completed()
     {
+        await Constants.WaitForTaskReadyAsync();
         var observable = new IntObservableComplete();
 
         Constants
@@ -43,9 +45,10 @@ public class GDTaskTest_Observable
             .IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ToObservable()
     {
+        await Constants.WaitForTaskReadyAsync();
         var asyncUnitObserver = new AwaitableObserver<AsyncUnit>();
         var asyncUnitObservable = Constants.Delay().ToObservable();
         using (asyncUnitObservable.Subscribe(asyncUnitObserver))
@@ -54,9 +57,10 @@ public class GDTaskTest_Observable
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_ToObservable()
     {
+        await Constants.WaitForTaskReadyAsync();
         var asyncUnitObserver = new AwaitableObserver<int>();
         var asyncUnitObservable = Constants.DelayWithReturn().ToObservable();
         int? result;
@@ -70,9 +74,10 @@ public class GDTaskTest_Observable
             .IsEqual(Constants.ReturnValue);
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ToObservableTUnit()
     {
+        await Constants.WaitForTaskReadyAsync();
         var asyncUnitObserver = new AwaitableObserver<Unit>();
         var asyncUnitObservable = Constants.Delay().ToObservable<Unit>();
         using (asyncUnitObservable.Subscribe(asyncUnitObserver))

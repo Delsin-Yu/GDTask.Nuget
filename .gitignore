@@ -30,3 +30,4 @@ tests/metadata.json
 .DS_Store
 GDTask/nupkg
 GDTask.Tests/reports
+GDTask.Tests/addons/gdUnit4/GdUnitRunner.cfg

@@ -11,9 +11,10 @@ namespace GodotTask.Tests;
 [TestSuite]
 public partial class GDTaskTest_Factory
 {
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_FromException()
     {
+        await Constants.WaitForTaskReadyAsync();
         try
         {
             await GDTask.FromException(new ExpectedException());
@@ -26,9 +27,10 @@ public partial class GDTaskTest_Factory
         throw new TestFailedException("Exception not thrown");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_FromExceptionT()
     {
+        await Constants.WaitForTaskReadyAsync();
         try
         {
             await GDTask.FromException<int>(new ExpectedException());
@@ -41,17 +43,19 @@ public partial class GDTaskTest_Factory
         throw new TestFailedException("Exception not thrown");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_FromResult()
     {
+        await Constants.WaitForTaskReadyAsync();
         Assertions
             .AssertThat(await GDTask.FromResult(Constants.ReturnValue))
             .IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_FromCanceled()
     {
+        await Constants.WaitForTaskReadyAsync();
         try
         {
             await GDTask.FromCanceled();
@@ -64,9 +68,10 @@ public partial class GDTaskTest_Factory
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_FromCanceledT()
     {
+        await Constants.WaitForTaskReadyAsync();
         try
         {
             await GDTask.FromCanceled<int>();
@@ -79,9 +84,10 @@ public partial class GDTaskTest_Factory
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_FromCanceled_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         var cancellationTokenSource = new CancellationTokenSource();
         await cancellationTokenSource.CancelAsync();
         try
@@ -96,9 +102,10 @@ public partial class GDTaskTest_Factory
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_FromCanceledT_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         var cancellationTokenSource = new CancellationTokenSource();
         await cancellationTokenSource.CancelAsync();
         try
@@ -113,23 +120,26 @@ public partial class GDTaskTest_Factory
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Create()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.Create(() => Constants.Delay());
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_CreateT()
     {
+        await Constants.WaitForTaskReadyAsync();
         Assertions
             .AssertThat(await GDTask.Create(() => Constants.DelayWithReturn()))
             .IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Lazy()
     {
+        await Constants.WaitForTaskReadyAsync();
         var started = false;
         var task = GDTask.Lazy(
             async () =>
@@ -142,9 +152,10 @@ public partial class GDTaskTest_Factory
         await task;
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_LazyT()
     {
+        await Constants.WaitForTaskReadyAsync();
         var started = false;
         var task = GDTask.Lazy(
             async () =>
@@ -157,9 +168,10 @@ public partial class GDTaskTest_Factory
         Assertions.AssertThat(await task).IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Void()
     {
+        await Constants.WaitForTaskReadyAsync();
         var finished = false;
         using (new ScopedStopwatch())
         {
@@ -174,9 +186,10 @@ public partial class GDTaskTest_Factory
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Void_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         var finished = false;
         OperationCanceledException? exception = null;
         GDTask.Void(
@@ -201,9 +214,10 @@ public partial class GDTaskTest_Factory
         Assertions.AssertThat(exception != null).IsTrue();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Action()
     {
+        await Constants.WaitForTaskReadyAsync();
         var finished = false;
         using (new ScopedStopwatch())
         {
@@ -221,9 +235,10 @@ public partial class GDTaskTest_Factory
     }
 
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Action_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         var finished = false;
         OperationCanceledException? exception = null;
         var call = GDTask.Action(
@@ -249,9 +264,10 @@ public partial class GDTaskTest_Factory
         Assertions.AssertThat(exception != null).IsTrue();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Defer()
     {
+        await Constants.WaitForTaskReadyAsync();
         var started = false;
         var deferredTask = GDTask.Defer(
             () =>
@@ -269,9 +285,10 @@ public partial class GDTaskTest_Factory
         }
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_DeferT()
     {
+        await Constants.WaitForTaskReadyAsync();
         var started = false;
         var deferredTask = GDTask.Defer(
             () =>
@@ -291,9 +308,10 @@ public partial class GDTaskTest_Factory
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Never()
     {
+        await Constants.WaitForTaskReadyAsync();
         try
         {
             await GDTask.Never(Constants.CreateCanceledToken());
@@ -306,9 +324,10 @@ public partial class GDTaskTest_Factory
         throw new TestFailedException("OperationCanceledException not thrown");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_NeverT()
     {
+        await Constants.WaitForTaskReadyAsync();
         try
         {
             await GDTask.Never<int>(Constants.CreateCanceledToken());

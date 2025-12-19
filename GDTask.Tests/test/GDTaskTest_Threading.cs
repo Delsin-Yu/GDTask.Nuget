@@ -11,27 +11,30 @@ namespace GodotTask.Tests;
 [TestSuite]
 public class GDTaskTest_Threading
 {
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_SwitchToThreadPool()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.SwitchToThreadPool();
         Assertions
             .AssertThat(Thread.CurrentThread.IsThreadPoolThread)
             .IsTrue();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_SwitchToMainThread_Process()
     {
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.SwitchToMainThread();
         Assertions
             .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
             .IsTrue();
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_SwitchToMainThread_Process_Token()
     {
+        await Constants.WaitForTaskReadyAsync();
         try
         {
             await GDTask.SwitchToMainThread(Constants.CreateCanceledToken());
@@ -45,10 +48,10 @@ public class GDTaskTest_Threading
     }
 
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_Delegate()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.RunOnThreadPool(
             (Action)(() => Assertions
                 .AssertThat(Thread.CurrentThread.IsThreadPoolThread)
@@ -58,10 +61,10 @@ public class GDTaskTest_Threading
         );
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_Delegate_ConfigureAwait()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.RunOnThreadPool(
             (Action)(() => Assertions
                 .AssertThat(Thread.CurrentThread.IsThreadPoolThread)
@@ -75,10 +78,10 @@ public class GDTaskTest_Threading
             .IsTrue();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_Delegate_Token()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         try
         {
             await GDTask.RunOnThreadPool(
@@ -93,11 +96,10 @@ public class GDTaskTest_Threading
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_Delegate_ConfigureAwait_Token()
     {
-        await GDTask.SwitchToMainThread();
-
+        await Constants.WaitForTaskReadyAsync();
         try
         {
             await GDTask.RunOnThreadPool(
@@ -114,10 +116,10 @@ public class GDTaskTest_Threading
     }
 
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_DelegateT()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         var result = await GDTask.RunOnThreadPool(
             () =>
             {
@@ -133,10 +135,10 @@ public class GDTaskTest_Threading
         Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_DelegateT_ConfigureAwait()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         var result = await GDTask.RunOnThreadPool(
             () =>
             {
@@ -156,10 +158,10 @@ public class GDTaskTest_Threading
         Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_DelegateT_Token()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
 
         try
         {
@@ -175,10 +177,10 @@ public class GDTaskTest_Threading
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_DelegateT_ConfigureAwait_Token()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
 
         Constants.CreateCanceledToken();
 
@@ -198,10 +200,10 @@ public class GDTaskTest_Threading
     }
 
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_GDTask()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.RunOnThreadPool(
             () =>
             {
@@ -215,10 +217,10 @@ public class GDTaskTest_Threading
         );
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_GDTask_ConfigureAwait()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         await GDTask.RunOnThreadPool(
             () =>
             {
@@ -236,10 +238,10 @@ public class GDTaskTest_Threading
             .IsTrue();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_GDTask_Token()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
 
         try
         {
@@ -255,10 +257,10 @@ public class GDTaskTest_Threading
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_GDTask_ConfigureAwait_Token()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         
         try
         {
@@ -276,10 +278,10 @@ public class GDTaskTest_Threading
     }
 
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_GDTaskT()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         var result = await GDTask.RunOnThreadPool(
             () =>
             {
@@ -297,10 +299,10 @@ public class GDTaskTest_Threading
             .IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_GDTaskT_ConfigureAwait()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         var result = await GDTask.RunOnThreadPool(
             () =>
             {
@@ -322,10 +324,10 @@ public class GDTaskTest_Threading
             .IsEqual(Constants.ReturnValue);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_GDTaskT_Token()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         
         try
         {
@@ -341,10 +343,10 @@ public class GDTaskTest_Threading
         }
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_GDTaskT_ConfigureAwait_Token()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
 
         try
         {
@@ -362,9 +364,10 @@ public class GDTaskTest_Threading
     }
     
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ReturnToMainThread()
     {
+        await Constants.WaitForTaskReadyAsync();
         await using (GDTask.ReturnToMainThread())
         {
             await GDTask.SwitchToThreadPool();
@@ -378,10 +381,10 @@ public class GDTaskTest_Threading
             .IsTrue();
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ReturnToSynchronizationContext()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         
         var context = SynchronizationContext.Current;
         
@@ -396,10 +399,10 @@ public class GDTaskTest_Threading
             .AssertThat(context == SynchronizationContext.Current);
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ReturnToCurrentSynchronizationContext()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
         
         var context = SynchronizationContext.Current;
         
@@ -415,7 +418,7 @@ public class GDTaskTest_Threading
     }
 
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ReturnToMainThread_Token()
     {
         await GDTask.SwitchToThreadPool();
@@ -431,11 +434,11 @@ public class GDTaskTest_Threading
         throw new TestFailedException("Operation not canceled");
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ReturnToSynchronizationContext_Token()
     {
-        await GDTask.SwitchToMainThread();
-        
+        await Constants.WaitForTaskReadyAsync();
+
         var context = SynchronizationContext.Current;
         
         try
@@ -449,10 +452,10 @@ public class GDTaskTest_Threading
         throw new TestFailedException("Operation not canceled");
     }
     
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ReturnToCurrentSynchronizationContext_Token()
     {
-        await GDTask.SwitchToMainThread();
+        await Constants.WaitForTaskReadyAsync();
 
         try
         {

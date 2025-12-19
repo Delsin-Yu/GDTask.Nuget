@@ -87,12 +87,10 @@ namespace GodotTask
         }
 
         /// <summary>
-        /// Cancels all running <see cref="GDTask"/>s by incrementing a global counter, causing them to throw an <see cref="OperationCanceledException"/>.<br/>
-        /// This is equivalent to passing a <see cref="CancellationToken"/> to every <see cref="GDTask"/> and cancelling them all.
+        /// Cancels all running <see cref="GDTask"/>>s and throws OperationCanceledExceptions at their call sites;
+        /// this is equivalent to passing a <see cref="CancellationToken"/> to each GDTask and performing a cancellation.
         /// </summary>
-        public static void CancelAllTasks() {
-            GDTaskPlayerLoopRunner.CancelAllTasks();
-        }
+        public static void CancelAllTasks() => GDTaskPlayerLoopRunner.CancelAllTasks();
 
         /// <summary>
         /// Creates a <see cref="GDTask"/> allows to await multiple times.

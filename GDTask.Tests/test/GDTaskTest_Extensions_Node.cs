@@ -7,25 +7,28 @@ namespace GodotTask.Tests;
 
 public class GDTaskTest_Extensions_Node
 {
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task Node_OnEnterTreeAsync()
     {
+        await Constants.WaitForTaskReadyAsync();
         var node = Constants.CreateTestNode("OnEnterTreeAsync");
         await node.OnEnterTreeAsync();
         node.QueueFree();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task Node_OnReadyAsync()
     {
+        await Constants.WaitForTaskReadyAsync();
         var node = Constants.CreateTestNode("OnReadyAsync");
         await node.OnReadyAsync();
         node.QueueFree();
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task Node_OnProcessAsync()
     {
+        await Constants.WaitForTaskReadyAsync();
         var node = Constants.CreateTestNode("OnProcessAsync");
         var trigger = node.GetAsyncProcessTrigger();
         await trigger.OnProcessAsync();
@@ -36,9 +39,10 @@ public class GDTaskTest_Extensions_Node
         Assertions.AssertThat(frames + 1).IsEqual(newFrames);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task Node_OnPhysicsProcessAsync()
     {
+        await Constants.WaitForTaskReadyAsync();
         var node = Constants.CreateTestNode("OnPhysicsProcessAsync");
         var trigger = node.GetAsyncPhysicsProcessTrigger();
         await trigger.OnPhysicsProcessAsync();
@@ -49,9 +53,10 @@ public class GDTaskTest_Extensions_Node
         Assertions.AssertThat(frames + 1).IsEqual(newFrames);
     }
 
-    [TestCase]
+    [TestCase, RequireGodotRuntime]
     public static async Task Node_OnPredeleteAsync()
     {
+        await Constants.WaitForTaskReadyAsync();
         var node = Constants.CreateTestNode("OnPredeleteAsync");
         node.QueueFree();
         await node.OnPredeleteAsync();
