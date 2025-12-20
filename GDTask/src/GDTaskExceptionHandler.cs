@@ -10,8 +10,13 @@ namespace GodotTask
     public static class GDTaskExceptionHandler
     {
         /// <summary>
-        /// Occurs when a faulted <see cref="GDTask"/>'s unobserved exception is about to trigger exception escalation policy.
+        /// Subscribe to this event to get notified when a <see cref="GDTask"/> throws an unobserved exception,
         /// </summary>
+        /// <remarks>
+        /// This event is invoked when a <see cref="GDTask"/> completes with an exception that is not observed (i.e., not awaited or handled).
+        /// If no handlers are subscribed to this event, the exception details will be logged using <see cref="GD.PushError(string)"/>,
+        /// otherwise, all subscribed handlers will be invoked with the exception as an argument.
+        /// </remarks>
         public static event Action<Exception> UnobservedTaskException;
 
         /// <summary>
