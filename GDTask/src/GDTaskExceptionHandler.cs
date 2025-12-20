@@ -21,22 +21,20 @@ namespace GodotTask
 
         internal static void PublishUnobservedTaskException(Exception ex)
         {
-            if (ex != null)
+            if (ex == null) return;
+            
+            if (!PropagateOperationCanceledException && ex is OperationCanceledException)
             {
-                if (!PropagateOperationCanceledException && ex is OperationCanceledException)
-                {
-                    return;
-                }
-
-                if (UnobservedTaskException != null)
-                {
-                    UnobservedTaskException.Invoke(ex);
-                }
-                else
-                {
-                    GD.PrintErr("UnobservedTaskException: " + ex.ToString());
-                }
+                return;
             }
+
+            if (UnobservedTaskException == null)
+            {
+                GD.PushError($"UnobservedTaskException: \n{ex}");
+                return;
+            }
+
+            UnobservedTaskException.Invoke(ex);
         }
     }
 }
