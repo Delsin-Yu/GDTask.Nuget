@@ -430,7 +430,7 @@ namespace GodotTask
                 result.targetGodotObject = target as GodotObject;
                 result.monitorFunction = monitorFunction;
                 result.currentValue = monitorFunction(target);
-                result.equalityComparer = equalityComparer ?? GodotEqualityComparer.GetDefault<U>();
+                result.equalityComparer = equalityComparer ?? EqualityComparer<U>.Default;
                 result.cancellationToken = cancellationToken;
                 result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
 
@@ -560,7 +560,7 @@ namespace GodotTask
                 result.target = new WeakReference<T>(target, false); // wrap in WeakReference.
                 result.monitorFunction = monitorFunction;
                 result.currentValue = monitorFunction(target);
-                result.equalityComparer = equalityComparer ?? GodotEqualityComparer.GetDefault<U>();
+                result.equalityComparer = equalityComparer ?? EqualityComparer<U>.Default;
                 result.cancellationToken = cancellationToken;
                 result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
 
