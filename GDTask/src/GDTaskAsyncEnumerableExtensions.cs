@@ -85,14 +85,14 @@ namespace GodotTask {
 
                 public T Current => enumerator.Current;
 
-                public async ValueTask DisposeAsync()
+                public ValueTask DisposeAsync()
                 {
-                    await enumerator.DisposeAsync();
+                    return enumerator.DisposeAsync().AsValueTask();
                 }
 
-                public async ValueTask<bool> MoveNextAsync()
+                public ValueTask<bool> MoveNextAsync()
                 {
-                    return await enumerator.MoveNextAsync();
+                    return enumerator.MoveNextAsync().AsValueTask();
                 }
             }
         }
