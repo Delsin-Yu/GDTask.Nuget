@@ -295,6 +295,58 @@ public class GDTaskTest_GlobalCancellation
     }
 
     [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_CancelAllTasks_WhenEach()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var canceled = false;
+        try
+        {
+            var task1 = GDTask.Delay(TimeSpan.FromSeconds(1.0));
+            var task2 = GDTask.Delay(TimeSpan.FromSeconds(1.0));
+            var whenEachTask = GDTask.WhenEach(task1, task2);
+            await GDTask.Yield();
+            GDTask.CancelAllTasks();
+            await foreach (GDTask _ in whenEachTask) {}
+        }
+        catch (OperationCanceledException)
+        {
+            canceled = true;
+        }
+
+        Assertions.AssertThat(canceled).IsTrue();
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_CancelAllTasks_WhenEachT()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var canceled = false;
+        try
+        {
+            var task1 = GDTask.Create(async () =>
+            {
+                await GDTask.Delay(TimeSpan.FromSeconds(1.0));
+                return 1;
+            });
+            var task2 = GDTask.Create(async () =>
+            {
+                await GDTask.Delay(TimeSpan.FromSeconds(1.0));
+                return 2;
+            });
+            var whenEachTask = GDTask.WhenEach(task1, task2);
+            await GDTask.Yield();
+            GDTask.CancelAllTasks();
+            await foreach (GDTask<int> _ in whenEachTask) { }
+        }
+        catch (OperationCanceledException)
+        {
+            canceled = true;
+        }
+
+        Assertions.AssertThat(canceled).IsTrue();
+    }
+
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_CancelAllTasks_CompletionSource()
     {
         await Constants.WaitForTaskReadyAsync();
