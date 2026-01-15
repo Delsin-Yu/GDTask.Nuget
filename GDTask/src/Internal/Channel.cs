@@ -128,7 +128,7 @@ namespace GodotTask.Internal
 
                 if (waiting)
                 {
-                    parent.readerSource.SingalContinuation();
+                    parent.readerSource.SignalContinuation();
                 }
 
                 return true;
@@ -171,7 +171,7 @@ namespace GodotTask.Internal
 
                         if (waiting)
                         {
-                            parent.readerSource.SingalCompleted(error);
+                            parent.readerSource.SignalCompleted(error);
                         }
                     }
 
@@ -302,18 +302,18 @@ namespace GodotTask.Internal
                 }
             }
 
-            public void SingalContinuation()
+            public void SignalContinuation()
             {
                 core.TrySetResult(true);
             }
 
-            public void SingalCancellation(CancellationToken cancellationToken)
+            public void SignalCancellation(CancellationToken cancellationToken)
             {
                 TaskTracker.RemoveTracking(this);
                 core.TrySetCanceled(cancellationToken);
             }
 
-            public void SingalCompleted(Exception error)
+            public void SignalCompleted(Exception error)
             {
                 if (error != null)
                 {
@@ -360,7 +360,7 @@ namespace GodotTask.Internal
             private static void CancellationCallback(object state)
             {
                 var self = (SingleConsumerUnboundedChannelReader)state;
-                self.SingalCancellation(self.cancellationToken);
+                self.SignalCancellation(self.cancellationToken);
             }
 
             private sealed class ReadAllAsyncEnumerable : IGDTaskAsyncEnumerable<T>, IGDTaskAsyncEnumerator<T>
@@ -439,13 +439,13 @@ namespace GodotTask.Internal
                 private static void CancellationCallback1(object state)
                 {
                     var self = (ReadAllAsyncEnumerable)state;
-                    self.parent.SingalCancellation(self.cancellationToken1);
+                    self.parent.SignalCancellation(self.cancellationToken1);
                 }
 
                 private static void CancellationCallback2(object state)
                 {
                     var self = (ReadAllAsyncEnumerable)state;
-                    self.parent.SingalCancellation(self.cancellationToken2);
+                    self.parent.SignalCancellation(self.cancellationToken2);
                 }
             }
         }
