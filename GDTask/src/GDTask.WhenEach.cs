@@ -58,6 +58,7 @@ namespace GodotTask
         {
             private readonly IEnumerable<GDTask<T>> source;
             private readonly CancellationToken cancellationToken;
+            private readonly CancellationToken globalCancellationToken;
 
             private Channel<GDTask<T>> channel;
             private IGDTaskAsyncEnumerator<GDTask<T>> channelEnumerator;
@@ -68,6 +69,7 @@ namespace GodotTask
             {
                 this.source = source;
                 this.cancellationToken = cancellationToken;
+                this.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
             }
 
             public GDTask<T> Current => channelEnumerator.Current;
@@ -75,6 +77,7 @@ namespace GodotTask
             public GDTask<bool> MoveNextAsync()
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                globalCancellationToken.ThrowIfCancellationRequested();
 
                 if (state == WhenEachState.NotRunning)
                 {
@@ -152,6 +155,7 @@ namespace GodotTask
         {
             private readonly IEnumerable<GDTask> source;
             private readonly CancellationToken cancellationToken;
+            private readonly CancellationToken globalCancellationToken;
 
             private Channel<GDTask> channel;
             private IGDTaskAsyncEnumerator<GDTask> channelEnumerator;
@@ -162,6 +166,7 @@ namespace GodotTask
             {
                 this.source = source;
                 this.cancellationToken = cancellationToken;
+                this.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
             }
 
             public GDTask Current => channelEnumerator.Current;
@@ -169,6 +174,7 @@ namespace GodotTask
             public GDTask<bool> MoveNextAsync()
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                globalCancellationToken.ThrowIfCancellationRequested();
 
                 if (state == WhenEachState.NotRunning)
                 {

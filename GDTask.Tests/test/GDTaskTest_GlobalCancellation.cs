@@ -303,10 +303,13 @@ public class GDTaskTest_GlobalCancellation
         {
             var task1 = GDTask.Delay(TimeSpan.FromSeconds(1.0));
             var task2 = GDTask.Delay(TimeSpan.FromSeconds(1.0));
-            var whenEachTask = GDTask.WhenEach(task1, task2);
+            var whenEachEnumerable = GDTask.WhenEach(task1, task2).GetAsyncEnumerator();
             await GDTask.Yield();
             GDTask.CancelAllTasks();
-            await foreach (GDTask _ in whenEachTask) {}
+            while (await whenEachEnumerable.MoveNextAsync())
+            {
+                _ = whenEachEnumerable.Current;
+            }
         }
         catch (OperationCanceledException)
         {
@@ -333,10 +336,13 @@ public class GDTaskTest_GlobalCancellation
                 await GDTask.Delay(TimeSpan.FromSeconds(1.0));
                 return 2;
             });
-            var whenEachTask = GDTask.WhenEach(task1, task2);
+            var whenEachEnumerable = GDTask.WhenEach(task1, task2).GetAsyncEnumerator();
             await GDTask.Yield();
             GDTask.CancelAllTasks();
-            await foreach (GDTask<int> _ in whenEachTask) { }
+            while (await whenEachEnumerable.MoveNextAsync())
+            {
+                _ = whenEachEnumerable.Current;
+            }
         }
         catch (OperationCanceledException)
         {
