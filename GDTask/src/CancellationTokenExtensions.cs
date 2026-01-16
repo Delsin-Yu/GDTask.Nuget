@@ -167,12 +167,14 @@ namespace GodotTask
     public readonly struct CancellationTokenAwaitable
     {
         private readonly CancellationToken cancellationToken;
+        private readonly CancellationToken globalCancellationToken;
 
         internal CancellationTokenAwaitable(CancellationToken cancellationToken)
         {
             var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, GDTaskPlayerLoopRunner.GetGlobalCancellationToken());
 
             this.cancellationToken = linkedTokenSource.Token;
+            this.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
         }
 
         /// <summary>
@@ -180,7 +182,7 @@ namespace GodotTask
         /// </summary>
         public Awaiter GetAwaiter()
         {
-            return new Awaiter(cancellationToken);
+            return new Awaiter(cancellationToken, globalCancellationToken);
         }
 
         /// <summary>
@@ -189,16 +191,18 @@ namespace GodotTask
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             private readonly CancellationToken cancellationToken;
+            private readonly CancellationToken globalCancellationToken;
 
-            internal Awaiter(CancellationToken cancellationToken)
+            internal Awaiter(CancellationToken cancellationToken, CancellationToken globalCancellationToken)
             {
                 this.cancellationToken = cancellationToken;
+                this.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
             }
 
             /// <summary>
             /// Gets a value that indicates whether the <see cref="CancellationToken"/> has canceled.
             /// </summary>
-            public bool IsCompleted => !cancellationToken.CanBeCanceled || cancellationToken.IsCancellationRequested;
+            public bool IsCompleted => !cancellationToken.CanBeCanceled || cancellationToken.IsCancellationRequested || globalCancellationToken.IsCancellationRequested;
 
             /// <summary>
             /// Do nothing
@@ -219,8 +223,8 @@ namespace GodotTask
             public void UnsafeOnCompleted(Action continuation)
             {
                 cancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
+                globalCancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
             }
         }
     }
 }
-

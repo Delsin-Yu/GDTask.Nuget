@@ -279,6 +279,7 @@ namespace GodotTask
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationToken = default;
+                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -385,6 +386,7 @@ namespace GodotTask
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationToken = default;
+                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -512,6 +514,7 @@ namespace GodotTask
                 currentFrameCount = default;
                 delayFrameCount = default;
                 cancellationToken = default;
+                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -638,6 +641,7 @@ namespace GodotTask
                 delayTimeSpan = default;
                 elapsed = default;
                 cancellationToken = default;
+                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -751,6 +755,7 @@ namespace GodotTask
                 core.Reset();
                 stopwatch = default;
                 cancellationToken = default;
+                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }

@@ -171,6 +171,7 @@ namespace GodotTask
                 core.Reset();
                 predicate = default;
                 cancellationToken = default;
+                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -286,6 +287,7 @@ namespace GodotTask
                 core.Reset();
                 predicate = default;
                 cancellationToken = default;
+                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -384,6 +386,7 @@ namespace GodotTask
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationToken = default;
+                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -516,6 +519,7 @@ namespace GodotTask
                 monitorFunction = default;
                 equalityComparer = default;
                 cancellationToken = default;
+                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -646,6 +650,7 @@ namespace GodotTask
                 monitorFunction = default;
                 equalityComparer = default;
                 cancellationToken = default;
+                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }

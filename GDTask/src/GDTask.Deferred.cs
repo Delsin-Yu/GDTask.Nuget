@@ -112,6 +112,7 @@ public partial struct GDTask
             TaskTracker.RemoveTracking(this);
             core.Reset();
             cancellationToken = default;
+            globalCancellationToken = default;
             return pool.TryPush(this);
         }
     }
