@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Godot;
+using System.Threading.Tasks;
 using GodotTask.CompilerServices;
 
 namespace GodotTask
@@ -64,6 +64,14 @@ namespace GodotTask
         }
 
         IGDTaskAwaiter IGDTask.GetAwaiter() => GetAwaiter();
+
+        /// <summary>
+        /// Create a <see cref="ValueTask"/> that wraps around this task.
+        /// </summary>
+        public ValueTask AsValueTask()
+        {
+            return new ValueTask(source, token);
+        }
 
         /// <summary>
         /// returns (bool IsCanceled) instead of throws OperationCanceledException.
@@ -474,6 +482,14 @@ namespace GodotTask
         public static implicit operator GDTask(GDTask<T> self)
         {
             return self.AsGDTask();
+        }
+
+        /// <summary>
+        /// Create a <see cref="ValueTask{T}"/> that wraps around this task.
+        /// </summary>
+        public ValueTask<T> AsValueTask()
+        {
+            return new ValueTask<T>(source, token);
         }
 
         /// <summary>

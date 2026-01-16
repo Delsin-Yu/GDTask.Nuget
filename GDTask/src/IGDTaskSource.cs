@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks.Sources;
 
 namespace GodotTask
 {
@@ -28,23 +29,35 @@ namespace GodotTask
     /// <summary>
     /// GDTaskSource that has a void return (returns nothing).
     /// </summary>
-    internal interface IGDTaskSource
+    internal interface IGDTaskSource : IValueTaskSource
     {
-        GDTaskStatus GetStatus(short token);
+        new GDTaskStatus GetStatus(short token);
         void OnCompleted(Action<object> continuation, object state, short token);
-        void GetResult(short token);
+        new void GetResult(short token);
 
         GDTaskStatus UnsafeGetStatus(); // only for debug use.
+
+        // ValueTask compatibility
+        ValueTaskSourceStatus IValueTaskSource.GetStatus(short token) => (ValueTaskSourceStatus)((IGDTaskSource)this).GetStatus(token);
+        void IValueTaskSource.GetResult(short token) => ((IGDTaskSource)this).GetResult(token);
+        void IValueTaskSource.OnCompleted(Action<object> continuation, object state, short token, ValueTaskSourceOnCompletedFlags flags) => ((IGDTaskSource)this).OnCompleted(continuation, state, token); // // ignore flags, always none.
     }
 
     /// <summary>
     /// GDTaskSource that has a typed return value
     /// </summary>
     /// <typeparam name="T">Return value of the task source</typeparam>
-    internal interface IGDTaskSource<out T> : IGDTaskSource
+    internal interface IGDTaskSource<out T> : IGDTaskSource, IValueTaskSource<T>
     {
         // Hide the original void GetResult method
         new T GetResult(short token);
+        
+        // ValueTask compatibility
+        new public GDTaskStatus GetStatus(short token) => ((IGDTaskSource)this).GetStatus(token);
+        new public void OnCompleted(Action<object> continuation, object state, short token) => ((IGDTaskSource)this).OnCompleted(continuation, state, token);
+        ValueTaskSourceStatus IValueTaskSource<T>.GetStatus(short token) => (ValueTaskSourceStatus)((IGDTaskSource)this).GetStatus(token);
+        T IValueTaskSource<T>.GetResult(short token) => ((IGDTaskSource<T>)this).GetResult(token);
+        void IValueTaskSource<T>.OnCompleted(Action<object> continuation, object state, short token, ValueTaskSourceOnCompletedFlags flags) => ((IGDTaskSource)this).OnCompleted(continuation, state, token); // // ignore flags, always none.
     }
 
     /// <summary>

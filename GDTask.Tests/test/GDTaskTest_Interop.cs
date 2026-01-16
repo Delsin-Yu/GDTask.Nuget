@@ -75,6 +75,22 @@ public class GDTaskTest_Interop
     }
 
     [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_AsValueTask()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        using (new ScopedStopwatch()) await Constants.Delay().AsValueTask();
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTaskT_AsValueTask()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        int result;
+        using (new ScopedStopwatch()) result = await Constants.DelayWithReturn().AsValueTask();
+        Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
+    }
+
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ToAsyncLazy()
     {
         await Constants.WaitForTaskReadyAsync();

@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
+using Godot;
 
 namespace GodotTask.Tests;
 
 [TestSuite]
-public class GDTaskTest_WhenAll_WhenAny
+public class GDTaskTest_WhenAll_WhenAny_WhenEach
 {
     [TestCase, RequireGodotRuntime]
     public static async Task GDTask_WhenAll_Params()
@@ -122,5 +123,44 @@ public class GDTaskTest_WhenAll_WhenAny
         var (winArgumentIndex, result1, _) = await GDTask.WhenAny(Constants.DelayWithReturn(), GDTask.Never<int>(CancellationToken.None));
         Assertions.AssertThat(winArgumentIndex).IsEqual(0);
         Assertions.AssertThat(result1).IsEqual(Constants.ReturnValue);
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_WhenEach_Enumerable()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        int counter = 0;
+        ulong frameCount = Engine.GetProcessFrames();
+        await foreach (GDTask task in GDTask.WhenEach((IEnumerable<GDTask>)new[] {
+            GDTask.DelayFrame(5),
+            GDTask.DelayFrame(15),
+            GDTask.DelayFrame(10),
+        }))
+        {
+            counter++;
+        }
+        Assertions.AssertThat(counter).IsEqual(3);
+        Assertions.AssertThat(frameCount).IsEqual(Engine.GetProcessFrames() - 15);
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_WhenEachT_Enumerable()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        int counter = 0;
+        ulong frameCount = Engine.GetProcessFrames();
+        List<int> results = [];
+        await foreach (GDTask<int> task in GDTask.WhenEach((IEnumerable<GDTask<int>>)new[] {
+            GDTask.DelayFrame(5).ContinueWith(() => 1),
+            GDTask.DelayFrame(15).ContinueWith(() => 3),
+            GDTask.DelayFrame(10).ContinueWith(() => 2),
+        }))
+        {
+            counter++;
+            results.Add(task.GetAwaiter().GetResult());
+        }
+        Assertions.AssertThat(counter).IsEqual(3);
+        Assertions.AssertThat(frameCount).IsEqual(Engine.GetProcessFrames() - 15);
+        Assertions.AssertThat(string.Join(", ", results)).IsEqual("1, 2, 3");
     }
 }
