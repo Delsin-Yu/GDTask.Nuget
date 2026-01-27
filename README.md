@@ -223,6 +223,7 @@ Otherwise, the following table shows the GDTask APIs provided that are meant to 
 | `Task.Run`                                   | `GDTask.RunOnThreadPool`                                         |
 | `Task.WhenAll`                               | `GDTask.WhenAll`                                                 |
 | `Task.WhenAny`                               | `GDTask.WhenAny`                                                 |
+| `Task.WhenEach`                              | `GDTask.WhenEach`                                                |
 | `Task.CompletedTask`                         | `GDTask.CompletedTask`                                           |
 | `Task.FromException`                         | `GDTask.FromException`                                           |
 | `Task.FromResult`                            | `GDTask.FromResult`                                              |
