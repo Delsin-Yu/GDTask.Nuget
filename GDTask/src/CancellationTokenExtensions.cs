@@ -222,8 +222,32 @@ namespace GodotTask
             /// <inheritdoc cref="OnCompleted"/>
             public void UnsafeOnCompleted(Action continuation)
             {
-                cancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
-                globalCancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
+                if (!cancellationToken.CanBeCanceled)
+                {
+                    globalCancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
+                    return;
+                }
+
+                int completed = 0;
+                CancellationTokenRegistration reg1 = default;
+                CancellationTokenRegistration reg2 = default;
+
+                void CancelCallback() {
+                    if (Interlocked.Exchange(ref completed, 1) == 0) {
+                        reg1.Dispose();
+                        reg2.Dispose();
+
+                        continuation();
+                    }
+                }
+
+                reg1 = cancellationToken.RegisterWithoutCaptureExecutionContext(CancelCallback);
+                reg2 = globalCancellationToken.RegisterWithoutCaptureExecutionContext(CancelCallback);
+
+                if (completed == 1) {
+                    reg1.Dispose();
+                    reg2.Dispose();
+                }
             }
         }
     }
