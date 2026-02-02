@@ -210,7 +210,7 @@ namespace GodotTask
                 return task;
             }
 
-            return new GDTask(AttachExternalCancellationSource.Create(task, cancellationToken, out var token), token);
+            return new GDTask(new AttachExternalCancellationSource(task, cancellationToken), 0);
         }
 
         /// <inheritdoc cref="AttachExternalCancellation"/>
@@ -231,49 +231,22 @@ namespace GodotTask
                 return task;
             }
 
-            return new GDTask<T>(AttachExternalCancellationSource<T>.Create(task, cancellationToken, out var token), token);
+            return new GDTask<T>(new AttachExternalCancellationSource<T>(task, cancellationToken), 0);
         }
 
-        private sealed class AttachExternalCancellationSource : IGDTaskSource, ITaskPoolNode<AttachExternalCancellationSource>
+        private sealed class AttachExternalCancellationSource : IGDTaskSource
         {
-            private static TaskPool<AttachExternalCancellationSource> pool;
-            private AttachExternalCancellationSource nextNode;
-            public ref AttachExternalCancellationSource NextNode => ref nextNode;
+            private static readonly Action<object> cancellationCallbackDelegate = CancellationCallback;
 
             private CancellationToken cancellationToken;
             private CancellationTokenRegistration tokenRegistration;
             private GDTaskCompletionSourceCore<AsyncUnit> core;
 
-            static AttachExternalCancellationSource()
+            public AttachExternalCancellationSource(GDTask task, CancellationToken cancellationToken)
             {
-                TaskPool.RegisterSizeGetter(typeof(AttachExternalCancellationSource), () => pool.Size);
-            }
-
-            private AttachExternalCancellationSource()
-            {
-            }
-
-            public static IGDTaskSource Create(GDTask task, CancellationToken cancellationToken, out short token)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return AutoResetGDTaskCompletionSource.CreateFromCanceled(cancellationToken, out token);
-                }
-
-                if (!pool.TryPop(out var result))
-                {
-                    result = new AttachExternalCancellationSource();
-                }
-
-                result.cancellationToken = cancellationToken;
-                result.tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallback, result);
-
-                TaskTracker.TrackActiveTask(result, 3);
-
-                result.RunTask(task).Forget();
-
-                token = result.core.Version;
-                return result;
+                this.cancellationToken = cancellationToken;
+                tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallbackDelegate, this);
+                RunTask(task).Forget();
             }
 
             private async GDTaskVoid RunTask(GDTask task)
@@ -301,14 +274,7 @@ namespace GodotTask
 
             public void GetResult(short token)
             {
-                try
-                {
-                    core.GetResult(token);
-                }
-                finally
-                {
-                    TryReturn();
-                }
+                core.GetResult(token);
             }
 
             public GDTaskStatus GetStatus(short token)
@@ -325,56 +291,19 @@ namespace GodotTask
             {
                 return core.UnsafeGetStatus();
             }
-
-            private bool TryReturn()
-            {
-                TaskTracker.RemoveTracking(this);
-                core.Reset();
-                cancellationToken = default;
-                return pool.TryPush(this);
-            }
         }
 
-        private sealed class AttachExternalCancellationSource<T> : IGDTaskSource<T>, ITaskPoolNode<AttachExternalCancellationSource<T>>
+        private sealed class AttachExternalCancellationSource<T> : IGDTaskSource<T>
         {
-            private static TaskPool<AttachExternalCancellationSource<T>> pool;
-            private AttachExternalCancellationSource<T> nextNode;
-            public ref AttachExternalCancellationSource<T> NextNode => ref nextNode;
-
-            private CancellationToken cancellationToken;
-            private CancellationTokenRegistration tokenRegistration;
+            private readonly CancellationToken cancellationToken;
+            private readonly CancellationTokenRegistration tokenRegistration;
             private GDTaskCompletionSourceCore<T> core;
-            
-            static AttachExternalCancellationSource()
+
+            public AttachExternalCancellationSource(GDTask<T> task, CancellationToken cancellationToken)
             {
-                TaskPool.RegisterSizeGetter(typeof(AttachExternalCancellationSource<T>), () => pool.Size);
-            }
-
-            private AttachExternalCancellationSource()
-            {
-            }
-
-            public static IGDTaskSource<T> Create(GDTask<T> task, CancellationToken cancellationToken, out short token)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return AutoResetGDTaskCompletionSource<T>.CreateFromCanceled(cancellationToken, out token);
-                }
-
-                if (!pool.TryPop(out var result))
-                {
-                    result = new AttachExternalCancellationSource<T>();
-                }
-
-                result.cancellationToken = cancellationToken;
-                result.tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallback, result);
-
-                TaskTracker.TrackActiveTask(result, 3);
-
-                result.RunTask(task).Forget();
-
-                token = result.core.Version;
-                return result;
+                this.cancellationToken = cancellationToken;
+                tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallback, this);
+                RunTask(task).Forget();
             }
 
             private async GDTaskVoid RunTask(GDTask<T> task)
@@ -401,26 +330,12 @@ namespace GodotTask
 
             void IGDTaskSource.GetResult(short token)
             {
-                try
-                {
-                    core.GetResult(token);
-                }
-                finally
-                {
-                    TryReturn();
-                }
+                core.GetResult(token);
             }
 
             public T GetResult(short token)
             {
-                try
-                {
-                    return core.GetResult(token);
-                }
-                finally
-                {
-                    TryReturn();
-                }
+                return core.GetResult(token);
             }
 
             public GDTaskStatus GetStatus(short token)
@@ -436,14 +351,6 @@ namespace GodotTask
             public GDTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
-            }
-
-            private bool TryReturn()
-            {
-                TaskTracker.RemoveTracking(this);
-                core.Reset();
-                cancellationToken = default;
-                return pool.TryPush(this);
             }
         }
 
