@@ -88,34 +88,6 @@ public class GDTaskTest_Core
         await gdTask;
     }
 
-    [TestCase, RequireGodotRuntime]
-    public static async Task GDTask_TriggerGlobalCancellation()
-    {
-        var number = 0;
-        async GDTask delayIncrementNumberTwice()
-        {
-            await GDTask.Delay(TimeSpan.FromSeconds(0.2)).AttachGlobalCancellation();
-            number++;
-            await GDTask.Delay(TimeSpan.FromSeconds(0.2)).AttachGlobalCancellation();
-            number++;
-        }
-
-        var canceled = false;
-        try
-        {
-            var task = delayIncrementNumberTwice();
-            await GDTask.Delay(TimeSpan.FromSeconds(0.3)).AttachGlobalCancellation();
-            GDTask.TriggerGlobalCancellation();
-            await task;
-        }
-        catch (OperationCanceledException)
-        {
-            canceled = true;
-        }
-        Assertions.AssertThat(canceled).IsTrue();
-        Assertions.AssertThat(number).IsEqual(1);
-    }
-
     [TestCase]
     public static async Task GDTaskT_Result()
     {
