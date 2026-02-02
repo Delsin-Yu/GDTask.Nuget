@@ -167,14 +167,10 @@ namespace GodotTask
     public readonly struct CancellationTokenAwaitable
     {
         private readonly CancellationToken cancellationToken;
-        private readonly CancellationToken globalCancellationToken;
 
         internal CancellationTokenAwaitable(CancellationToken cancellationToken)
         {
-            var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, GDTaskPlayerLoopRunner.GetGlobalCancellationToken());
-
-            this.cancellationToken = linkedTokenSource.Token;
-            this.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
+            this.cancellationToken = cancellationToken;
         }
 
         /// <summary>
@@ -182,7 +178,7 @@ namespace GodotTask
         /// </summary>
         public Awaiter GetAwaiter()
         {
-            return new Awaiter(cancellationToken, globalCancellationToken);
+            return new Awaiter(cancellationToken);
         }
 
         /// <summary>
@@ -191,18 +187,16 @@ namespace GodotTask
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             private readonly CancellationToken cancellationToken;
-            private readonly CancellationToken globalCancellationToken;
 
-            internal Awaiter(CancellationToken cancellationToken, CancellationToken globalCancellationToken)
+            internal Awaiter(CancellationToken cancellationToken)
             {
                 this.cancellationToken = cancellationToken;
-                this.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
             }
 
             /// <summary>
             /// Gets a value that indicates whether the <see cref="CancellationToken"/> has canceled.
             /// </summary>
-            public bool IsCompleted => !cancellationToken.CanBeCanceled || cancellationToken.IsCancellationRequested || globalCancellationToken.IsCancellationRequested;
+            public bool IsCompleted => !cancellationToken.CanBeCanceled || cancellationToken.IsCancellationRequested;
 
             /// <summary>
             /// Do nothing
@@ -222,32 +216,7 @@ namespace GodotTask
             /// <inheritdoc cref="OnCompleted"/>
             public void UnsafeOnCompleted(Action continuation)
             {
-                if (!cancellationToken.CanBeCanceled)
-                {
-                    globalCancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
-                    return;
-                }
-
-                int completed = 0;
-                CancellationTokenRegistration reg1 = default;
-                CancellationTokenRegistration reg2 = default;
-
-                void CancelCallback() {
-                    if (Interlocked.Exchange(ref completed, 1) == 0) {
-                        reg1.Dispose();
-                        reg2.Dispose();
-
-                        continuation();
-                    }
-                }
-
-                reg1 = cancellationToken.RegisterWithoutCaptureExecutionContext(CancelCallback);
-                reg2 = globalCancellationToken.RegisterWithoutCaptureExecutionContext(CancelCallback);
-
-                if (completed == 1) {
-                    reg1.Dispose();
-                    reg2.Dispose();
-                }
+                cancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
             }
         }
     }

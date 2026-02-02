@@ -112,13 +112,13 @@ namespace GodotTask
         public double PhysicsDeltaTime => GetPhysicsProcessDeltaTime();
 
         private static GDTaskPlayerLoopRunner s_Global;
-        private static CancellationTokenSource globalCancellationTokenSource = new();
+        private static Tuple<CancellationTokenSource, CancellationToken> globalCancellationTuple = CreateCancellationTuple();
         private int mainThreadId;
         private ContinuationQueue[] yielders;
         private ContinuationQueue deferredYielder;
         private PlayerLoopRunner[] runners;
         private PlayerLoopRunner deferredRunner;
-        
+
         public override void _Ready()
         {
             if (s_Global == null)
@@ -190,15 +190,21 @@ namespace GodotTask
             deferredRunner.Run();
         }
 
-        public static void CancelAllTasks()
+        public static void CancelGlobalCancellationTokenSource()
         {
-            var oldGlobalCancellationTokenSource = Interlocked.Exchange(ref globalCancellationTokenSource, new CancellationTokenSource());
-            oldGlobalCancellationTokenSource.Cancel();
-            oldGlobalCancellationTokenSource.Dispose();
+            var oldGlobalCancellationTuple = Interlocked.Exchange(ref globalCancellationTuple, CreateCancellationTuple());
+            oldGlobalCancellationTuple.Item1.Cancel();
+            oldGlobalCancellationTuple.Item1.Dispose();
         }
         public static CancellationToken GetGlobalCancellationToken()
         {
-            return globalCancellationTokenSource.Token;
+            return globalCancellationTuple.Item2;
+        }
+
+        private static Tuple<CancellationTokenSource, CancellationToken> CreateCancellationTuple()
+        {
+            CancellationTokenSource source = new();
+            return Tuple.Create(source, source.Token);
         }
     }
 }

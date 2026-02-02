@@ -199,7 +199,6 @@ namespace GodotTask
             }
 
             private CancellationToken cancellationToken;
-            private CancellationToken globalCancellationToken;
             private GDTaskCompletionSourceCore<object> core;
 
             private YieldPromise()
@@ -219,7 +218,6 @@ namespace GodotTask
                 }
 
                 result.cancellationToken = cancellationToken;
-                result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
 
                 TaskTracker.TrackActiveTask(result, 3);
 
@@ -264,12 +262,6 @@ namespace GodotTask
                     return false;
                 }
 
-                if (globalCancellationToken.IsCancellationRequested)
-                {
-                    core.TrySetCanceled();
-                    return false;
-                }
-
                 core.TrySetResult(null);
                 return false;
             }
@@ -279,7 +271,6 @@ namespace GodotTask
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationToken = default;
-                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -298,7 +289,6 @@ namespace GodotTask
             private bool isMainThread;
             private ulong frameCount;
             private CancellationToken cancellationToken;
-            private CancellationToken globalCancellationToken;
             private GDTaskCompletionSourceCore<AsyncUnit> core;
 
             private NextFramePromise()
@@ -321,7 +311,6 @@ namespace GodotTask
                 if (result.isMainThread)
                     result.frameCount = Engine.GetProcessFrames();
                 result.cancellationToken = cancellationToken;
-                result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
 
                 TaskTracker.TrackActiveTask(result, 3);
 
@@ -366,12 +355,6 @@ namespace GodotTask
                     return false;
                 }
 
-                if (globalCancellationToken.IsCancellationRequested)
-                {
-                    core.TrySetCanceled();
-                    return false;
-                }
-
                 if (isMainThread && frameCount == Engine.GetProcessFrames())
                 {
                     return true;
@@ -386,7 +369,6 @@ namespace GodotTask
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationToken = default;
-                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -406,7 +388,6 @@ namespace GodotTask
             private ulong initialFrame;
             private int delayFrameCount;
             private CancellationToken cancellationToken;
-            private CancellationToken globalCancellationToken;
 
             private int currentFrameCount;
             private GDTaskCompletionSourceCore<AsyncUnit> core;
@@ -429,7 +410,6 @@ namespace GodotTask
 
                 result.delayFrameCount = delayFrameCount;
                 result.cancellationToken = cancellationToken;
-                result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
                 result.isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
                 if (result.isMainThread)
                     result.initialFrame = Engine.GetProcessFrames();
@@ -477,12 +457,6 @@ namespace GodotTask
                     return false;
                 }
 
-                if (globalCancellationToken.IsCancellationRequested)
-                {
-                    core.TrySetCanceled();
-                    return false;
-                }
-
                 if (currentFrameCount == 0)
                 {
                     if (delayFrameCount == 0) // same as Yield
@@ -514,7 +488,6 @@ namespace GodotTask
                 currentFrameCount = default;
                 delayFrameCount = default;
                 cancellationToken = default;
-                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -535,7 +508,6 @@ namespace GodotTask
             private double delayTimeSpan;
             private double elapsed;
             private CancellationToken cancellationToken;
-            private CancellationToken globalCancellationToken;
             private PlayerLoopTiming timing;
             private GDTaskCompletionSourceCore<object> core;
 
@@ -558,7 +530,6 @@ namespace GodotTask
                 result.elapsed = 0.0f;
                 result.delayTimeSpan = (float)delayTimeSpan.TotalSeconds;
                 result.cancellationToken = cancellationToken;
-                result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
                 result.isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
                 result.timing = timing;
                 if (result.isMainThread)
@@ -607,12 +578,6 @@ namespace GodotTask
                     return false;
                 }
 
-                if (globalCancellationToken.IsCancellationRequested)
-                {
-                    core.TrySetCanceled();
-                    return false;
-                }
-
                 if (elapsed == 0.0f)
                 {
                     if (isMainThread && initialFrame == Engine.GetProcessFrames())
@@ -641,7 +606,6 @@ namespace GodotTask
                 delayTimeSpan = default;
                 elapsed = default;
                 cancellationToken = default;
-                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -660,7 +624,6 @@ namespace GodotTask
             private long delayTimeSpanTicks;
             private ValueStopwatch stopwatch;
             private CancellationToken cancellationToken;
-            private CancellationToken globalCancellationToken;
 
             private GDTaskCompletionSourceCore<AsyncUnit> core;
 
@@ -683,7 +646,6 @@ namespace GodotTask
                 result.stopwatch = ValueStopwatch.StartNew();
                 result.delayTimeSpanTicks = delayTimeSpan.Ticks;
                 result.cancellationToken = cancellationToken;
-                result.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
 
                 TaskTracker.TrackActiveTask(result, 3);
 
@@ -728,12 +690,6 @@ namespace GodotTask
                     return false;
                 }
 
-                if (globalCancellationToken.IsCancellationRequested)
-                {
-                    core.TrySetCanceled();
-                    return false;
-                }
-
                 if (stopwatch.IsInvalid)
                 {
                     core.TrySetResult(AsyncUnit.Default);
@@ -755,7 +711,6 @@ namespace GodotTask
                 core.Reset();
                 stopwatch = default;
                 cancellationToken = default;
-                globalCancellationToken = default;
                 return pool.TryPush(this);
             }
         }
@@ -766,8 +721,7 @@ namespace GodotTask
     /// </summary>
     public readonly struct YieldAwaitable
     {
-        private readonly PlayerLoopTiming timing;
-        private readonly CancellationToken globalCancellationToken;
+        internal readonly PlayerLoopTiming timing;
 
         /// <summary>
         /// Initializes the <see cref="YieldAwaitable"/>.
@@ -775,7 +729,6 @@ namespace GodotTask
         internal YieldAwaitable(PlayerLoopTiming timing)
         {
             this.timing = timing;
-            globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
         }
 
         /// <summary>
@@ -783,7 +736,7 @@ namespace GodotTask
         /// </summary>
         public Awaiter GetAwaiter()
         {
-            return new Awaiter(timing, globalCancellationToken);
+            return new Awaiter(timing);
         }
 
         /// <summary>
@@ -800,15 +753,13 @@ namespace GodotTask
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             private readonly PlayerLoopTiming timing;
-            private readonly CancellationToken globalCancellationToken;
 
             /// <summary>
             /// Initializes the <see cref="Awaiter"/>.
             /// </summary>
-            internal Awaiter(PlayerLoopTiming timing, CancellationToken globalCancellationToken)
+            internal Awaiter(PlayerLoopTiming timing)
             {
                 this.timing = timing;
-                this.globalCancellationToken = globalCancellationToken;
             }
 
             /// <summary>
@@ -820,7 +771,6 @@ namespace GodotTask
             /// Ends the awaiting on the completed <see cref="YieldAwaitable"/>.
             /// </summary>
             public void GetResult() {
-                globalCancellationToken.ThrowIfCancellationRequested();
             }
 
             /// <summary>
