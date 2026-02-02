@@ -171,9 +171,7 @@ namespace GodotTask
 
         internal CancellationTokenAwaitable(CancellationToken cancellationToken)
         {
-            var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, GDTaskPlayerLoopRunner.GetGlobalCancellationToken());
-
-            this.cancellationToken = linkedTokenSource.Token;
+            this.cancellationToken = cancellationToken;
             this.globalCancellationToken = GDTaskPlayerLoopRunner.GetGlobalCancellationToken();
         }
 
@@ -232,8 +230,10 @@ namespace GodotTask
                 CancellationTokenRegistration reg1 = default;
                 CancellationTokenRegistration reg2 = default;
 
-                void CancelCallback() {
-                    if (Interlocked.Exchange(ref completed, 1) == 0) {
+                void CancelCallback()
+                {
+                    if (Interlocked.Exchange(ref completed, 1) == 0)
+                    {
                         reg1.Dispose();
                         reg2.Dispose();
 
@@ -244,7 +244,8 @@ namespace GodotTask
                 reg1 = cancellationToken.RegisterWithoutCaptureExecutionContext(CancelCallback);
                 reg2 = globalCancellationToken.RegisterWithoutCaptureExecutionContext(CancelCallback);
 
-                if (completed == 1) {
+                if (completed == 1)
+                {
                     reg1.Dispose();
                     reg2.Dispose();
                 }
