@@ -52,6 +52,10 @@ namespace GodotTask
             {
                 return CompletedTask;
             }
+            if (tasks.Length == 1)
+            {
+                return tasks[0];
+            }
 
             return new GDTask(new WhenAllPromise(tasks), 0);
         }
@@ -63,6 +67,10 @@ namespace GodotTask
             {
                 return CompletedTask;
             }
+            if (tasks.Length == 1)
+            {
+                return tasks[0];
+            }
 
             return new GDTask(new WhenAllPromise(tasks), 0);
         }
@@ -71,6 +79,14 @@ namespace GodotTask
         public static GDTask WhenAll(IEnumerable<GDTask> tasks)
         {
             using var usage = EnumerableUtils.ToSpan(tasks, out var span);
+            if (span.Length == 0)
+            {
+                return CompletedTask;
+            }
+            if (span.Length == 1)
+            {
+                return span[0];
+            }
             var promise = new WhenAllPromise(span); // consumed array in constructor.
             return new GDTask(promise, 0);
         }
