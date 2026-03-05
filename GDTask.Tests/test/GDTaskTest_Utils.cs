@@ -11,10 +11,15 @@ public class GDTaskTest_Utils
     [TestCase, RequireGodotRuntime]
     public static async Task GDTask_AttachExternalCancellation()
     {
+        using var neverCts = new CancellationTokenSource();
+        using var otherCts = new CancellationTokenSource();
+
         await Constants.WaitForTaskReadyAsync();
         try
         {
-            await Constants.Delay().AttachExternalCancellation(Constants.CreateCanceledToken());
+            await Constants.Delay().AttachExternalCancellation(neverCts.Token);
+            _ = Constants.DelayHalf().ContinueWith(otherCts.Cancel);
+            await Constants.Delay().AttachExternalCancellation(otherCts.Token);
         }
         catch (OperationCanceledException)
         {
@@ -27,10 +32,15 @@ public class GDTaskTest_Utils
     [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_AttachExternalCancellation()
     {
+        using var neverCts = new CancellationTokenSource();
+        using var otherCts = new CancellationTokenSource();
+
         await Constants.WaitForTaskReadyAsync();
         try
         {
-            await Constants.DelayWithReturn().AttachExternalCancellation(Constants.CreateCanceledToken());
+            await Constants.DelayWithReturn().AttachExternalCancellation(neverCts.Token);
+            _ = Constants.DelayHalfWithReturn().ContinueWith(otherCts.Cancel);
+            await Constants.DelayWithReturn().AttachExternalCancellation(otherCts.Token);
         }
         catch (OperationCanceledException)
         {
