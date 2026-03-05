@@ -15,7 +15,7 @@
 
     <Title>GDTask</Title>
     <PackageId>GDTask</PackageId>
-    <PackageVersion>2.0.0</PackageVersion>
+    <PackageVersion>2.0.1</PackageVersion>
     <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
     <Description>Provides an efficient async/await integration to Godot 4.1+</Description>
     <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
@@ -25,13 +25,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Godot GDTask GodotTask Task Async</PackageTags>
     <PackageReleaseNotes>
-      - BREAKING: Removed global cancellation from core GDTask (including GDTask.CancelAllTasks and related global token pipeline).
-      - Added GDTask.WhenEach and related async-enumeration support.
-      - Added generic TState overloads for RunOnThreadPool to reduce boxing/casting overhead.
-      - Removed internal GodotEqualityComparer and switched affected paths to standard comparer behavior.
-      - Standardized .NET 9+ synchronization paths on System.Threading.Lock.
-      - Updated README documentation for GDTask.WhenEach.
-      - Note: intermediate global-cancellation PRs in this cycle were superseded by the final removal in PR #33.
+      - Fixed an issue where valid operations using AttachExternalCancellation could be incorrectly canceled by a previously used token.
     </PackageReleaseNotes>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     
