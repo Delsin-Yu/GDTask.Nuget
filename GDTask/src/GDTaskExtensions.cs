@@ -307,6 +307,7 @@ namespace GodotTask
                 }
                 finally
                 {
+                    tokenRegistration.Dispose();
                     TryReturn();
                 }
             }
@@ -331,6 +332,7 @@ namespace GodotTask
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationToken = default;
+                tokenRegistration = default;
                 return pool.TryPush(this);
             }
         }
@@ -407,6 +409,7 @@ namespace GodotTask
                 }
                 finally
                 {
+                    tokenRegistration.Dispose();
                     TryReturn();
                 }
             }
@@ -419,6 +422,7 @@ namespace GodotTask
                 }
                 finally
                 {
+                    tokenRegistration.Dispose();
                     TryReturn();
                 }
             }
@@ -443,6 +447,7 @@ namespace GodotTask
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationToken = default;
+                tokenRegistration = default;
                 return pool.TryPush(this);
             }
         }

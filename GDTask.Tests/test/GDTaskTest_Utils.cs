@@ -38,6 +38,85 @@ public class GDTaskTest_Utils
         }
 
         throw new TestFailedException("Operation not cancelled");
+    } 
+    
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_AttachExternalCancellation_None()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        try
+        {
+            await Constants.Delay().AttachExternalCancellation(CancellationToken.None);
+        }
+        catch (OperationCanceledException)
+        {
+            throw new TestFailedException("Operation cancelled with None token");
+        }
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTaskT_AttachExternalCancellation_None()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        try
+        {
+            await Constants.DelayWithReturn().AttachExternalCancellation(CancellationToken.None);
+        }
+        catch (OperationCanceledException)
+        {
+            throw new TestFailedException("Operation cancelled with None token");
+        }
+    }
+
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_AttachExternalCancellation_CancelTokenAfterUse()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var source = new CancellationTokenSource();
+        try
+        {
+            await Constants.Delay().AttachExternalCancellation(source.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            throw new TestFailedException("Operation cancelled with Valid token");
+        }
+        await source.CancelAsync();
+        source = new CancellationTokenSource();
+        try
+        {
+            await Constants.Delay().AttachExternalCancellation(source.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            throw new TestFailedException("Operation cancelled with Valid token");
+        }
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTaskT_AttachExternalCancellation_CancelTokenAfterUse()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var source = new CancellationTokenSource();
+        try
+        {
+            await Constants.DelayWithReturn().AttachExternalCancellation(source.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            throw new TestFailedException("Operation cancelled with Valid token");
+        }
+        await source.CancelAsync();
+        source = new CancellationTokenSource();
+        try
+        {
+            await Constants.DelayWithReturn().AttachExternalCancellation(source.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            throw new TestFailedException("Operation cancelled with Valid token");
+        }
     }
 
     [TestCase, RequireGodotRuntime]
