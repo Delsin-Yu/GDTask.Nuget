@@ -36,9 +36,11 @@ internal static class Constants
 
     internal static GDTask DelayRealtime(int multiplier = 1, CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan * multiplier, DelayType.Realtime, cancellationToken: cancellationToken ?? CancellationToken.None);
     internal static GDTask Delay(CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan, cancellationToken: cancellationToken ?? CancellationToken.None);
+    internal static GDTask DelayHalf(CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan / 2, cancellationToken: cancellationToken ?? CancellationToken.None);
 
     internal static GDTask DelayRealtimeWithReturn(int multiplier = 1, CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan * multiplier, DelayType.Realtime, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
     internal static GDTask<int> DelayWithReturn(CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
+    internal static GDTask<int> DelayHalfWithReturn(CancellationToken? cancellationToken = default) => GDTask.Delay(DelayTimeSpan / 2, cancellationToken: cancellationToken ?? CancellationToken.None).ContinueWith(() => ReturnValue);
 
     internal static TNode CreateTestNode<TNode>(string nodeName) where TNode : Node, new()
     {
