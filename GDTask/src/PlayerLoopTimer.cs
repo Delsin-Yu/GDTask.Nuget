@@ -10,17 +10,17 @@ namespace GodotTask
         private readonly CancellationToken cancellationToken;
         private readonly Action<object> timerCallback;
         private readonly object state;
-        private readonly PlayerLoopTiming playerLoopTiming;
+        protected readonly PlayerLoopRunnerTarget target;
         private readonly bool periodic;
 
         private bool isRunning;
         private bool tryStop;
         private bool isDisposed;
 
-        protected PlayerLoopTimer(bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
+        protected PlayerLoopTimer(bool periodic, PlayerLoopRunnerTarget target, CancellationToken cancellationToken, Action<object> timerCallback, object state)
         {
             this.periodic = periodic;
-            this.playerLoopTiming = playerLoopTiming;
+            this.target = target;
             this.cancellationToken = cancellationToken;
             this.timerCallback = timerCallback;
             this.state = state;
@@ -28,8 +28,13 @@ namespace GodotTask
 
         public static PlayerLoopTimer Create(TimeSpan interval, bool periodic, DelayType delayType, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
         {
+            return Create(interval, periodic, delayType, GDTask.CreateTarget(playerLoopTiming), cancellationToken, timerCallback, state);
+        }
+
+        public static PlayerLoopTimer Create(TimeSpan interval, bool periodic, DelayType delayType, PlayerLoopRunnerTarget target, CancellationToken cancellationToken, Action<object> timerCallback, object state)
+        {
             // Force use Realtime.
-            if (GDTaskPlayerLoopRunner.IsMainThread && Engine.IsEditorHint())
+            if (ReferenceEquals(target.Scheduler, GDTaskPlayerLoopRunner.DefaultScheduler) && target.IsMainThread && Engine.IsEditorHint())
             {
                 delayType = DelayType.Realtime;
             }
@@ -37,16 +42,16 @@ namespace GodotTask
             switch (delayType)
             {
                 case DelayType.Realtime:
-                    return new RealtimePlayerLoopTimer(interval, periodic, playerLoopTiming, cancellationToken, timerCallback, state);
+                    return new RealtimePlayerLoopTimer(interval, periodic, target, cancellationToken, timerCallback, state);
                 case DelayType.DeltaTime:
                 default:
-                    return new DeltaTimePlayerLoopTimer(interval, periodic, playerLoopTiming, cancellationToken, timerCallback, state);
+                    return new DeltaTimePlayerLoopTimer(interval, periodic, target, cancellationToken, timerCallback, state);
             }
         }
 
         public static PlayerLoopTimer StartNew(TimeSpan interval, bool periodic, DelayType delayType, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
         {
-            var timer = Create(interval, periodic, delayType, playerLoopTiming, cancellationToken, timerCallback, state);
+            var timer = Create(interval, periodic, delayType, GDTask.CreateTarget(playerLoopTiming), cancellationToken, timerCallback, state);
             timer.Restart();
             return timer;
         }
@@ -62,7 +67,7 @@ namespace GodotTask
             if (!isRunning)
             {
                 isRunning = true;
-                GDTaskPlayerLoopRunner.AddAction(playerLoopTiming, this);
+                target.AddAction(this);
             }
             tryStop = false;
         }
@@ -78,7 +83,7 @@ namespace GodotTask
             if (!isRunning)
             {
                 isRunning = true;
-                GDTaskPlayerLoopRunner.AddAction(playerLoopTiming, this);
+                target.AddAction(this);
             }
             tryStop = false;
         }
@@ -145,8 +150,8 @@ namespace GodotTask
         private double elapsed;
         private double interval;
 
-        public DeltaTimePlayerLoopTimer(TimeSpan interval, bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
-            : base(periodic, playerLoopTiming, cancellationToken, timerCallback, state)
+        public DeltaTimePlayerLoopTimer(TimeSpan interval, bool periodic, PlayerLoopRunnerTarget target, CancellationToken cancellationToken, Action<object> timerCallback, object state)
+            : base(periodic, target, cancellationToken, timerCallback, state)
         {
             ResetCore(interval);
         }
@@ -155,13 +160,13 @@ namespace GodotTask
         {
             if (elapsed == 0.0)
             {
-                if (isMainThread && initialFrame == Engine.GetProcessFrames())
+                if (isMainThread && initialFrame == target.FrameCount)
                 {
                     return true;
                 }
             }
 
-            elapsed += GDTaskPlayerLoopRunner.Global.DeltaTime;
+            elapsed += target.DeltaTime;
             if (elapsed >= interval)
             {
                 return false;
@@ -173,9 +178,9 @@ namespace GodotTask
         protected override void ResetCore(TimeSpan? interval)
         {
             elapsed = 0.0;
-            isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
+            isMainThread = target.IsMainThread;
             if (isMainThread)
-                initialFrame = Engine.GetProcessFrames();
+                initialFrame = target.FrameCount;
             if (interval != null)
             {
                 this.interval = (float)interval.Value.TotalSeconds;
@@ -188,8 +193,8 @@ namespace GodotTask
         private ValueStopwatch stopwatch;
         private long intervalTicks;
 
-        public RealtimePlayerLoopTimer(TimeSpan interval, bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
-            : base(periodic, playerLoopTiming, cancellationToken, timerCallback, state)
+        public RealtimePlayerLoopTimer(TimeSpan interval, bool periodic, PlayerLoopRunnerTarget target, CancellationToken cancellationToken, Action<object> timerCallback, object state)
+            : base(periodic, target, cancellationToken, timerCallback, state)
         {
             ResetCore(interval);
         }

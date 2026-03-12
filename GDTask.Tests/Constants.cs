@@ -55,6 +55,25 @@ internal static class Constants
     internal static CancellationToken CreateCanceledToken() => new(true);
 }
 
+internal sealed class ManualCustomPlayerLoop : ICustomPlayerLoop
+{
+    public event Action<double>? Process;
+    public event Action<double>? PhysicsProcess;
+
+    public int ProcessSubscriberCount => Process?.GetInvocationList().Length ?? 0;
+    public int PhysicsSubscriberCount => PhysicsProcess?.GetInvocationList().Length ?? 0;
+
+    public void RaiseProcess(double delta = 0.25)
+    {
+        Process?.Invoke(delta);
+    }
+
+    public void RaisePhysicsProcess(double delta = 0.25)
+    {
+        PhysicsProcess?.Invoke(delta);
+    }
+}
+
 internal readonly struct ScopedStopwatch : IDisposable
 {
     private readonly Stopwatch _stopwatch;

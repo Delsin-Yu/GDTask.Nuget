@@ -53,5 +53,22 @@ public class GDTaskTest_Deferred
         throw new TestFailedException("Deferred Instructions not canceled");
     }
 
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_Deferred_CustomLoop_Order()
+    {
+        await Constants.WaitForTaskReadyAsync();
+
+        var loop = new ManualCustomPlayerLoop();
+        var list = new List<string>();
+
+        GDTask.Post(() => list.Add("Post"), loop);
+        GDTask.Deferred(loop).ToGDTask().ContinueWith(() => list.Add("Deferred")).Forget();
+
+        loop.RaiseProcess();
+
+        await GDTask.WaitUntil(() => list.Count == 2);
+        Assertions.AssertThat(list.SequenceEqual(["Post", "Deferred"])).IsTrue();
+    }
+
 
 }

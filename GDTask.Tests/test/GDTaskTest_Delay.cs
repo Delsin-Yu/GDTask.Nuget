@@ -308,4 +308,76 @@ public class GDTaskTest_Delay
 
         throw new TestFailedException("Delay Instructions not canceled");
     }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_Yield_CustomLoop_UsesMatchingLoop_AndUnsubscribes()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var firstLoop = new ManualCustomPlayerLoop();
+        var secondLoop = new ManualCustomPlayerLoop();
+        var completed = false;
+
+        GDTask.Yield(firstLoop).ToGDTask().ContinueWith(() => completed = true).Forget();
+
+        Assertions.AssertThat(firstLoop.ProcessSubscriberCount).IsEqual(1);
+
+        secondLoop.RaiseProcess();
+        Assertions.AssertThat(completed).IsFalse();
+
+        firstLoop.RaiseProcess();
+        await GDTask.WaitUntil(() => completed);
+
+        Assertions.AssertThat(firstLoop.ProcessSubscriberCount).IsEqual(0);
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_CustomLoop_SharedDispatch_CompletesYieldAndNextFrame()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var loop = new ManualCustomPlayerLoop();
+        var yieldCompleted = false;
+        var nextFrameCompleted = false;
+
+        GDTask.Yield(loop).ToGDTask().ContinueWith(() => yieldCompleted = true).Forget();
+        GDTask.NextFrame(loop).ContinueWith(() => nextFrameCompleted = true).Forget();
+
+        loop.RaiseProcess();
+
+        await GDTask.WaitUntil(() => yieldCompleted && nextFrameCompleted);
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_DelayFrame_CustomLoop_Process()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var loop = new ManualCustomPlayerLoop();
+        var completed = false;
+
+        GDTask.DelayFrame(2, loop).ContinueWith(() => completed = true).Forget();
+
+        loop.RaiseProcess();
+        Assertions.AssertThat(completed).IsFalse();
+
+        loop.RaiseProcess();
+        await GDTask.WaitUntil(() => completed);
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_Delay_CustomLoop_PhysicsProcess()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var loop = new ManualCustomPlayerLoop();
+        var completed = false;
+
+        GDTask.Delay(TimeSpan.FromSeconds(0.5), loop, PlayerLoopTiming.PhysicsProcess).ContinueWith(() => completed = true).Forget();
+
+        loop.RaisePhysicsProcess(0.2);
+        Assertions.AssertThat(completed).IsFalse();
+
+        loop.RaisePhysicsProcess(0.2);
+        Assertions.AssertThat(completed).IsFalse();
+
+        loop.RaisePhysicsProcess(0.2);
+        await GDTask.WaitUntil(() => completed);
+    }
 }

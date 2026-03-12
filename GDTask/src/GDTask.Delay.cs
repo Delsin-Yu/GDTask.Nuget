@@ -25,7 +25,7 @@ namespace GodotTask
         public static YieldAwaitable Yield()
         {
             // optimized for single continuation
-            return new YieldAwaitable(PlayerLoopTiming.Process);
+            return new YieldAwaitable(CreateTarget(PlayerLoopTiming.Process));
         }
 
         /// <summary>
@@ -34,7 +34,23 @@ namespace GodotTask
         public static YieldAwaitable Yield(PlayerLoopTiming timing)
         {
             // optimized for single continuation
-            return new YieldAwaitable(timing);
+            return new YieldAwaitable(CreateTarget(timing));
+        }
+
+        /// <summary>
+        /// Delay the execution until the next <see cref="PlayerLoopTiming.Process"/> of the provided custom player loop.
+        /// </summary>
+        public static YieldAwaitable Yield(ICustomPlayerLoop customPlayerLoop)
+        {
+            return new YieldAwaitable(CreateTarget(customPlayerLoop, PlayerLoopTiming.Process));
+        }
+
+        /// <summary>
+        /// Delay the execution until the next provided <see cref="PlayerLoopTiming"/> of the provided custom player loop.
+        /// </summary>
+        public static YieldAwaitable Yield(ICustomPlayerLoop customPlayerLoop, PlayerLoopTiming timing)
+        {
+            return new YieldAwaitable(CreateTarget(customPlayerLoop, timing));
         }
 
         /// <summary>
@@ -42,7 +58,7 @@ namespace GodotTask
         /// </summary>
         public static GDTask Yield(CancellationToken cancellationToken)
         {
-            return new GDTask(YieldPromise.Create(PlayerLoopTiming.Process, cancellationToken, out var token), token);
+            return new GDTask(YieldPromise.Create(CreateTarget(PlayerLoopTiming.Process), cancellationToken, out var token), token);
         }
 
         /// <summary>
@@ -50,7 +66,23 @@ namespace GodotTask
         /// </summary>   
         public static GDTask Yield(PlayerLoopTiming timing, CancellationToken cancellationToken)
         {
-            return new GDTask(YieldPromise.Create(timing, cancellationToken, out var token), token);
+            return new GDTask(YieldPromise.Create(CreateTarget(timing), cancellationToken, out var token), token);
+        }
+
+        /// <summary>
+        /// Delay the execution until the next <see cref="PlayerLoopTiming.Process"/> of the provided custom player loop, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        public static GDTask Yield(ICustomPlayerLoop customPlayerLoop, CancellationToken cancellationToken)
+        {
+            return new GDTask(YieldPromise.Create(CreateTarget(customPlayerLoop, PlayerLoopTiming.Process), cancellationToken, out var token), token);
+        }
+
+        /// <summary>
+        /// Delay the execution until the next provided <see cref="PlayerLoopTiming"/> of the provided custom player loop, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        public static GDTask Yield(ICustomPlayerLoop customPlayerLoop, PlayerLoopTiming timing, CancellationToken cancellationToken)
+        {
+            return new GDTask(YieldPromise.Create(CreateTarget(customPlayerLoop, timing), cancellationToken, out var token), token);
         }
 
         /// <summary>
@@ -58,7 +90,7 @@ namespace GodotTask
         /// </summary>
         public static GDTask NextFrame()
         {
-            return new GDTask(NextFramePromise.Create(PlayerLoopTiming.Process, CancellationToken.None, out var token), token);
+            return new GDTask(NextFramePromise.Create(CreateTarget(PlayerLoopTiming.Process), CancellationToken.None, out var token), token);
         }
 
         /// <summary>
@@ -66,7 +98,23 @@ namespace GodotTask
         /// </summary>
         public static GDTask NextFrame(PlayerLoopTiming timing)
         {
-            return new GDTask(NextFramePromise.Create(timing, CancellationToken.None, out var token), token);
+            return new GDTask(NextFramePromise.Create(CreateTarget(timing), CancellationToken.None, out var token), token);
+        }
+
+        /// <summary>
+        /// Delay the execution until the next frame of <see cref="PlayerLoopTiming.Process"/> on the provided custom player loop.
+        /// </summary>
+        public static GDTask NextFrame(ICustomPlayerLoop customPlayerLoop)
+        {
+            return new GDTask(NextFramePromise.Create(CreateTarget(customPlayerLoop, PlayerLoopTiming.Process), CancellationToken.None, out var token), token);
+        }
+
+        /// <summary>
+        /// Delay the execution until the next frame of the provided <see cref="PlayerLoopTiming"/> on the provided custom player loop.
+        /// </summary>
+        public static GDTask NextFrame(ICustomPlayerLoop customPlayerLoop, PlayerLoopTiming timing)
+        {
+            return new GDTask(NextFramePromise.Create(CreateTarget(customPlayerLoop, timing), CancellationToken.None, out var token), token);
         }
 
         /// <summary>
@@ -74,7 +122,7 @@ namespace GodotTask
         /// </summary>
         public static GDTask NextFrame(CancellationToken cancellationToken)
         {
-            return new GDTask(NextFramePromise.Create(PlayerLoopTiming.Process, cancellationToken, out var token), token);
+            return new GDTask(NextFramePromise.Create(CreateTarget(PlayerLoopTiming.Process), cancellationToken, out var token), token);
         }
 
         /// <summary>
@@ -82,7 +130,23 @@ namespace GodotTask
         /// </summary>
         public static GDTask NextFrame(PlayerLoopTiming timing, CancellationToken cancellationToken)
         {
-            return new GDTask(NextFramePromise.Create(timing, cancellationToken, out var token), token);
+            return new GDTask(NextFramePromise.Create(CreateTarget(timing), cancellationToken, out var token), token);
+        }
+
+        /// <summary>
+        /// Delay the execution until the next frame of <see cref="PlayerLoopTiming.Process"/> on the provided custom player loop, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        public static GDTask NextFrame(ICustomPlayerLoop customPlayerLoop, CancellationToken cancellationToken)
+        {
+            return new GDTask(NextFramePromise.Create(CreateTarget(customPlayerLoop, PlayerLoopTiming.Process), cancellationToken, out var token), token);
+        }
+
+        /// <summary>
+        /// Delay the execution until the next frame of the provided <see cref="PlayerLoopTiming"/> on the provided custom player loop, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        public static GDTask NextFrame(ICustomPlayerLoop customPlayerLoop, PlayerLoopTiming timing, CancellationToken cancellationToken)
+        {
+            return new GDTask(NextFramePromise.Create(CreateTarget(customPlayerLoop, timing), cancellationToken, out var token), token);
         }
 
         /// <inheritdoc cref="Yield()"/>
@@ -124,7 +188,21 @@ namespace GodotTask
                 throw new ArgumentOutOfRangeException("Delay does not allow minus delayFrameCount. delayFrameCount:" + delayFrameCount);
             }
 
-            return new GDTask(DelayFramePromise.Create(delayFrameCount, delayTiming, cancellationToken, out var token), token);
+            return new GDTask(DelayFramePromise.Create(delayFrameCount, CreateTarget(delayTiming), cancellationToken, out var token), token);
+        }
+
+        /// <summary>
+        /// Delay the execution after frame(s) of the provided custom player loop, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="delayFrameCount"/> is less than 0.</exception>
+        public static GDTask DelayFrame(int delayFrameCount, ICustomPlayerLoop customPlayerLoop, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default)
+        {
+            if (delayFrameCount < 0)
+            {
+                throw new ArgumentOutOfRangeException("Delay does not allow minus delayFrameCount. delayFrameCount:" + delayFrameCount);
+            }
+
+            return new GDTask(DelayFramePromise.Create(delayFrameCount, CreateTarget(customPlayerLoop, delayTiming), cancellationToken, out var token), token);
         }
 
         /// <summary>
@@ -138,12 +216,29 @@ namespace GodotTask
         }
 
         /// <summary>
+        /// Delay the execution after <paramref name="millisecondsDelay"/> on the provided custom player loop with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        public static GDTask Delay(int millisecondsDelay, ICustomPlayerLoop customPlayerLoop, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default)
+        {
+            var delayTimeSpan = TimeSpan.FromMilliseconds(millisecondsDelay);
+            return Delay(delayTimeSpan, customPlayerLoop, delayTiming, cancellationToken);
+        }
+
+        /// <summary>
         /// Delay the execution after <paramref name="delayTimeSpan"/> on provided <see cref="PlayerLoopTiming"/> with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="delayTimeSpan"/> is less than 0.</exception>
         public static GDTask Delay(TimeSpan delayTimeSpan, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Delay(delayTimeSpan, DelayType.DeltaTime, delayTiming, cancellationToken);
+            return Delay(delayTimeSpan, DelayType.DeltaTime, CreateTarget(delayTiming), cancellationToken);
+        }
+
+        /// <summary>
+        /// Delay the execution after <paramref name="delayTimeSpan"/> on the provided custom player loop with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        public static GDTask Delay(TimeSpan delayTimeSpan, ICustomPlayerLoop customPlayerLoop, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default)
+        {
+            return Delay(delayTimeSpan, DelayType.DeltaTime, CreateTarget(customPlayerLoop, delayTiming), cancellationToken);
         }
 
         /// <summary>
@@ -157,10 +252,32 @@ namespace GodotTask
         }
 
         /// <summary>
+        /// Delay the execution after <paramref name="millisecondsDelay"/> on the provided custom player loop, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        public static GDTask Delay(int millisecondsDelay, DelayType delayType, ICustomPlayerLoop customPlayerLoop, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default)
+        {
+            var delayTimeSpan = TimeSpan.FromMilliseconds(millisecondsDelay);
+            return Delay(delayTimeSpan, delayType, customPlayerLoop, delayTiming, cancellationToken);
+        }
+
+        /// <summary>
         /// Delay the execution after <paramref name="delayTimeSpan"/> on provided <see cref="PlayerLoopTiming"/> with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="delayTimeSpan"/> is less than 0.</exception>
         public static GDTask Delay(TimeSpan delayTimeSpan, DelayType delayType, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Delay(delayTimeSpan, delayType, CreateTarget(delayTiming), cancellationToken);
+        }
+
+        /// <summary>
+        /// Delay the execution after <paramref name="delayTimeSpan"/> on the provided custom player loop, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        public static GDTask Delay(TimeSpan delayTimeSpan, DelayType delayType, ICustomPlayerLoop customPlayerLoop, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default)
+        {
+            return Delay(delayTimeSpan, delayType, CreateTarget(customPlayerLoop, delayTiming), cancellationToken);
+        }
+
+        private static GDTask Delay(TimeSpan delayTimeSpan, DelayType delayType, PlayerLoopRunnerTarget target, CancellationToken cancellationToken)
         {
             if (delayTimeSpan < TimeSpan.Zero)
             {
@@ -168,7 +285,7 @@ namespace GodotTask
             }
 
             // Force use Realtime in editor.
-            if (GDTaskPlayerLoopRunner.IsMainThread && Engine.IsEditorHint())
+            if (ReferenceEquals(target.Scheduler, GDTaskPlayerLoopRunner.DefaultScheduler) && target.IsMainThread && Engine.IsEditorHint())
             {
                 delayType = DelayType.Realtime;
             }
@@ -177,15 +294,20 @@ namespace GodotTask
             {
                 case DelayType.Realtime:
                     {
-                        return new GDTask(DelayRealtimePromise.Create(delayTimeSpan, delayTiming, cancellationToken, out var token), token);
+                        return new GDTask(DelayRealtimePromise.Create(delayTimeSpan, target, cancellationToken, out var token), token);
                     }
                 case DelayType.DeltaTime:
                 default:
                     {
-                        return new GDTask(DelayPromise.Create(delayTimeSpan, delayTiming, cancellationToken, out var token), token);
+                        return new GDTask(DelayPromise.Create(delayTimeSpan, target, cancellationToken, out var token), token);
                     }
             }
         }
+
+            internal static GDTask CreateYieldTask(PlayerLoopRunnerTarget target, CancellationToken cancellationToken)
+            {
+                return new GDTask(YieldPromise.Create(target, cancellationToken, out var token), token);
+            }
 
         private sealed class YieldPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<YieldPromise>
         {
@@ -205,7 +327,7 @@ namespace GodotTask
             {
             }
 
-            public static IGDTaskSource Create(PlayerLoopTiming timing, CancellationToken cancellationToken, out short token)
+            public static IGDTaskSource Create(PlayerLoopRunnerTarget target, CancellationToken cancellationToken, out short token)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -221,7 +343,7 @@ namespace GodotTask
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopRunner.AddAction(timing, result);
+                target.AddAction(result);
 
                 token = result.core.Version;
                 return result;
@@ -288,6 +410,7 @@ namespace GodotTask
 
             private bool isMainThread;
             private ulong frameCount;
+            private PlayerLoopRunnerTarget target;
             private CancellationToken cancellationToken;
             private GDTaskCompletionSourceCore<AsyncUnit> core;
 
@@ -295,7 +418,7 @@ namespace GodotTask
             {
             }
 
-            public static IGDTaskSource Create(PlayerLoopTiming timing, CancellationToken cancellationToken, out short token)
+            public static IGDTaskSource Create(PlayerLoopRunnerTarget target, CancellationToken cancellationToken, out short token)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -307,14 +430,15 @@ namespace GodotTask
                     result = new NextFramePromise();
                 }
 
-                result.isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
+                result.target = target;
+                result.isMainThread = target.IsMainThread;
                 if (result.isMainThread)
-                    result.frameCount = Engine.GetProcessFrames();
+                    result.frameCount = target.FrameCount;
                 result.cancellationToken = cancellationToken;
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopRunner.AddAction(timing, result);
+                target.AddAction(result);
 
                 token = result.core.Version;
                 return result;
@@ -355,7 +479,7 @@ namespace GodotTask
                     return false;
                 }
 
-                if (isMainThread && frameCount == Engine.GetProcessFrames())
+                if (isMainThread && frameCount == target.FrameCount)
                 {
                     return true;
                 }
@@ -368,6 +492,7 @@ namespace GodotTask
             {
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
+                target = default;
                 cancellationToken = default;
                 return pool.TryPush(this);
             }
@@ -386,6 +511,7 @@ namespace GodotTask
 
             private bool isMainThread;
             private ulong initialFrame;
+            private PlayerLoopRunnerTarget target;
             private int delayFrameCount;
             private CancellationToken cancellationToken;
 
@@ -396,7 +522,7 @@ namespace GodotTask
             {
             }
 
-            public static IGDTaskSource Create(int delayFrameCount, PlayerLoopTiming timing, CancellationToken cancellationToken, out short token)
+            public static IGDTaskSource Create(int delayFrameCount, PlayerLoopRunnerTarget target, CancellationToken cancellationToken, out short token)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -410,13 +536,14 @@ namespace GodotTask
 
                 result.delayFrameCount = delayFrameCount;
                 result.cancellationToken = cancellationToken;
-                result.isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
+                result.target = target;
+                result.isMainThread = target.IsMainThread;
                 if (result.isMainThread)
-                    result.initialFrame = Engine.GetProcessFrames();
+                    result.initialFrame = target.FrameCount;
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopRunner.AddAction(timing, result);
+                target.AddAction(result);
 
                 token = result.core.Version;
                 return result;
@@ -466,7 +593,7 @@ namespace GodotTask
                     }
 
                     // Skip in initial frame.
-                    if (isMainThread && initialFrame == Engine.GetProcessFrames())
+                    if (isMainThread && initialFrame == target.FrameCount)
                     {
                         return true;
                     }
@@ -485,6 +612,7 @@ namespace GodotTask
             {
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
+                target = default;
                 currentFrameCount = default;
                 delayFrameCount = default;
                 cancellationToken = default;
@@ -508,14 +636,14 @@ namespace GodotTask
             private double delayTimeSpan;
             private double elapsed;
             private CancellationToken cancellationToken;
-            private PlayerLoopTiming timing;
+            private PlayerLoopRunnerTarget target;
             private GDTaskCompletionSourceCore<object> core;
 
             private DelayPromise()
             {
             }
 
-            public static IGDTaskSource Create(TimeSpan delayTimeSpan, PlayerLoopTiming timing, CancellationToken cancellationToken, out short token)
+            public static IGDTaskSource Create(TimeSpan delayTimeSpan, PlayerLoopRunnerTarget target, CancellationToken cancellationToken, out short token)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -530,14 +658,14 @@ namespace GodotTask
                 result.elapsed = 0.0f;
                 result.delayTimeSpan = (float)delayTimeSpan.TotalSeconds;
                 result.cancellationToken = cancellationToken;
-                result.isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
-                result.timing = timing;
+                result.target = target;
+                result.isMainThread = target.IsMainThread;
                 if (result.isMainThread)
-                    result.initialFrame = Engine.GetProcessFrames();
+                    result.initialFrame = target.FrameCount;
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopRunner.AddAction(timing, result);
+                target.AddAction(result);
 
                 token = result.core.Version;
                 return result;
@@ -580,15 +708,13 @@ namespace GodotTask
 
                 if (elapsed == 0.0f)
                 {
-                    if (isMainThread && initialFrame == Engine.GetProcessFrames())
+                    if (isMainThread && initialFrame == target.FrameCount)
                     {
                         return true;
                     }
                 }
 
-                elapsed += timing is PlayerLoopTiming.Process or PlayerLoopTiming.IsolatedProcess ? 
-                    GDTaskPlayerLoopRunner.Global.DeltaTime : 
-                    GDTaskPlayerLoopRunner.Global.PhysicsDeltaTime;
+                elapsed += target.DeltaTime;
                 
                 if (elapsed >= delayTimeSpan)
                 {
@@ -603,6 +729,7 @@ namespace GodotTask
             {
                 TaskTracker.RemoveTracking(this);
                 core.Reset();
+                target = default;
                 delayTimeSpan = default;
                 elapsed = default;
                 cancellationToken = default;
@@ -631,7 +758,7 @@ namespace GodotTask
             {
             }
 
-            public static IGDTaskSource Create(TimeSpan delayTimeSpan, PlayerLoopTiming timing, CancellationToken cancellationToken, out short token)
+            public static IGDTaskSource Create(TimeSpan delayTimeSpan, PlayerLoopRunnerTarget target, CancellationToken cancellationToken, out short token)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -649,7 +776,7 @@ namespace GodotTask
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopRunner.AddAction(timing, result);
+                target.AddAction(result);
 
                 token = result.core.Version;
                 return result;
@@ -721,14 +848,14 @@ namespace GodotTask
     /// </summary>
     public readonly struct YieldAwaitable
     {
-        internal readonly PlayerLoopTiming timing;
+        internal readonly PlayerLoopRunnerTarget target;
 
         /// <summary>
         /// Initializes the <see cref="YieldAwaitable"/>.
         /// </summary>
-        internal YieldAwaitable(PlayerLoopTiming timing)
+        internal YieldAwaitable(PlayerLoopRunnerTarget target)
         {
-            this.timing = timing;
+            this.target = target;
         }
 
         /// <summary>
@@ -736,7 +863,7 @@ namespace GodotTask
         /// </summary>
         public Awaiter GetAwaiter()
         {
-            return new Awaiter(timing);
+            return new Awaiter(target);
         }
 
         /// <summary>
@@ -744,7 +871,7 @@ namespace GodotTask
         /// </summary>
         public GDTask ToGDTask()
         {
-            return GDTask.Yield(timing, CancellationToken.None);
+            return GDTask.CreateYieldTask(target, CancellationToken.None);
         }
 
         /// <summary>
@@ -752,14 +879,14 @@ namespace GodotTask
         /// </summary>
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
-            private readonly PlayerLoopTiming timing;
+            private readonly PlayerLoopRunnerTarget target;
 
             /// <summary>
             /// Initializes the <see cref="Awaiter"/>.
             /// </summary>
-            internal Awaiter(PlayerLoopTiming timing)
+            internal Awaiter(PlayerLoopRunnerTarget target)
             {
-                this.timing = timing;
+                this.target = target;
             }
 
             /// <summary>
@@ -778,7 +905,7 @@ namespace GodotTask
             /// </summary>
             public void OnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopRunner.AddContinuation(timing, continuation);
+                target.AddContinuation(continuation);
             }
 
             /// <summary>
@@ -786,7 +913,7 @@ namespace GodotTask
             /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopRunner.AddContinuation(timing, continuation);
+                target.AddContinuation(continuation);
             }
         }
     }

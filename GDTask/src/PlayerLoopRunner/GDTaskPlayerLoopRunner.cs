@@ -43,43 +43,22 @@ namespace GodotTask
     /// </summary>
     internal partial class GDTaskPlayerLoopRunner : Node
     {
-        public static int MainThreadId => Global.mainThreadId;
-        public static bool IsMainThread => System.Environment.CurrentManagedThreadId == Global.mainThreadId;
-        public static void AddAction(PlayerLoopTiming timing, IPlayerLoopItem action) => Global.LocalAddAction(timing, action);
-        public static void ThrowInvalidLoopTiming(PlayerLoopTiming playerLoopTiming) => throw new InvalidOperationException("Target playerLoopTiming is not injected. Please check PlayerLoopHelper.Initialize. PlayerLoopTiming:" + playerLoopTiming);
-        public static void AddContinuation(PlayerLoopTiming timing, Action continuation) => Global.LocalAddContinuation(timing, continuation);
-        public static void AddDeferredAction(IPlayerLoopItem action) => Global.LocalAddDeferredAction(action);
-        public static void AddDeferredContinuation(Action continuation) => Global.LocalAddDeferredContinuation(continuation);
-        
-        public void LocalAddAction(PlayerLoopTiming timing, IPlayerLoopItem action)
-        {
-            var runner = runners[(int)timing];
-            if (runner == null)
-            {
-                ThrowInvalidLoopTiming(timing);
-            }
-            runner!.AddAction(action);
-        }
+        private static readonly ConditionalWeakTable<ICustomPlayerLoop, CustomPlayerLoopScheduler> customSchedulers = new();
 
-        // NOTE: Continuation means a asynchronous task invoked by another task after the other task finishes.
-        public void LocalAddContinuation(PlayerLoopTiming timing, Action continuation)
+        public static int MainThreadId => DefaultScheduler.MainThreadId;
+        public static bool IsMainThread => DefaultScheduler.IsMainThread;
+        public static void AddAction(PlayerLoopTiming timing, IPlayerLoopItem action) => DefaultScheduler.AddAction(timing, action);
+        public static void ThrowInvalidLoopTiming(PlayerLoopTiming playerLoopTiming) => throw new InvalidOperationException("Target playerLoopTiming is not injected. Please check PlayerLoopHelper.Initialize. PlayerLoopTiming:" + playerLoopTiming);
+        public static void AddContinuation(PlayerLoopTiming timing, Action continuation) => DefaultScheduler.AddContinuation(timing, continuation);
+        public static void AddDeferredAction(IPlayerLoopItem action) => DefaultScheduler.AddDeferredAction(action);
+        public static void AddDeferredContinuation(Action continuation) => DefaultScheduler.AddDeferredContinuation(continuation);
+
+        internal static IPlayerLoopScheduler DefaultScheduler => Global.scheduler;
+
+        internal static IPlayerLoopScheduler GetScheduler(ICustomPlayerLoop customPlayerLoop)
         {
-            var q = yielders[(int)timing];
-            if (q == null)
-            {
-                ThrowInvalidLoopTiming(timing);
-            }
-            q!.Enqueue(continuation);
-        }
-        
-        public void LocalAddDeferredAction(IPlayerLoopItem action)
-        {
-            deferredRunner.AddAction(action);
-        }
-        
-        public void LocalAddDeferredContinuation(Action continuation)
-        {
-            deferredYielder.Enqueue(continuation);
+            ArgumentNullException.ThrowIfNull(customPlayerLoop);
+            return customSchedulers.GetValue(customPlayerLoop, static loop => new CustomPlayerLoopScheduler(loop));
         }
 
         private GDTaskPlayerLoopRunner() { }
@@ -112,11 +91,7 @@ namespace GodotTask
         public double PhysicsDeltaTime => GetPhysicsProcessDeltaTime();
 
         private static GDTaskPlayerLoopRunner s_Global;
-        private int mainThreadId;
-        private ContinuationQueue[] yielders;
-        private ContinuationQueue deferredYielder;
-        private PlayerLoopRunner[] runners;
-        private PlayerLoopRunner deferredRunner;
+        private DefaultPlayerLoopScheduler scheduler;
 
         public override void _Ready()
         {
@@ -135,11 +110,8 @@ namespace GodotTask
 
         private void Initialize()
         {
-            mainThreadId = System.Environment.CurrentManagedThreadId;
-            yielders = [new(), new(), new(), new()];
-            runners = [new(), new(), new(), new()];
-            deferredYielder = new();
-            deferredRunner = new();
+            scheduler = new DefaultPlayerLoopScheduler(System.Environment.CurrentManagedThreadId);
+            scheduler.Initialize();
         }
 
         public override void _Notification(int what)
@@ -148,45 +120,37 @@ namespace GodotTask
             {
                 if (Global == this)
                     s_Global = null;
-                if (yielders != null)
+                if (scheduler != null)
                 {
-                    foreach (var yielder in yielders)
-                        yielder.Clear();
-                    foreach (var runner in runners)
-                        runner.Clear();
+                    scheduler.Clear();
                 }
             }
         }
 
         public override void _Process(double delta)
         {
-            yielders[(int)PlayerLoopTiming.Process].Run();
-            runners[(int)PlayerLoopTiming.Process].Run();
+            scheduler.DispatchProcess(delta);
             CallDeferred(MethodName.DeferredProcess);
         }
 
         public override void _PhysicsProcess(double delta)
         {
-            yielders[(int)PlayerLoopTiming.PhysicsProcess].Run();
-            runners[(int)PlayerLoopTiming.PhysicsProcess].Run();
+            scheduler.DispatchPhysicsProcess(delta);
         }
 
-        public void PauseProcess()
+        public void PauseProcess(double delta)
         {
-            yielders[(int)PlayerLoopTiming.IsolatedProcess].Run();
-            runners[(int)PlayerLoopTiming.IsolatedProcess].Run();
+            scheduler.DispatchIsolatedProcess(delta);
         }
 
-        public void PausePhysicsProcess()
+        public void PausePhysicsProcess(double delta)
         {
-            yielders[(int)PlayerLoopTiming.IsolatedPhysicsProcess].Run();
-            runners[(int)PlayerLoopTiming.IsolatedPhysicsProcess].Run();
+            scheduler.DispatchIsolatedPhysicsProcess(delta);
         }
 
         public void DeferredProcess()
         {
-            deferredYielder.Run();
-            deferredRunner.Run();
+            scheduler.RunDeferred();
         }
     }
 }

@@ -65,6 +65,17 @@ namespace GodotTask.Internal
             }
         }
 
+        public bool HasItems
+        {
+            get
+            {
+                lock (arrayLock)
+                {
+                    return tail != 0;
+                }
+            }
+        }
+
         // Delegate entrypoint.
         public void Run()
         {

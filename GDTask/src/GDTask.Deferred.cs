@@ -12,11 +12,24 @@ public partial struct GDTask
     public static DeferredAwaitable Deferred() => new();
 
     /// <summary>
+    /// Delay the execution until the end of the next dispatch cycle of the provided custom player loop.
+    /// </summary>
+    public static DeferredAwaitable Deferred(ICustomPlayerLoop customPlayerLoop) => new(GetDeferredScheduler(customPlayerLoop));
+
+    /// <summary>
     /// Delay the execution until the end of the current frame (idle time), with specified <see cref="CancellationToken"/>.
     /// </summary>
     public static GDTask Deferred(CancellationToken cancellationToken)
     {
-        return new GDTask(DeferredPromise.Create(cancellationToken, out var token), token);
+        return new GDTask(DeferredPromise.Create(GetDefaultDeferredScheduler(), cancellationToken, out var token), token);
+    }
+
+    /// <summary>
+    /// Delay the execution until the end of the next dispatch cycle of the provided custom player loop, with specified <see cref="CancellationToken"/>.
+    /// </summary>
+    public static GDTask Deferred(ICustomPlayerLoop customPlayerLoop, CancellationToken cancellationToken)
+    {
+        return new GDTask(DeferredPromise.Create(GetDeferredScheduler(customPlayerLoop), cancellationToken, out var token), token);
     }
 
     private sealed class DeferredPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DeferredPromise>
@@ -38,7 +51,7 @@ public partial struct GDTask
             
         }
         
-        public static IGDTaskSource Create(CancellationToken cancellationToken, out short token)
+        public static IGDTaskSource Create(IPlayerLoopScheduler scheduler, CancellationToken cancellationToken, out short token)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -54,7 +67,7 @@ public partial struct GDTask
             
             TaskTracker.TrackActiveTask(result, 3);
             
-            GDTaskPlayerLoopRunner.AddDeferredAction(result);
+            scheduler.AddDeferredAction(result);
             
             token = result.core.Version;
             return result;
@@ -113,23 +126,30 @@ public partial struct GDTask
     /// </summary>
     public readonly struct DeferredAwaitable
     {
+        private readonly IPlayerLoopScheduler scheduler;
+
         /// <summary>
         /// Initializes the <see cref="DeferredAwaitable"/>.
         /// </summary>
         public DeferredAwaitable() {
         }
 
+        internal DeferredAwaitable(IPlayerLoopScheduler scheduler)
+        {
+            this.scheduler = scheduler;
+        }
+
         /// <summary>
         /// Gets an awaiter used to await this <see cref="DeferredAwaitable"/>.
         /// </summary>
-        public Awaiter GetAwaiter() => new Awaiter();
+        public Awaiter GetAwaiter() => new Awaiter(scheduler ?? GetDefaultDeferredScheduler());
 
         /// <summary>
         /// Creates a <see cref="GDTask"/> that represents this <see cref="DeferredAwaitable"/>.
         /// </summary>
         public GDTask ToGDTask()
         {
-            return GDTask.Deferred(CancellationToken.None);
+            return new GDTask(DeferredPromise.Create(scheduler ?? GetDefaultDeferredScheduler(), CancellationToken.None, out var token), token);
         }
       
         /// <summary>
@@ -137,10 +157,17 @@ public partial struct GDTask
         /// </summary>
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
+            private readonly IPlayerLoopScheduler scheduler;
+
             /// <summary>
             /// Initializes the <see cref="Awaiter"/>.
             /// </summary>
             public Awaiter() {
+            }
+
+            internal Awaiter(IPlayerLoopScheduler scheduler)
+            {
+                this.scheduler = scheduler;
             }
 
             /// <summary>
@@ -159,7 +186,7 @@ public partial struct GDTask
             /// </summary>
             public void OnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopRunner.AddDeferredContinuation(continuation);
+                scheduler.AddDeferredContinuation(continuation);
             }
 
             /// <summary>
@@ -167,7 +194,7 @@ public partial struct GDTask
             /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopRunner.AddDeferredContinuation(continuation);
+                scheduler.AddDeferredContinuation(continuation);
             }
         }
     }

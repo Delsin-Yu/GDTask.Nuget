@@ -47,6 +47,48 @@ public class GDTaskTest_Threading
         throw new TestFailedException("SwitchToMainThread not canceled");
     }
 
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_Post_CustomLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var loop = new ManualCustomPlayerLoop();
+        var invoked = false;
+
+        GDTask.Post(() => invoked = true, loop);
+
+        Assertions.AssertThat(invoked).IsFalse();
+        loop.RaiseProcess();
+        await GDTask.WaitUntil(() => invoked);
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_SwitchToMainThread_CustomLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var loop = new ManualCustomPlayerLoop();
+        var resumed = false;
+
+        SwitchToLoop(loop, () => resumed = true).Forget();
+
+        Assertions.AssertThat(resumed).IsFalse();
+        loop.RaiseProcess();
+        await GDTask.WaitUntil(() => resumed);
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_ReturnToMainThread_CustomLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var loop = new ManualCustomPlayerLoop();
+        var resumed = false;
+
+        ReturnToLoop(loop, () => resumed = true).Forget();
+
+        Assertions.AssertThat(resumed).IsFalse();
+        loop.RaiseProcess();
+        await GDTask.WaitUntil(() => resumed);
+    }
+
     
     [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_Delegate()
@@ -466,5 +508,20 @@ public class GDTaskTest_Threading
             return;
         }
         throw new TestFailedException("Operation not canceled");
+    }
+
+    private static async GDTask SwitchToLoop(ICustomPlayerLoop customPlayerLoop, Action onResume)
+    {
+        await GDTask.SwitchToMainThread(customPlayerLoop);
+        onResume();
+    }
+
+    private static async GDTask ReturnToLoop(ICustomPlayerLoop customPlayerLoop, Action onResume)
+    {
+        await using (GDTask.ReturnToMainThread(customPlayerLoop))
+        {
+        }
+
+        onResume();
     }
 }

@@ -75,6 +75,23 @@ namespace GodotTask.Internal
             return rest;
         }
 
+        public bool HasItems
+        {
+            get
+            {
+                bool lockTaken = false;
+                try
+                {
+                    gate.Enter(ref lockTaken);
+                    return actionListCount != 0 || waitingListCount != 0;
+                }
+                finally
+                {
+                    if (lockTaken) gate.Exit(false);
+                }
+            }
+        }
+
         // Delegate entrypoint.
         public void Run()
         {
