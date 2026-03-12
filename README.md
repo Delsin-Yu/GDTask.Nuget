@@ -86,6 +86,10 @@ public async GDTask ApiUsage()
     
     // Creates a task that will complete at the next provided PlayerLoopTiming when the provided monitorFunction returns a different value.
     await GDTask.WaitUntilValueChanged(Time.Singleton, timeInstance => timeInstance.GetTimeDictFromSystem()["minute"]);
+
+    // Use a controllable custom process loop.
+    await GDTask.Delay(TimeSpan.FromSeconds(1), myCustomPlayerLoop);
+    await GDTask.WaitUntil(() => canResume, myCustomPlayerLoop);
     
     // Creates an awaitable that asynchronously yields to ThreadPool when awaited.
     await GDTask.SwitchToThreadPool();

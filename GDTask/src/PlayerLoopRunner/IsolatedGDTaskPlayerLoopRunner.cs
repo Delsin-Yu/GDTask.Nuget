@@ -12,9 +12,9 @@ internal partial class IsolatedGDTaskPlayerLoopRunner : Node
         _playerLoopRunner = playerLoopRunner;
     }
 
-    public sealed override void _Process(double delta) => 
-        _playerLoopRunner.PauseProcess();
+    public sealed override void _Process(double delta) =>
+        _playerLoopRunner.PauseProcess(delta);
 
-    public sealed override void _PhysicsProcess(double delta) => 
-        _playerLoopRunner.PausePhysicsProcess();
+    public sealed override void _PhysicsProcess(double delta) =>
+        _playerLoopRunner.PausePhysicsProcess(delta);
 }

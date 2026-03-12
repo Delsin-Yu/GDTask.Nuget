@@ -45,41 +45,22 @@ namespace GodotTask
     {
         public static int MainThreadId => Global.mainThreadId;
         public static bool IsMainThread => System.Environment.CurrentManagedThreadId == Global.mainThreadId;
-        public static void AddAction(PlayerLoopTiming timing, IPlayerLoopItem action) => Global.LocalAddAction(timing, action);
+        internal static IPlayerLoopChannel GetLoop(PlayerLoopTiming timing) => Global.LocalGetLoop(timing);
+        internal static IPlayerLoopChannel GetLoop(ICustomPlayerLoop customPlayerLoop, PlayerLoopTiming timing) => CustomPlayerLoopRegistry.GetChannel(customPlayerLoop, timing);
+        public static void AddAction(PlayerLoopTiming timing, IPlayerLoopItem action) => GetLoop(timing).AddAction(action);
         public static void ThrowInvalidLoopTiming(PlayerLoopTiming playerLoopTiming) => throw new InvalidOperationException("Target playerLoopTiming is not injected. Please check PlayerLoopHelper.Initialize. PlayerLoopTiming:" + playerLoopTiming);
-        public static void AddContinuation(PlayerLoopTiming timing, Action continuation) => Global.LocalAddContinuation(timing, continuation);
+        public static void AddContinuation(PlayerLoopTiming timing, Action continuation) => GetLoop(timing).AddContinuation(continuation);
         public static void AddDeferredAction(IPlayerLoopItem action) => Global.LocalAddDeferredAction(action);
         public static void AddDeferredContinuation(Action continuation) => Global.LocalAddDeferredContinuation(continuation);
-        
-        public void LocalAddAction(PlayerLoopTiming timing, IPlayerLoopItem action)
-        {
-            var runner = runners[(int)timing];
-            if (runner == null)
-            {
-                ThrowInvalidLoopTiming(timing);
-            }
-            runner!.AddAction(action);
-        }
 
-        // NOTE: Continuation means a asynchronous task invoked by another task after the other task finishes.
-        public void LocalAddContinuation(PlayerLoopTiming timing, Action continuation)
-        {
-            var q = yielders[(int)timing];
-            if (q == null)
-            {
-                ThrowInvalidLoopTiming(timing);
-            }
-            q!.Enqueue(continuation);
-        }
-        
         public void LocalAddDeferredAction(IPlayerLoopItem action)
         {
-            deferredRunner.AddAction(action);
+            deferredChannel.AddAction(action);
         }
         
         public void LocalAddDeferredContinuation(Action continuation)
         {
-            deferredYielder.Enqueue(continuation);
+            deferredChannel.AddContinuation(continuation);
         }
 
         private GDTaskPlayerLoopRunner() { }
@@ -108,15 +89,13 @@ namespace GodotTask
                 return s_Global;
             }
         }
-        public double DeltaTime => GetProcessDeltaTime();
-        public double PhysicsDeltaTime => GetPhysicsProcessDeltaTime();
+        public double DeltaTime => channels[(int)PlayerLoopTiming.Process].DeltaTime;
+        public double PhysicsDeltaTime => channels[(int)PlayerLoopTiming.PhysicsProcess].DeltaTime;
 
         private static GDTaskPlayerLoopRunner s_Global;
         private int mainThreadId;
-        private ContinuationQueue[] yielders;
-        private ContinuationQueue deferredYielder;
-        private PlayerLoopRunner[] runners;
-        private PlayerLoopRunner deferredRunner;
+        private PlayerLoopChannel[] channels;
+        private PlayerLoopChannel deferredChannel;
 
         public override void _Ready()
         {
@@ -136,10 +115,25 @@ namespace GodotTask
         private void Initialize()
         {
             mainThreadId = System.Environment.CurrentManagedThreadId;
-            yielders = [new(), new(), new(), new()];
-            runners = [new(), new(), new(), new()];
-            deferredYielder = new();
-            deferredRunner = new();
+            channels =
+            [
+                new(() => IsMainThread),
+                new(() => IsMainThread),
+                new(() => IsMainThread),
+                new(() => IsMainThread),
+            ];
+            deferredChannel = new(() => IsMainThread);
+        }
+
+        private IPlayerLoopChannel LocalGetLoop(PlayerLoopTiming timing)
+        {
+            var index = (int)timing;
+            if ((uint)index >= (uint)channels.Length)
+            {
+                ThrowInvalidLoopTiming(timing);
+            }
+
+            return channels[index];
         }
 
         public override void _Notification(int what)
@@ -148,45 +142,39 @@ namespace GodotTask
             {
                 if (Global == this)
                     s_Global = null;
-                if (yielders != null)
+                if (channels != null)
                 {
-                    foreach (var yielder in yielders)
-                        yielder.Clear();
-                    foreach (var runner in runners)
-                        runner.Clear();
+                    foreach (var channel in channels)
+                        channel.Clear();
+                    deferredChannel?.Clear();
                 }
             }
         }
 
         public override void _Process(double delta)
         {
-            yielders[(int)PlayerLoopTiming.Process].Run();
-            runners[(int)PlayerLoopTiming.Process].Run();
+            channels[(int)PlayerLoopTiming.Process].Run(delta);
             CallDeferred(MethodName.DeferredProcess);
         }
 
         public override void _PhysicsProcess(double delta)
         {
-            yielders[(int)PlayerLoopTiming.PhysicsProcess].Run();
-            runners[(int)PlayerLoopTiming.PhysicsProcess].Run();
+            channels[(int)PlayerLoopTiming.PhysicsProcess].Run(delta);
         }
 
-        public void PauseProcess()
+        public void PauseProcess(double delta)
         {
-            yielders[(int)PlayerLoopTiming.IsolatedProcess].Run();
-            runners[(int)PlayerLoopTiming.IsolatedProcess].Run();
+            channels[(int)PlayerLoopTiming.IsolatedProcess].Run(delta);
         }
 
-        public void PausePhysicsProcess()
+        public void PausePhysicsProcess(double delta)
         {
-            yielders[(int)PlayerLoopTiming.IsolatedPhysicsProcess].Run();
-            runners[(int)PlayerLoopTiming.IsolatedPhysicsProcess].Run();
+            channels[(int)PlayerLoopTiming.IsolatedPhysicsProcess].Run(delta);
         }
 
         public void DeferredProcess()
         {
-            deferredYielder.Run();
-            deferredRunner.Run();
+            deferredChannel.Run(0.0);
         }
     }
 }
