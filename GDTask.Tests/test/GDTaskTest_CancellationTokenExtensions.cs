@@ -136,17 +136,6 @@ public class GDTaskTest_CancellationTokenExtensions
     }
 
     [TestCase, RequireGodotRuntime]
-    public static async Task CancellationToken_RegisterRaiseCancelOnPredelete()
-    {
-        await Constants.WaitForTaskReadyAsync();
-        var source = new CancellationTokenSource();
-        var node = Constants.CreateTestNode("RegisterRaiseCancelOnPredelete");
-        source.RegisterRaiseCancelOnPredelete(node);
-        node.QueueFree();
-        await source.Token.WaitUntilCanceled();
-    }
-    
-    [TestCase, RequireGodotRuntime]
     public static async Task Disposable_AddTo()
     {
         await Constants.WaitForTaskReadyAsync();

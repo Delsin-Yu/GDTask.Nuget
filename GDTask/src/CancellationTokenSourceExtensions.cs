@@ -16,17 +16,6 @@ namespace GodotTask
             cts.Cancel();
         }
 
-        private static void TryCancel(CancellationTokenSource cts)
-        {
-            try
-            {
-                cts.Cancel();
-            }
-            catch (ObjectDisposedException)
-            {
-            }
-        }
-
         /// <inheritdoc cref="CancelAfterSlim(System.Threading.CancellationTokenSource,int,DelayType,PlayerLoopTiming)"/>
         public static IDisposable CancelAfterSlim(this CancellationTokenSource cts, int millisecondsDelay, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process)
         {
@@ -61,90 +50,5 @@ namespace GodotTask
             return PlayerLoopTimer.StartNew(delayTimeSpan, false, delayType, delayLoop, cts.Token, CancelCancellationTokenSourceState, cts);
         }
 
-        /// <summary>
-        /// Associate this <see cref="CancellationTokenSource"/> to a <see cref="Node"/> for it to be canceled when the node is receiving <see cref="GodotObject.NotificationPredelete"/>  
-        /// </summary>
-        public static void RegisterRaiseCancelOnPredelete(this CancellationTokenSource cts, Node node)
-        {
-            if (cts.IsCancellationRequested)
-            {
-                return;
-            }
-
-            if (!GodotObject.IsInstanceValid(node) || node.IsQueuedForDeletion())
-            {
-                TryCancel(cts);
-                return;
-            }
-
-            new NodeTreeExitingCancellationRegistration(cts, node);
-        }
-
-        private sealed class NodeTreeExitingCancellationRegistration : IDisposable
-        {
-            private readonly CancellationTokenSource _cts;
-            private readonly Node _node;
-            private readonly Callable _callback;
-            private CancellationTokenRegistration _cancellationRegistration;
-            private bool _disposed;
-
-            public NodeTreeExitingCancellationRegistration(CancellationTokenSource cts, Node node)
-            {
-                _cts = cts;
-                _node = node;
-                _callback = Callable.From(OnNodeTreeExiting);
-
-                try
-                {
-                    // AsyncTriggers were removed from the package, so tree_exiting is the closest
-                    // node lifecycle hook we can observe directly without adding runtime children.
-                    _node.Connect("tree_exiting", _callback);
-                }
-                catch (Exception)
-                {
-                    _disposed = true;
-                    TryCancel(_cts);
-                    return;
-                }
-
-                _cancellationRegistration = cts.Token.RegisterWithoutCaptureExecutionContext(static state =>
-                {
-                    ((NodeTreeExitingCancellationRegistration)state).Dispose();
-                }, this);
-            }
-
-            private void OnNodeTreeExiting()
-            {
-                if (_disposed)
-                {
-                    return;
-                }
-
-                _disposed = true;
-                Disconnect();
-                _cancellationRegistration.Dispose();
-                TryCancel(_cts);
-            }
-
-            public void Dispose()
-            {
-                if (_disposed)
-                {
-                    return;
-                }
-
-                _disposed = true;
-                Disconnect();
-                _cancellationRegistration.Dispose();
-            }
-
-            private void Disconnect()
-            {
-                if (GodotObject.IsInstanceValid(_node) && _node.IsConnected("tree_exiting", _callback))
-                {
-                    _node.Disconnect("tree_exiting", _callback);
-                }
-            }
-        }
     }
 }
