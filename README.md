@@ -148,41 +148,14 @@ public async GDTask ApiUsage()
     // Associate a time out to the current GDTask.
     await GDTask.Never(CancellationToken.None).Timeout(TimeSpan.FromMilliseconds(5));
 
-    var node = new Node();
-    ((SceneTree)Engine.GetMainLoop()).Root.CallDeferred(Node.MethodName.AddChild, node);
-    
-    // Creates a task that will complete when the _EnterTree() is called.
-    await node.OnEnterTreeAsync();
-    
-    // Creates a task that will complete when the _Ready() is called.
-    await node.OnReadyAsync();
-    
-    // Gets an instance of IAsyncProcessHandler for making repeatedly calls on OnProcessAsync().
-    var processTrigger = node.GetAsyncProcessTrigger();
-    
-    // Creates a task that will complete when the next _Process(double) is called.
-    await processTrigger.OnProcessAsync();
-    await processTrigger.OnProcessAsync();
-    await processTrigger.OnProcessAsync();
-    await processTrigger.OnProcessAsync();
-    
-    // Gets an instance of IAsyncPhysicsProcessHandler for making repeatedly calls on OnPhysicsProcessAsync().
-    var physicsProcessTrigger = node.GetAsyncPhysicsProcessTrigger();
-    await physicsProcessTrigger.OnPhysicsProcessAsync();
-    await physicsProcessTrigger.OnPhysicsProcessAsync();
-    await physicsProcessTrigger.OnPhysicsProcessAsync();
-    await physicsProcessTrigger.OnPhysicsProcessAsync();    
-    
-    node.QueueFree();
-    
-    // Creates a task that will complete when the Node is receiving NotificationPredelete.
-    await node.OnPredeleteAsync();
 }
 ```
 
 ## Extended Feature Packages
 
 The following packages extend the functionality of GDTask; they are optional components for projects where applicable.
+
+AsyncTriggers are no longer included in the main GDTask package. If there is concrete demand for them again, they are intended to live in a separate community package instead.
 
 ---
 

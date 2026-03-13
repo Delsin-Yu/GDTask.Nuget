@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using GodotTask.Triggers;
 using System;
 using Godot;
 
@@ -56,9 +55,72 @@ namespace GodotTask
         /// </summary>
         public static void RegisterRaiseCancelOnPredelete(this CancellationTokenSource cts, Node node)
         {
-            var trigger = node.GetAsyncPredeleteTrigger();
-            trigger.CancellationToken.RegisterWithoutCaptureExecutionContext(CancelCancellationTokenSourceState, cts);
+            if (cts.IsCancellationRequested)
+            {
+                return;
+            }
+
+            if (!GodotObject.IsInstanceValid(node) || node.IsQueuedForDeletion())
+            {
+                cts.Cancel();
+                return;
+            }
+
+            new NodeTreeExitingCancellationRegistration(cts, node);
+        }
+
+        private sealed class NodeTreeExitingCancellationRegistration : IDisposable
+        {
+            private readonly CancellationTokenSource _cts;
+            private readonly Node _node;
+            private readonly Callable _callback;
+            private CancellationTokenRegistration _cancellationRegistration;
+            private bool _disposed;
+
+            public NodeTreeExitingCancellationRegistration(CancellationTokenSource cts, Node node)
+            {
+                _cts = cts;
+                _node = node;
+                _callback = Callable.From(OnNodeTreeExiting);
+                _node.Connect("tree_exiting", _callback);
+                _cancellationRegistration = cts.Token.RegisterWithoutCaptureExecutionContext(static state =>
+                {
+                    ((NodeTreeExitingCancellationRegistration)state).Dispose();
+                }, this);
+            }
+
+            private void OnNodeTreeExiting()
+            {
+                if (_disposed)
+                {
+                    return;
+                }
+
+                _disposed = true;
+                Disconnect();
+                _cancellationRegistration.Dispose();
+                _cts.Cancel();
+            }
+
+            public void Dispose()
+            {
+                if (_disposed)
+                {
+                    return;
+                }
+
+                _disposed = true;
+                Disconnect();
+                _cancellationRegistration.Dispose();
+            }
+
+            private void Disconnect()
+            {
+                if (GodotObject.IsInstanceValid(_node) && _node.IsConnected("tree_exiting", _callback))
+                {
+                    _node.Disconnect("tree_exiting", _callback);
+                }
+            }
         }
     }
 }
-
