@@ -10,17 +10,19 @@ namespace GodotTask
         private readonly CancellationToken cancellationToken;
         private readonly Action<object> timerCallback;
         private readonly object state;
-        private readonly PlayerLoopTiming playerLoopTiming;
+        private readonly IPlayerLoop playerLoop;
+        protected readonly bool UsesEngineFrameBoundary;
         private readonly bool periodic;
 
         private bool isRunning;
         private bool tryStop;
         private bool isDisposed;
 
-        protected PlayerLoopTimer(bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
+        protected PlayerLoopTimer(bool periodic, IPlayerLoop playerLoop, CancellationToken cancellationToken, Action<object> timerCallback, object state)
         {
             this.periodic = periodic;
-            this.playerLoopTiming = playerLoopTiming;
+            this.playerLoop = playerLoop;
+            UsesEngineFrameBoundary = GDTaskScheduler.UsesEngineFrameBoundary(playerLoop);
             this.cancellationToken = cancellationToken;
             this.timerCallback = timerCallback;
             this.state = state;
@@ -28,8 +30,13 @@ namespace GodotTask
 
         public static PlayerLoopTimer Create(TimeSpan interval, bool periodic, DelayType delayType, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
         {
+            return Create(interval, periodic, delayType, GDTaskScheduler.GetPlayerLoop(playerLoopTiming), cancellationToken, timerCallback, state);
+        }
+
+        public static PlayerLoopTimer Create(TimeSpan interval, bool periodic, DelayType delayType, IPlayerLoop playerLoop, CancellationToken cancellationToken, Action<object> timerCallback, object state)
+        {
             // Force use Realtime.
-            if (GDTaskPlayerLoopRunner.IsMainThread && Engine.IsEditorHint())
+            if (GDTaskScheduler.IsMainThread && Engine.IsEditorHint())
             {
                 delayType = DelayType.Realtime;
             }
@@ -37,16 +44,21 @@ namespace GodotTask
             switch (delayType)
             {
                 case DelayType.Realtime:
-                    return new RealtimePlayerLoopTimer(interval, periodic, playerLoopTiming, cancellationToken, timerCallback, state);
+                    return new RealtimePlayerLoopTimer(interval, periodic, playerLoop, cancellationToken, timerCallback, state);
                 case DelayType.DeltaTime:
                 default:
-                    return new DeltaTimePlayerLoopTimer(interval, periodic, playerLoopTiming, cancellationToken, timerCallback, state);
+                    return new DeltaTimePlayerLoopTimer(interval, periodic, playerLoop, cancellationToken, timerCallback, state);
             }
         }
 
         public static PlayerLoopTimer StartNew(TimeSpan interval, bool periodic, DelayType delayType, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
         {
-            var timer = Create(interval, periodic, delayType, playerLoopTiming, cancellationToken, timerCallback, state);
+            return StartNew(interval, periodic, delayType, GDTaskScheduler.GetPlayerLoop(playerLoopTiming), cancellationToken, timerCallback, state);
+        }
+
+        public static PlayerLoopTimer StartNew(TimeSpan interval, bool periodic, DelayType delayType, IPlayerLoop playerLoop, CancellationToken cancellationToken, Action<object> timerCallback, object state)
+        {
+            var timer = Create(interval, periodic, delayType, playerLoop, cancellationToken, timerCallback, state);
             timer.Restart();
             return timer;
         }
@@ -62,7 +74,7 @@ namespace GodotTask
             if (!isRunning)
             {
                 isRunning = true;
-                GDTaskPlayerLoopRunner.AddAction(playerLoopTiming, this);
+                GDTaskScheduler.AddAction(playerLoop, this);
             }
             tryStop = false;
         }
@@ -78,7 +90,7 @@ namespace GodotTask
             if (!isRunning)
             {
                 isRunning = true;
-                GDTaskPlayerLoopRunner.AddAction(playerLoopTiming, this);
+                GDTaskScheduler.AddAction(playerLoop, this);
             }
             tryStop = false;
         }
@@ -98,7 +110,7 @@ namespace GodotTask
             isDisposed = true;
         }
 
-        bool IPlayerLoopItem.MoveNext()
+        bool IPlayerLoopItem.MoveNext(double deltaTime)
         {
             if (isDisposed)
             {
@@ -116,7 +128,7 @@ namespace GodotTask
                 return false;
             }
 
-            if (!MoveNextCore())
+            if (!MoveNextCore(deltaTime))
             {
                 timerCallback(state);
 
@@ -135,7 +147,7 @@ namespace GodotTask
             return true;
         }
 
-        protected abstract bool MoveNextCore();
+        protected abstract bool MoveNextCore(double deltaTime);
     }
 
     internal sealed class DeltaTimePlayerLoopTimer : PlayerLoopTimer
@@ -145,23 +157,25 @@ namespace GodotTask
         private double elapsed;
         private double interval;
 
-        public DeltaTimePlayerLoopTimer(TimeSpan interval, bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
-            : base(periodic, playerLoopTiming, cancellationToken, timerCallback, state)
+        public DeltaTimePlayerLoopTimer(TimeSpan interval, bool periodic, IPlayerLoop playerLoop, CancellationToken cancellationToken, Action<object> timerCallback, object state)
+            : base(periodic, playerLoop, cancellationToken, timerCallback, state)
         {
             ResetCore(interval);
         }
 
-        protected override bool MoveNextCore()
+        protected override bool MoveNextCore(double deltaTime)
         {
             if (elapsed == 0.0)
             {
+                // Match built-in player loop behavior by waiting for the next engine frame,
+                // but do not suppress the first manual tick of a custom IPlayerLoop.
                 if (isMainThread && initialFrame == Engine.GetProcessFrames())
                 {
                     return true;
                 }
             }
 
-            elapsed += GDTaskPlayerLoopRunner.Global.DeltaTime;
+            elapsed += deltaTime;
             if (elapsed >= interval)
             {
                 return false;
@@ -173,7 +187,7 @@ namespace GodotTask
         protected override void ResetCore(TimeSpan? interval)
         {
             elapsed = 0.0;
-            isMainThread = GDTaskPlayerLoopRunner.IsMainThread;
+            isMainThread = UsesEngineFrameBoundary && GDTaskScheduler.IsMainThread;
             if (isMainThread)
                 initialFrame = Engine.GetProcessFrames();
             if (interval != null)
@@ -188,13 +202,13 @@ namespace GodotTask
         private ValueStopwatch stopwatch;
         private long intervalTicks;
 
-        public RealtimePlayerLoopTimer(TimeSpan interval, bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
-            : base(periodic, playerLoopTiming, cancellationToken, timerCallback, state)
+        public RealtimePlayerLoopTimer(TimeSpan interval, bool periodic, IPlayerLoop playerLoop, CancellationToken cancellationToken, Action<object> timerCallback, object state)
+            : base(periodic, playerLoop, cancellationToken, timerCallback, state)
         {
             ResetCore(interval);
         }
 
-        protected override bool MoveNextCore()
+        protected override bool MoveNextCore(double deltaTime)
         {
             if (stopwatch.ElapsedTicks >= intervalTicks)
             {

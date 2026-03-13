@@ -54,7 +54,7 @@ public partial struct GDTask
             
             TaskTracker.TrackActiveTask(result, 3);
             
-            GDTaskPlayerLoopRunner.AddDeferredAction(result);
+            GDTaskScheduler.AddAction(PlayerLoopTiming.DeferredProcess, result);
             
             token = result.core.Version;
             return result;
@@ -87,7 +87,7 @@ public partial struct GDTask
             core.OnCompleted(continuation, state, token);
         }
 
-        public bool MoveNext()
+        public bool MoveNext(double deltaTime)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -159,7 +159,7 @@ public partial struct GDTask
             /// </summary>
             public void OnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopRunner.AddDeferredContinuation(continuation);
+                GDTaskScheduler.AddContinuation(PlayerLoopTiming.DeferredProcess, continuation);
             }
 
             /// <summary>
@@ -167,7 +167,7 @@ public partial struct GDTask
             /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopRunner.AddDeferredContinuation(continuation);
+                GDTaskScheduler.AddContinuation(PlayerLoopTiming.DeferredProcess, continuation);
             }
         }
     }

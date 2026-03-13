@@ -466,8 +466,23 @@ namespace GodotTask
         /// <exception cref="TimeoutException">Thrown when the time allotted for this task has expired.</exception>
         public static async GDTask Timeout(this GDTask task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
         {
+            await Timeout(task, timeout, delayType, GDTaskScheduler.GetPlayerLoop(timeoutCheckTiming), taskCancellationTokenSource);
+        }
+
+        /// <summary>
+        /// Associate a time out to the current <see cref="GDTask"/>
+        /// </summary>
+        /// <param name="task">The <see cref="GDTask"/> to associate the time out to</param>
+        /// <param name="timeout">The time out associate to the <see cref="GDTask"/></param>
+        /// <param name="delayType">Timing provide used for calculating time out</param>
+        /// <param name="timeoutCheckLoop">Update loop used for checking time out</param>
+        /// <param name="taskCancellationTokenSource">A <see cref="CancellationTokenSource"/> that get canceled when the task is completed by time out</param>
+        /// <exception cref="TimeoutException">Thrown when the time allotted for this task has expired.</exception>
+        public static async GDTask Timeout(this GDTask task, TimeSpan timeout, DelayType delayType, IPlayerLoop timeoutCheckLoop, CancellationTokenSource taskCancellationTokenSource = null)
+        {
+            Error.ThrowArgumentNullException(timeoutCheckLoop, nameof(timeoutCheckLoop));
             var delayCancellationTokenSource = new CancellationTokenSource();
-            var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
+            var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckLoop, delayCancellationTokenSource.Token).SuppressCancellationThrow();
 
             int winArgIndex;
             bool taskResultIsCanceled;
@@ -505,11 +520,18 @@ namespace GodotTask
             }
         }
 
-        /// <inheritdoc cref="Timeout"/>
+        /// <inheritdoc cref="Timeout(GDTask, TimeSpan, DelayType, PlayerLoopTiming, CancellationTokenSource)"/>
         public static async GDTask<T> Timeout<T>(this GDTask<T> task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
         {
+            return await Timeout(task, timeout, delayType, GDTaskScheduler.GetPlayerLoop(timeoutCheckTiming), taskCancellationTokenSource);
+        }
+
+        /// <inheritdoc cref="Timeout(GDTask,System.TimeSpan,DelayType,IPlayerLoop,System.Threading.CancellationTokenSource)"/>
+        public static async GDTask<T> Timeout<T>(this GDTask<T> task, TimeSpan timeout, DelayType delayType, IPlayerLoop timeoutCheckLoop, CancellationTokenSource taskCancellationTokenSource = null)
+        {
+            Error.ThrowArgumentNullException(timeoutCheckLoop, nameof(timeoutCheckLoop));
             var delayCancellationTokenSource = new CancellationTokenSource();
-            var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
+            var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckLoop, delayCancellationTokenSource.Token).SuppressCancellationThrow();
 
             int winArgIndex;
             (bool IsCanceled, T Result) taskResult;
@@ -559,8 +581,22 @@ namespace GodotTask
         /// <param name="taskCancellationTokenSource">A <see cref="CancellationTokenSource"/> that get canceled when the task is completed by time out</param>
         public static async GDTask<bool> TimeoutWithoutException(this GDTask task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
         {
+            return await TimeoutWithoutException(task, timeout, delayType, GDTaskScheduler.GetPlayerLoop(timeoutCheckTiming), taskCancellationTokenSource);
+        }
+
+        /// <summary>
+        /// Associate a time out to the current <see cref="GDTask"/>, this overload does not raise <see cref="TimeoutException"/> instead asynchronously returns a <see cref="bool"/> indicating if the operation has timed out.
+        /// </summary>
+        /// <param name="task">The <see cref="GDTask"/> to associate the time out to</param>
+        /// <param name="timeout">The time out associate to the <see cref="GDTask"/></param>
+        /// <param name="delayType">Timing provide used for calculating time out</param>
+        /// <param name="timeoutCheckLoop">Update loop used for checking time out</param>
+        /// <param name="taskCancellationTokenSource">A <see cref="CancellationTokenSource"/> that get canceled when the task is completed by time out</param>
+        public static async GDTask<bool> TimeoutWithoutException(this GDTask task, TimeSpan timeout, DelayType delayType, IPlayerLoop timeoutCheckLoop, CancellationTokenSource taskCancellationTokenSource = null)
+        {
+            Error.ThrowArgumentNullException(timeoutCheckLoop, nameof(timeoutCheckLoop));
             var delayCancellationTokenSource = new CancellationTokenSource();
-            var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
+            var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckLoop, delayCancellationTokenSource.Token).SuppressCancellationThrow();
 
             int winArgIndex;
             bool taskResultIsCanceled;
@@ -600,11 +636,18 @@ namespace GodotTask
             return false;
         }
 
-        /// <inheritdoc cref="TimeoutWithoutException"/>
+        /// <inheritdoc cref="TimeoutWithoutException(GDTask, TimeSpan, DelayType, PlayerLoopTiming, CancellationTokenSource)"/>
         public static async GDTask<(bool IsTimeout, T Result)> TimeoutWithoutException<T>(this GDTask<T> task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
         {
+            return await TimeoutWithoutException(task, timeout, delayType, GDTaskScheduler.GetPlayerLoop(timeoutCheckTiming), taskCancellationTokenSource);
+        }
+
+        /// <inheritdoc cref="TimeoutWithoutException(GDTask,System.TimeSpan,DelayType,IPlayerLoop,System.Threading.CancellationTokenSource)"/>
+        public static async GDTask<(bool IsTimeout, T Result)> TimeoutWithoutException<T>(this GDTask<T> task, TimeSpan timeout, DelayType delayType, IPlayerLoop timeoutCheckLoop, CancellationTokenSource taskCancellationTokenSource = null)
+        {
+            Error.ThrowArgumentNullException(timeoutCheckLoop, nameof(timeoutCheckLoop));
             var delayCancellationTokenSource = new CancellationTokenSource();
-            var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
+            var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckLoop, delayCancellationTokenSource.Token).SuppressCancellationThrow();
 
             int winArgIndex;
             (bool IsCanceled, T Result) taskResult;

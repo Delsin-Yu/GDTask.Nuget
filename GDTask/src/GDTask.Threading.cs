@@ -16,7 +16,7 @@ namespace GodotTask
         /// </returns>
         public static SwitchToMainThreadAwaitable SwitchToMainThread(CancellationToken cancellationToken = default)
         {
-            return new SwitchToMainThreadAwaitable(PlayerLoopTiming.Process, cancellationToken);
+            return new SwitchToMainThreadAwaitable(GDTaskScheduler.GetPlayerLoop(PlayerLoopTiming.Process), cancellationToken);
         }
 
         /// <summary>
@@ -27,7 +27,19 @@ namespace GodotTask
         /// </returns>
         public static SwitchToMainThreadAwaitable SwitchToMainThread(PlayerLoopTiming timing, CancellationToken cancellationToken = default)
         {
-            return new SwitchToMainThreadAwaitable(timing, cancellationToken);
+            return new SwitchToMainThreadAwaitable(GDTaskScheduler.GetPlayerLoop(timing), cancellationToken);
+        }
+
+        /// <summary>
+        /// Creates an awaitable that asynchronously yields back to the next provided <see cref="IPlayerLoop"/> from the main thread when awaited, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <returns>
+        /// A context that, when awaited, will asynchronously transition back into the next provided <see cref="IPlayerLoop"/> from the main thread at the time of the await.
+        /// </returns>
+        public static SwitchToMainThreadAwaitable SwitchToMainThread(IPlayerLoop playerLoop, CancellationToken cancellationToken = default)
+        {
+            Error.ThrowArgumentNullException(playerLoop, nameof(playerLoop));
+            return new SwitchToMainThreadAwaitable(playerLoop, cancellationToken);
         }
 
         /// <summary>
@@ -38,7 +50,7 @@ namespace GodotTask
         /// </returns>
         public static ReturnToMainThread ReturnToMainThread(CancellationToken cancellationToken = default)
         {
-            return new ReturnToMainThread(PlayerLoopTiming.Process, cancellationToken);
+            return new ReturnToMainThread(GDTaskScheduler.GetPlayerLoop(PlayerLoopTiming.Process), cancellationToken);
         }
 
         /// <summary>
@@ -49,7 +61,19 @@ namespace GodotTask
         /// </returns>
         public static ReturnToMainThread ReturnToMainThread(PlayerLoopTiming timing, CancellationToken cancellationToken = default)
         {
-            return new ReturnToMainThread(timing, cancellationToken);
+            return new ReturnToMainThread(GDTaskScheduler.GetPlayerLoop(timing), cancellationToken);
+        }
+
+        /// <summary>
+        /// Creates an asynchronously disposable that asynchronously yields back to the next provided <see cref="IPlayerLoop"/> from the main thread after using scope is closed, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <returns>
+        /// A context that, when disposed, will asynchronously transition back into the next provided <see cref="IPlayerLoop"/> from the main thread at the time of the dispose.
+        /// </returns>
+        public static ReturnToMainThread ReturnToMainThread(IPlayerLoop playerLoop, CancellationToken cancellationToken = default)
+        {
+            Error.ThrowArgumentNullException(playerLoop, nameof(playerLoop));
+            return new ReturnToMainThread(playerLoop, cancellationToken);
         }
 
         /// <summary>
@@ -57,7 +81,16 @@ namespace GodotTask
         /// </summary>
         public static void Post(Action action, PlayerLoopTiming timing = PlayerLoopTiming.Process)
         {
-            GDTaskPlayerLoopRunner.AddContinuation(timing, action);
+            GDTaskScheduler.AddContinuation(timing, action);
+        }
+
+        /// <summary>
+        /// Queue the action execution to the next specified <see cref="IPlayerLoop"/>.
+        /// </summary>
+        public static void Post(Action action, IPlayerLoop playerLoop)
+        {
+            Error.ThrowArgumentNullException(playerLoop, nameof(playerLoop));
+            GDTaskScheduler.AddContinuation(playerLoop, action);
         }
 
         /// <summary>
@@ -107,35 +140,35 @@ namespace GodotTask
     }
 
     /// <summary>
-    /// An awaitable that, when awaited, will asynchronously yields back to the next <see cref="PlayerLoopTiming"/>.
+    /// An awaitable that, when awaited, will asynchronously yields back to the next <see cref="IPlayerLoop"/>.
     /// </summary>
     public readonly struct SwitchToMainThreadAwaitable
     {
-        internal readonly PlayerLoopTiming playerLoopTiming;
+        internal readonly IPlayerLoop playerLoop;
         internal readonly CancellationToken cancellationToken;
 
-        internal SwitchToMainThreadAwaitable(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
+        internal SwitchToMainThreadAwaitable(IPlayerLoop playerLoop, CancellationToken cancellationToken)
         {
-            this.playerLoopTiming = playerLoopTiming;
+            this.playerLoop = playerLoop;
             this.cancellationToken = cancellationToken;
         }
 
         /// <summary>
         /// Gets an awaiter used to await this <see cref="SwitchToMainThreadAwaitable"/>.
         /// </summary>
-        public Awaiter GetAwaiter() => new Awaiter(playerLoopTiming, cancellationToken);
+        public Awaiter GetAwaiter() => new Awaiter(playerLoop, cancellationToken);
 
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="SwitchToMainThreadAwaitable"/>.
         /// </summary>
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
-            private readonly PlayerLoopTiming playerLoopTiming;
+            private readonly IPlayerLoop playerLoop;
             private readonly CancellationToken cancellationToken;
 
-            internal Awaiter(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
+            internal Awaiter(IPlayerLoop playerLoop, CancellationToken cancellationToken)
             {
-                this.playerLoopTiming = playerLoopTiming;
+                this.playerLoop = playerLoop;
                 this.cancellationToken = cancellationToken;
             }
 
@@ -147,7 +180,7 @@ namespace GodotTask
                 get
                 {
                     var currentThreadId = Environment.CurrentManagedThreadId;
-                    if (GDTaskPlayerLoopRunner.MainThreadId == currentThreadId)
+                    if (GDTaskScheduler.MainThreadId == currentThreadId)
                     {
                         return true; // run immediate.
                     }
@@ -170,7 +203,7 @@ namespace GodotTask
             /// </summary>
             public void OnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopRunner.AddContinuation(playerLoopTiming, continuation);
+                GDTaskScheduler.AddContinuation(playerLoop, continuation);
             }
 
             /// <summary>
@@ -178,22 +211,22 @@ namespace GodotTask
             /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopRunner.AddContinuation(playerLoopTiming, continuation);
+                GDTaskScheduler.AddContinuation(playerLoop, continuation);
             }
         }
     }
 
     /// <summary>
-    /// An context that, when disposed, will asynchronously yields back to the next specified <see cref="PlayerLoopTiming"/> on the main thread.
+    /// An context that, when disposed, will asynchronously yields back to the next specified <see cref="IPlayerLoop"/> on the main thread.
     /// </summary>
     public readonly struct ReturnToMainThread
     {
-        internal readonly PlayerLoopTiming playerLoopTiming;
+        internal readonly IPlayerLoop playerLoop;
         internal readonly CancellationToken cancellationToken;
 
-        internal ReturnToMainThread(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
+        internal ReturnToMainThread(IPlayerLoop playerLoop, CancellationToken cancellationToken)
         {
-            this.playerLoopTiming = playerLoopTiming;
+            this.playerLoop = playerLoop;
             this.cancellationToken = cancellationToken;
         }
 
@@ -202,7 +235,7 @@ namespace GodotTask
         /// </summary>
         public Awaiter DisposeAsync()
         {
-            return new Awaiter(playerLoopTiming, cancellationToken); // run immediate.
+            return new Awaiter(playerLoop, cancellationToken); // run immediate.
         }
 
         /// <summary>
@@ -210,12 +243,12 @@ namespace GodotTask
         /// </summary>
         public readonly struct Awaiter : ICriticalNotifyCompletion
         {
-            private readonly PlayerLoopTiming timing;
+            private readonly IPlayerLoop playerLoop;
             private readonly CancellationToken cancellationToken;
 
-            internal Awaiter(PlayerLoopTiming timing, CancellationToken cancellationToken)
+            internal Awaiter(IPlayerLoop playerLoop, CancellationToken cancellationToken)
             {
-                this.timing = timing;
+                this.playerLoop = playerLoop;
                 this.cancellationToken = cancellationToken;
             }
 
@@ -227,7 +260,7 @@ namespace GodotTask
             /// <summary>
             /// Gets whether the current <see cref="GDTaskPlayerLoopRunner.MainThreadId"/> is <see cref="Environment.CurrentManagedThreadId"/>.
             /// </summary>
-            public bool IsCompleted => GDTaskPlayerLoopRunner.MainThreadId == Environment.CurrentManagedThreadId;
+            public bool IsCompleted => GDTaskScheduler.MainThreadId == Environment.CurrentManagedThreadId;
 
             /// <summary>
             /// Ends the awaiting on the completed <see cref="ReturnToMainThread"/>.
@@ -241,7 +274,7 @@ namespace GodotTask
             /// </summary>
             public void OnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopRunner.AddContinuation(timing, continuation);
+                GDTaskScheduler.AddContinuation(playerLoop, continuation);
             }
 
             /// <summary>
@@ -249,7 +282,7 @@ namespace GodotTask
             /// </summary>
             public void UnsafeOnCompleted(Action continuation)
             {
-                GDTaskPlayerLoopRunner.AddContinuation(timing, continuation);
+                GDTaskScheduler.AddContinuation(playerLoop, continuation);
             }
         }
     }

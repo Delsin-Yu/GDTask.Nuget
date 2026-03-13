@@ -66,7 +66,7 @@ namespace GodotTask.Internal
         }
 
         // Delegate entrypoint.
-        public void Run()
+        public void Run(double deltaTime)
         {
             lock (runningAndQueueLock)
             {
@@ -85,7 +85,7 @@ namespace GodotTask.Internal
                     {
                         try
                         {
-                            if (!action.MoveNext())
+                            if (!action.MoveNext(deltaTime))
                             {
                                 loopItemSpan[i] = null;
                             }
@@ -113,7 +113,7 @@ namespace GodotTask.Internal
                         {
                             try
                             {
-                                if (!fromTail.MoveNext())
+                                if (!fromTail.MoveNext(deltaTime))
                                 {
                                     loopItemSpan[j] = null;
                                     j--;

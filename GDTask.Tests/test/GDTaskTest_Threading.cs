@@ -2,6 +2,7 @@
 // ReSharper disable UnusedType.Global
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
@@ -27,7 +28,7 @@ public class GDTaskTest_Threading
         await Constants.WaitForTaskReadyAsync();
         await GDTask.SwitchToMainThread();
         Assertions
-            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
+            .AssertThat(GDTaskScheduler.IsMainThread)
             .IsTrue();
     }
     
@@ -45,6 +46,44 @@ public class GDTaskTest_Threading
         }
 
         throw new TestFailedException("SwitchToMainThread not canceled");
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_SwitchToMainThread_CustomPlayerLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var playerLoop = new ManualPlayerLoop();
+
+        await GDTask.SwitchToThreadPool();
+        
+        var task = GDTask.Create(async () =>
+        {
+            await GDTask.SwitchToMainThread(playerLoop);
+            return GDTaskScheduler.IsMainThread;
+        });
+
+        await GDTask.SwitchToMainThread();
+        playerLoop.Tick();
+        var resumedOnMainThread = await task;
+
+        playerLoop.Dispose();
+        Assertions.AssertThat(resumedOnMainThread).IsTrue();
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_Post_CustomPlayerLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        using var playerLoop = new ManualPlayerLoop();
+        var postedThreadId = -1;
+
+        GDTask.Post(() => postedThreadId = Thread.CurrentThread.ManagedThreadId, playerLoop);
+
+        Assertions.AssertThat(postedThreadId).IsEqual(-1);
+
+        playerLoop.Tick();
+
+        Assertions.AssertThat(postedThreadId).IsEqual(Thread.CurrentThread.ManagedThreadId);
     }
 
     
@@ -74,7 +113,7 @@ public class GDTaskTest_Threading
         );
 
         Assertions
-            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
+            .AssertThat(GDTaskScheduler.IsMainThread)
             .IsTrue();
     }
 
@@ -152,7 +191,7 @@ public class GDTaskTest_Threading
         );
 
         Assertions
-            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
+            .AssertThat(GDTaskScheduler.IsMainThread)
             .IsTrue();
 
         Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
@@ -234,7 +273,7 @@ public class GDTaskTest_Threading
         );
 
         Assertions
-            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
+            .AssertThat(GDTaskScheduler.IsMainThread)
             .IsTrue();
     }
 
@@ -316,7 +355,7 @@ public class GDTaskTest_Threading
         );
 
         Assertions
-            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
+            .AssertThat(GDTaskScheduler.IsMainThread)
             .IsTrue();
 
         Assertions
@@ -377,7 +416,7 @@ public class GDTaskTest_Threading
         }
         
         Assertions
-            .AssertThat(GDTaskPlayerLoopRunner.IsMainThread)
+            .AssertThat(GDTaskScheduler.IsMainThread)
             .IsTrue();
     }
     

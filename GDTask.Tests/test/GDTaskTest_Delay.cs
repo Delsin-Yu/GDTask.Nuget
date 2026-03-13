@@ -28,6 +28,19 @@ public class GDTaskTest_Delay
     }
 
     [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_Yield_CustomPlayerLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        using var playerLoop = new ManualPlayerLoop();
+        var task = GDTask.Yield(playerLoop, CancellationToken.None).AsTask();
+
+        Assertions.AssertThat(task.IsCompleted).IsFalse();
+
+        playerLoop.Tick();
+        await task;
+    }
+
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Yield_Process_Token()
     {
         await Constants.WaitForTaskReadyAsync();
@@ -200,7 +213,7 @@ public class GDTaskTest_Delay
     {
         await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.Process);
-        var tree = GDTaskPlayerLoopRunner.Global.GetTree();
+        var tree = PlayerLoopRunnerProvider.GlobalInstance.GetTree();
         tree.Paused = true;
         using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime, PlayerLoopTiming.IsolatedProcess);
         tree.Paused = false;
@@ -211,7 +224,7 @@ public class GDTaskTest_Delay
     {
         await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
-        var tree = GDTaskPlayerLoopRunner.Global.GetTree();
+        var tree = PlayerLoopRunnerProvider.GlobalInstance.GetTree();
         tree.Paused = true;
         using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime, PlayerLoopTiming.IsolatedPhysicsProcess);
         tree.Paused = false;
@@ -269,6 +282,20 @@ public class GDTaskTest_Delay
         await Constants.WaitForTaskReadyAsync();
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
         using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.Realtime, PlayerLoopTiming.PhysicsProcess);
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_Delay_DeltaTime_CustomPlayerLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        using var playerLoop = new ManualPlayerLoop();
+        var task = GDTask.Delay(TimeSpan.FromSeconds(1), DelayType.DeltaTime, playerLoop).AsTask();
+
+        playerLoop.Tick(0.4);
+        Assertions.AssertThat(task.IsCompleted).IsFalse();
+
+        playerLoop.Tick(0.7);
+        await task;
     }
 
     [TestCase, RequireGodotRuntime]

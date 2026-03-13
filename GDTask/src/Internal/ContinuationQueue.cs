@@ -76,7 +76,7 @@ namespace GodotTask.Internal
         }
 
         // Delegate entrypoint.
-        public void Run()
+        public void Run(double deltaTime)
         {
             {
                 bool lockTaken = false;

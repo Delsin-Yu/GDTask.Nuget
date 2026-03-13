@@ -149,6 +149,32 @@ public class GDTaskTest_Utils
     }
 
     [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_Timeout_CustomPlayerLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        using var playerLoop = new ManualPlayerLoop();
+        var task = GDTask.Never(CancellationToken.None)
+            .Timeout(TimeSpan.FromSeconds(1), DelayType.DeltaTime, playerLoop)
+            .AsTask();
+
+        playerLoop.Tick(0.4);
+        Assertions.AssertThat(task.IsCompleted).IsFalse();
+
+        playerLoop.Tick(0.7);
+
+        try
+        {
+            await task;
+        }
+        catch (TimeoutException)
+        {
+            return;
+        }
+
+        throw new TestFailedException("Operation not cancelled");
+    }
+
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_Timeout()
     {
         await Constants.WaitForTaskReadyAsync();
@@ -176,6 +202,22 @@ public class GDTaskTest_Utils
             var isTimeout = await GDTask.Never(CancellationToken.None).TimeoutWithoutException(Constants.DelayTimeSpan);
             Assertions.AssertThat(isTimeout);
         }
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_TimeoutWithoutException_CustomPlayerLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        using var playerLoop = new ManualPlayerLoop();
+        var task = GDTask.Never(CancellationToken.None)
+            .TimeoutWithoutException(TimeSpan.FromSeconds(1), DelayType.DeltaTime, playerLoop)
+            .AsTask();
+
+        playerLoop.Tick(0.4);
+        Assertions.AssertThat(task.IsCompleted).IsFalse();
+
+        playerLoop.Tick(0.7);
+        Assertions.AssertThat(await task).IsTrue();
     }
 
     [TestCase, RequireGodotRuntime]

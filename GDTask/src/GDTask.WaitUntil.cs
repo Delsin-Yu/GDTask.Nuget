@@ -14,7 +14,7 @@ namespace GodotTask
         /// <exception cref="OperationCanceledException">Throws when <paramref name="target"/> GodotObject has been freed.</exception>
         public static GDTask WaitUntil(GodotObject target, Func<bool> predicate, PlayerLoopTiming timing = PlayerLoopTiming.Process, CancellationToken cancellationToken = default)
         {
-            return new GDTask(WaitUntilPromise.Create(target, predicate, timing, cancellationToken, out var token), token);
+            return new GDTask(WaitUntilPromise.Create(target, predicate, GDTaskScheduler.GetPlayerLoop(timing), cancellationToken, out var token), token);
         }
         /// <inheritdoc cref="WaitUntil(GodotObject, Func{bool}, PlayerLoopTiming, CancellationToken)"/>
         public static GDTask WaitUntil(Func<bool> predicate, PlayerLoopTiming timing = PlayerLoopTiming.Process, CancellationToken cancellationToken = default)
@@ -23,12 +23,28 @@ namespace GodotTask
         }
 
         /// <summary>
+        /// Creates a task that will complete at the next provided <see cref="IPlayerLoop"/> when the supplied <paramref name="predicate"/> evaluates to true, with specified <see cref="CancellationToken"/>
+        /// </summary>
+        /// <exception cref="OperationCanceledException">Throws when <paramref name="target"/> GodotObject has been freed.</exception>
+        public static GDTask WaitUntil(GodotObject target, Func<bool> predicate, IPlayerLoop playerLoop, CancellationToken cancellationToken = default)
+        {
+            GodotTask.Internal.Error.ThrowArgumentNullException(playerLoop, nameof(playerLoop));
+            return new GDTask(WaitUntilPromise.Create(target, predicate, playerLoop, cancellationToken, out var token), token);
+        }
+
+        /// <inheritdoc cref="WaitUntil(GodotObject, Func{bool}, IPlayerLoop, CancellationToken)"/>
+        public static GDTask WaitUntil(Func<bool> predicate, IPlayerLoop playerLoop, CancellationToken cancellationToken = default)
+        {
+            return WaitUntil(null, predicate, playerLoop, cancellationToken);
+        }
+
+        /// <summary>
         /// Creates a task that will complete at the next provided <see cref="PlayerLoopTiming"/> when the supplied <paramref name="predicate"/> evaluates to false, with specified <see cref="CancellationToken"/>.
         /// </summary>
         /// <exception cref="OperationCanceledException">Throws when <paramref name="target"/> GodotObject has been freed.</exception>
         public static GDTask WaitWhile(GodotObject target, Func<bool> predicate, PlayerLoopTiming timing = PlayerLoopTiming.Process, CancellationToken cancellationToken = default)
         {
-            return new GDTask(WaitWhilePromise.Create(target, predicate, timing, cancellationToken, out var token), token);
+            return new GDTask(WaitWhilePromise.Create(target, predicate, GDTaskScheduler.GetPlayerLoop(timing), cancellationToken, out var token), token);
         }
         /// <inheritdoc cref="WaitWhile(GodotObject, Func{bool}, PlayerLoopTiming, CancellationToken)"/>
         public static GDTask WaitWhile(Func<bool> predicate, PlayerLoopTiming timing = PlayerLoopTiming.Process, CancellationToken cancellationToken = default)
@@ -37,16 +53,47 @@ namespace GodotTask
         }
 
         /// <summary>
+        /// Creates a task that will complete at the next provided <see cref="IPlayerLoop"/> when the supplied <paramref name="predicate"/> evaluates to false, with specified <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <exception cref="OperationCanceledException">Throws when <paramref name="target"/> GodotObject has been freed.</exception>
+        public static GDTask WaitWhile(GodotObject target, Func<bool> predicate, IPlayerLoop playerLoop, CancellationToken cancellationToken = default)
+        {
+            GodotTask.Internal.Error.ThrowArgumentNullException(playerLoop, nameof(playerLoop));
+            return new GDTask(WaitWhilePromise.Create(target, predicate, playerLoop, cancellationToken, out var token), token);
+        }
+
+        /// <inheritdoc cref="WaitWhile(GodotObject, Func{bool}, IPlayerLoop, CancellationToken)"/>
+        public static GDTask WaitWhile(Func<bool> predicate, IPlayerLoop playerLoop, CancellationToken cancellationToken = default)
+        {
+            return WaitWhile(null, predicate, playerLoop, cancellationToken);
+        }
+
+        /// <summary>
         /// Creates a task that will complete at the next provided <see cref="PlayerLoopTiming"/> when the supplied <see cref="CancellationToken"/> is canceled.
         /// </summary>
         public static GDTask WaitUntilCanceled(GodotObject target, CancellationToken cancellationToken, PlayerLoopTiming timing = PlayerLoopTiming.Process)
         {
-            return new GDTask(WaitUntilCanceledPromise.Create(target, cancellationToken, timing, out var token), token);
+            return new GDTask(WaitUntilCanceledPromise.Create(target, cancellationToken, GDTaskScheduler.GetPlayerLoop(timing), out var token), token);
         }
         /// <inheritdoc cref="WaitUntilCanceled(GodotObject, CancellationToken, PlayerLoopTiming)"/>
         public static GDTask WaitUntilCanceled(CancellationToken cancellationToken, PlayerLoopTiming timing = PlayerLoopTiming.Process)
         {
             return WaitUntilCanceled(null, cancellationToken, timing);
+        }
+
+        /// <summary>
+        /// Creates a task that will complete at the next provided <see cref="IPlayerLoop"/> when the supplied <see cref="CancellationToken"/> is canceled.
+        /// </summary>
+        public static GDTask WaitUntilCanceled(GodotObject target, CancellationToken cancellationToken, IPlayerLoop playerLoop)
+        {
+            GodotTask.Internal.Error.ThrowArgumentNullException(playerLoop, nameof(playerLoop));
+            return new GDTask(WaitUntilCanceledPromise.Create(target, cancellationToken, playerLoop, out var token), token);
+        }
+
+        /// <inheritdoc cref="WaitUntilCanceled(GodotObject, CancellationToken, IPlayerLoop)"/>
+        public static GDTask WaitUntilCanceled(CancellationToken cancellationToken, IPlayerLoop playerLoop)
+        {
+            return WaitUntilCanceled(null, cancellationToken, playerLoop);
         }
 
         /// <summary>
@@ -56,8 +103,20 @@ namespace GodotTask
           where T : class
         {
             return new GDTask<U>(target is GodotObject
-                ? WaitUntilValueChangedGodotObjectPromise<T, U>.Create(target, monitorFunction, equalityComparer, monitorTiming, cancellationToken, out var token)
-                : WaitUntilValueChangedStandardObjectPromise<T, U>.Create(target, monitorFunction, equalityComparer, monitorTiming, cancellationToken, out token), token);
+                                ? WaitUntilValueChangedGodotObjectPromise<T, U>.Create(target, monitorFunction, equalityComparer, GDTaskScheduler.GetPlayerLoop(monitorTiming), cancellationToken, out var token)
+                                : WaitUntilValueChangedStandardObjectPromise<T, U>.Create(target, monitorFunction, equalityComparer, GDTaskScheduler.GetPlayerLoop(monitorTiming), cancellationToken, out token), token);
+                }
+
+                /// <summary>
+                /// Creates a task that will complete at the next provided <see cref="IPlayerLoop"/> when the provided <paramref name="monitorFunction"/> returns a different value, with specified <see cref="CancellationToken"/>.
+                /// </summary>
+                public static GDTask<U> WaitUntilValueChanged<T, U>(T target, Func<T, U> monitorFunction, IPlayerLoop monitorLoop, IEqualityComparer<U> equalityComparer = null, CancellationToken cancellationToken = default)
+                    where T : class
+                {
+                        GodotTask.Internal.Error.ThrowArgumentNullException(monitorLoop, nameof(monitorLoop));
+                        return new GDTask<U>(target is GodotObject
+                                ? WaitUntilValueChangedGodotObjectPromise<T, U>.Create(target, monitorFunction, equalityComparer, monitorLoop, cancellationToken, out var token)
+                                : WaitUntilValueChangedStandardObjectPromise<T, U>.Create(target, monitorFunction, equalityComparer, monitorLoop, cancellationToken, out token), token);
         }
 
         private sealed class WaitUntilPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitUntilPromise>
@@ -81,7 +140,7 @@ namespace GodotTask
             {
             }
 
-            public static IGDTaskSource Create(GodotObject target, Func<bool> predicate, PlayerLoopTiming timing, CancellationToken cancellationToken, out short token)
+            public static IGDTaskSource Create(GodotObject target, Func<bool> predicate, IPlayerLoop playerLoop, CancellationToken cancellationToken, out short token)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -99,7 +158,7 @@ namespace GodotTask
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopRunner.AddAction(timing, result);
+                GDTaskScheduler.AddAction(playerLoop, result);
 
                 token = result.core.Version;
                 return result;
@@ -132,7 +191,7 @@ namespace GodotTask
                 core.OnCompleted(continuation, state, token);
             }
 
-            public bool MoveNext()
+            public bool MoveNext(double deltaTime)
             {
                 if (cancellationToken.IsCancellationRequested || (target is not null && !GodotObject.IsInstanceValid(target))) // Cancel when destroyed
                 {
@@ -188,7 +247,7 @@ namespace GodotTask
             {
             }
 
-            public static IGDTaskSource Create(GodotObject target, Func<bool> predicate, PlayerLoopTiming timing, CancellationToken cancellationToken, out short token)
+            public static IGDTaskSource Create(GodotObject target, Func<bool> predicate, IPlayerLoop playerLoop, CancellationToken cancellationToken, out short token)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -206,7 +265,7 @@ namespace GodotTask
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopRunner.AddAction(timing, result);
+                GDTaskScheduler.AddAction(playerLoop, result);
 
                 token = result.core.Version;
                 return result;
@@ -239,7 +298,7 @@ namespace GodotTask
                 core.OnCompleted(continuation, state, token);
             }
 
-            public bool MoveNext()
+            public bool MoveNext(double deltaTime)
             {
                 if (cancellationToken.IsCancellationRequested || (target is not null && !GodotObject.IsInstanceValid(target))) // Cancel when destroyed
                 {
@@ -294,7 +353,7 @@ namespace GodotTask
             {
             }
 
-            public static IGDTaskSource Create(GodotObject target, CancellationToken cancellationToken, PlayerLoopTiming timing, out short token)
+            public static IGDTaskSource Create(GodotObject target, CancellationToken cancellationToken, IPlayerLoop playerLoop, out short token)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -311,7 +370,7 @@ namespace GodotTask
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopRunner.AddAction(timing, result);
+                GDTaskScheduler.AddAction(playerLoop, result);
 
                 token = result.core.Version;
                 return result;
@@ -344,7 +403,7 @@ namespace GodotTask
                 core.OnCompleted(continuation, state, token);
             }
 
-            public bool MoveNext()
+            public bool MoveNext(double deltaTime)
             {
                 if (cancellationToken.IsCancellationRequested || (target is not null && !GodotObject.IsInstanceValid(target))) // Cancel when destroyed
                 {
@@ -389,7 +448,7 @@ namespace GodotTask
             {
             }
 
-            public static IGDTaskSource<U> Create(T target, Func<T, U> monitorFunction, IEqualityComparer<U> equalityComparer, PlayerLoopTiming timing, CancellationToken cancellationToken, out short token)
+            public static IGDTaskSource<U> Create(T target, Func<T, U> monitorFunction, IEqualityComparer<U> equalityComparer, IPlayerLoop playerLoop, CancellationToken cancellationToken, out short token)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -410,7 +469,7 @@ namespace GodotTask
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopRunner.AddAction(timing, result);
+                GDTaskScheduler.AddAction(playerLoop, result);
 
                 token = result.core.Version;
                 return result;
@@ -448,7 +507,7 @@ namespace GodotTask
                 core.OnCompleted(continuation, state, token);
             }
 
-            public bool MoveNext()
+            public bool MoveNext(double deltaTime)
             {
                 if (cancellationToken.IsCancellationRequested || (target is not null && !GodotObject.IsInstanceValid(targetGodotObject))) // Cancel when destroyed
                 {
@@ -512,7 +571,7 @@ namespace GodotTask
             {
             }
 
-            public static IGDTaskSource<U> Create(T target, Func<T, U> monitorFunction, IEqualityComparer<U> equalityComparer, PlayerLoopTiming timing, CancellationToken cancellationToken, out short token)
+            public static IGDTaskSource<U> Create(T target, Func<T, U> monitorFunction, IEqualityComparer<U> equalityComparer, IPlayerLoop playerLoop, CancellationToken cancellationToken, out short token)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -532,7 +591,7 @@ namespace GodotTask
 
                 TaskTracker.TrackActiveTask(result, 3);
 
-                GDTaskPlayerLoopRunner.AddAction(timing, result);
+                GDTaskScheduler.AddAction(playerLoop, result);
 
                 token = result.core.Version;
                 return result;
@@ -570,7 +629,7 @@ namespace GodotTask
                 core.OnCompleted(continuation, state, token);
             }
 
-            public bool MoveNext()
+            public bool MoveNext(double deltaTime)
             {
                 if (cancellationToken.IsCancellationRequested || !target.TryGetTarget(out var t)) // doesn't find = cancel.
                 {

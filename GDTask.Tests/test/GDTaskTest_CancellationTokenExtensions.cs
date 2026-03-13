@@ -120,6 +120,22 @@ public class GDTaskTest_CancellationTokenExtensions
     }
 
     [TestCase, RequireGodotRuntime]
+    public static async Task CancellationToken_CancelAfterSlim_CustomPlayerLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        using var playerLoop = new ManualPlayerLoop();
+        var source = new CancellationTokenSource();
+
+        source.CancelAfterSlim(TimeSpan.FromSeconds(1), DelayType.DeltaTime, playerLoop);
+
+        playerLoop.Tick(0.4);
+        Assertions.AssertThat(source.IsCancellationRequested).IsFalse();
+
+        playerLoop.Tick(0.7);
+        Assertions.AssertThat(source.IsCancellationRequested).IsTrue();
+    }
+
+    [TestCase, RequireGodotRuntime]
     public static async Task CancellationToken_RegisterRaiseCancelOnPredelete()
     {
         await Constants.WaitForTaskReadyAsync();

@@ -17,6 +17,22 @@ public class GDTaskTest_Wait
         Constants.Delay().ContinueWith(() => finished = true).Forget();
         await GDTask.WaitUntil(() => finished);
     }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_WaitUntil_CustomPlayerLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        using var playerLoop = new ManualPlayerLoop();
+        var finished = false;
+        var task = GDTask.WaitUntil(() => finished, playerLoop).AsTask();
+
+        playerLoop.Tick();
+        Assertions.AssertThat(task.IsCompleted).IsFalse();
+
+        finished = true;
+        playerLoop.Tick();
+        await task;
+    }
     
     [TestCase, RequireGodotRuntime]
     public static async Task GDTask_WaitWhile()
@@ -79,6 +95,24 @@ public class GDTaskTest_Wait
         var value = new InternalValue();
         Constants.Delay().ContinueWith(() => value.Value = 0).Forget();
         await GDTask.WaitUntilValueChanged(value, data => data.Value);
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_WaitUntilValueChanged_CustomPlayerLoop()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        using var playerLoop = new ManualPlayerLoop();
+        var value = new InternalValue();
+        var task = GDTask.WaitUntilValueChanged(value, data => data.Value, playerLoop).AsTask();
+
+        playerLoop.Tick();
+        Assertions.AssertThat(task.IsCompleted).IsFalse();
+
+        value.Value = 0;
+        playerLoop.Tick();
+
+        var result = await task;
+        Assertions.AssertThat(result).IsEqual(0);
     }
 
     private class InternalValue

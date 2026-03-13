@@ -102,3 +102,32 @@ internal readonly struct ScopedFrameCount : IDisposable
             .IsEqual(GetCurrentFrame(_timing));
     }
 }
+
+internal sealed class ManualPlayerLoop : IPlayerLoop, IDisposable
+{
+    private bool _disposed;
+
+    public event Action<double> OnProcess = delegate { };
+    public event Action OnPredelete = delegate { };
+
+    public void Tick(double deltaTime = 0.0)
+    {
+        if (_disposed)
+        {
+            throw new ObjectDisposedException(nameof(ManualPlayerLoop));
+        }
+
+        OnProcess.Invoke(deltaTime);
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        OnPredelete.Invoke();
+    }
+}

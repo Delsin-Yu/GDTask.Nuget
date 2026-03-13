@@ -78,6 +78,9 @@ public async GDTask ApiUsage()
     // Delay the execution until the next Process.
     await GDTask.Yield(PlayerLoopTiming.Process);
 
+    // The same overload families also accept any IPlayerLoop implementation.
+    // Example: await GDTask.Delay(TimeSpan.FromSeconds(1), DelayType.DeltaTime, myCustomLoop);
+
     // Delay the execution until the next PhysicsProcess.
     await GDTask.WaitForPhysicsProcess();
 
