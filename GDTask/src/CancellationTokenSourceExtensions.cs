@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using GodotTask.Triggers;
 using System;
 using Godot;
 
@@ -51,14 +50,5 @@ namespace GodotTask
             return PlayerLoopTimer.StartNew(delayTimeSpan, false, delayType, delayLoop, cts.Token, CancelCancellationTokenSourceState, cts);
         }
 
-        /// <summary>
-        /// Associate this <see cref="CancellationTokenSource"/> to a <see cref="Node"/> for it to be canceled when the node is receiving <see cref="GodotObject.NotificationPredelete"/>  
-        /// </summary>
-        public static void RegisterRaiseCancelOnPredelete(this CancellationTokenSource cts, Node node)
-        {
-            var trigger = node.GetAsyncPredeleteTrigger();
-            trigger.CancellationToken.RegisterWithoutCaptureExecutionContext(CancelCancellationTokenSourceState, cts);
-        }
     }
 }
-
