@@ -16,6 +16,17 @@ namespace GodotTask
             cts.Cancel();
         }
 
+        private static void TryCancel(CancellationTokenSource cts)
+        {
+            try
+            {
+                cts.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+        }
+
         /// <inheritdoc cref="CancelAfterSlim(System.Threading.CancellationTokenSource,int,DelayType,PlayerLoopTiming)"/>
         public static IDisposable CancelAfterSlim(this CancellationTokenSource cts, int millisecondsDelay, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process)
         {
@@ -62,7 +73,7 @@ namespace GodotTask
 
             if (!GodotObject.IsInstanceValid(node) || node.IsQueuedForDeletion())
             {
-                cts.Cancel();
+                TryCancel(cts);
                 return;
             }
 
@@ -82,7 +93,20 @@ namespace GodotTask
                 _cts = cts;
                 _node = node;
                 _callback = Callable.From(OnNodeTreeExiting);
-                _node.Connect("tree_exiting", _callback);
+
+                try
+                {
+                    // AsyncTriggers were removed from the package, so tree_exiting is the closest
+                    // node lifecycle hook we can observe directly without adding runtime children.
+                    _node.Connect("tree_exiting", _callback);
+                }
+                catch (Exception)
+                {
+                    _disposed = true;
+                    TryCancel(_cts);
+                    return;
+                }
+
                 _cancellationRegistration = cts.Token.RegisterWithoutCaptureExecutionContext(static state =>
                 {
                     ((NodeTreeExitingCancellationRegistration)state).Dispose();
@@ -99,7 +123,7 @@ namespace GodotTask
                 _disposed = true;
                 Disconnect();
                 _cancellationRegistration.Dispose();
-                _cts.Cancel();
+                TryCancel(_cts);
             }
 
             public void Dispose()
