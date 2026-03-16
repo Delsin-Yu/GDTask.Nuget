@@ -56,8 +56,7 @@ internal partial class TaskTrackerWindow : Window
             var trackingDataMap = _instance._trackingDataMap;
             var treeItemMap = _instance._treeItemMap;
             var tree = _instance._tree;
-            TreeItem treeItem;
-            if (!trackingDataMap.TryGetValue(trackingData, out treeItem))
+            if (!trackingDataMap.TryGetValue(trackingData, out TreeItem treeItem))
             {
                 treeItem = tree.CreateItem(_instance._rootTreeItem, trackingData.TrackingId);
                 trackingDataMap.Add(trackingData, treeItem);
@@ -239,8 +238,8 @@ internal partial class TaskTrackerWindow : Window
     private readonly Tree _tree;
     private readonly TreeItem _rootTreeItem;
     private readonly TextEdit _textEdit;
-    private readonly Dictionary<TaskTracker.TrackingData, TreeItem> _trackingDataMap = new();
-    private readonly Dictionary<TreeItem, TaskTracker.TrackingData> _treeItemMap = new();
+    private readonly Dictionary<TaskTracker.TrackingData, TreeItem> _trackingDataMap = [];
+    private readonly Dictionary<TreeItem, TaskTracker.TrackingData> _treeItemMap = [];
 
     private TreeItem _activeTreeItem;
     

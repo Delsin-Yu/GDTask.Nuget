@@ -22,8 +22,6 @@ public partial class ApiUsage : Node
 		await GDTaskTest_Threading.GDTask_SwitchToMainThread_Process_Token();
 		await GDTaskTest_Threading.GDTask_SwitchToMainThread_CustomPlayerLoop();
 		
-		return;
-		
 		await GDTask.SwitchToMainThread();
 		
 		// Delay the execution after frame(s).

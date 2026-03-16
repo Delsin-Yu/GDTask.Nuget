@@ -102,7 +102,7 @@ namespace GodotTask.Internal
             index = tmp;
         }
 
-        private void ThrowForEmptyQueue()
+        private static void ThrowForEmptyQueue()
         {
             throw new InvalidOperationException("EmptyQueue");
         }

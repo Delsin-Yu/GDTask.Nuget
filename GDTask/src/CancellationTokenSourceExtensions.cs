@@ -16,7 +16,7 @@ namespace GodotTask
             cts.Cancel();
         }
 
-        /// <inheritdoc cref="CancelAfterSlim(System.Threading.CancellationTokenSource,int,DelayType,PlayerLoopTiming)"/>
+        /// <inheritdoc cref="CancelAfterSlim(CancellationTokenSource, int, DelayType, PlayerLoopTiming)"/>
         public static IDisposable CancelAfterSlim(this CancellationTokenSource cts, int millisecondsDelay, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process)
         {
             return CancelAfterSlim(cts, TimeSpan.FromMilliseconds(millisecondsDelay), delayType, delayTiming);

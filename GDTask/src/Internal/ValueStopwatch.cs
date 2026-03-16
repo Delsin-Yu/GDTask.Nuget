@@ -9,7 +9,7 @@ namespace GodotTask.Internal
 
         private readonly long startTimestamp;
 
-        public static ValueStopwatch StartNew() => new ValueStopwatch(Stopwatch.GetTimestamp());
+        public static ValueStopwatch StartNew() => new(Stopwatch.GetTimestamp());
 
         private ValueStopwatch(long startTimestamp)
         {
@@ -26,7 +26,7 @@ namespace GodotTask.Internal
             {
                 if (startTimestamp == 0)
                 {
-                    throw new InvalidOperationException("Detected invalid initialization(use 'default'), only to create from StartNew().");
+                    throw new InvalidOperationException("Detected invalid initialization - use 'StartNew()', not 'default'.");
                 }
 
                 var delta = Stopwatch.GetTimestamp() - startTimestamp;

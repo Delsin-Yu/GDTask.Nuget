@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using Godot;
-using GodotTask.Internal;
 
 namespace GodotTask
 {

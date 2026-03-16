@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using GodotTask.Internal;
@@ -407,7 +408,7 @@ namespace GodotTask.Internal
             }
         }
 
-        public bool HasObservers => !(outObserver is EmptyObserver<T>) && !isStopped && !isDisposed;
+        public bool HasObservers => outObserver is not EmptyObserver<T> && !isStopped && !isDisposed;
 
         public bool IsCompleted => isStopped;
 
@@ -496,7 +497,7 @@ namespace GodotTask.Internal
                         }
                         else
                         {
-                            outObserver = new ListObserver<T>(new ImmutableList<IObserver<T>>(new[] { current, observer }));
+                            outObserver = new ListObserver<T>([current, observer]);
                         }
                     }
 
@@ -585,37 +586,34 @@ namespace GodotTask.Internal
 
     internal class ListObserver<T> : IObserver<T>
     {
-        private readonly ImmutableList<IObserver<T>> _observers;
+        private readonly ImmutableArray<IObserver<T>> _observers;
 
-        public ListObserver(ImmutableList<IObserver<T>> observers)
+        public ListObserver(ImmutableArray<IObserver<T>> observers)
         {
             _observers = observers;
         }
 
         public void OnCompleted()
         {
-            var targetObservers = _observers.Data;
-            for (int i = 0; i < targetObservers.Length; i++)
+            for (int i = 0; i < _observers.Length; i++)
             {
-                targetObservers[i].OnCompleted();
+                _observers[i].OnCompleted();
             }
         }
 
         public void OnError(Exception error)
         {
-            var targetObservers = _observers.Data;
-            for (int i = 0; i < targetObservers.Length; i++)
+            for (int i = 0; i < _observers.Length; i++)
             {
-                targetObservers[i].OnError(error);
+                _observers[i].OnError(error);
             }
         }
 
         public void OnNext(T value)
         {
-            var targetObservers = _observers.Data;
-            for (int i = 0; i < targetObservers.Length; i++)
+            for (int i = 0; i < _observers.Length; i++)
             {
-                targetObservers[i].OnNext(value);
+                _observers[i].OnNext(value);
             }
         }
 
@@ -626,13 +624,13 @@ namespace GodotTask.Internal
 
         internal IObserver<T> Remove(IObserver<T> observer)
         {
-            var i = Array.IndexOf(_observers.Data, observer);
+            var i = _observers.IndexOf(observer);
             if (i < 0)
                 return this;
 
-            if (_observers.Data.Length == 2)
+            if (_observers.Length == 2)
             {
-                return _observers.Data[1 - i];
+                return _observers[1 - i];
             }
             else
             {
@@ -643,7 +641,7 @@ namespace GodotTask.Internal
 
     internal class EmptyObserver<T> : IObserver<T>
     {
-        public static readonly EmptyObserver<T> Instance = new EmptyObserver<T>();
+        public static readonly EmptyObserver<T> Instance = new();
 
         private EmptyObserver()
         {
@@ -665,7 +663,7 @@ namespace GodotTask.Internal
 
     internal class ThrowObserver<T> : IObserver<T>
     {
-        public static readonly ThrowObserver<T> Instance = new ThrowObserver<T>();
+        public static readonly ThrowObserver<T> Instance = new();
 
         private ThrowObserver()
         {
@@ -688,7 +686,7 @@ namespace GodotTask.Internal
 
     internal class DisposedObserver<T> : IObserver<T>
     {
-        public static readonly DisposedObserver<T> Instance = new DisposedObserver<T>();
+        public static readonly DisposedObserver<T> Instance = new();
 
         private DisposedObserver()
         {
@@ -708,60 +706,6 @@ namespace GodotTask.Internal
         public void OnNext(T value)
         {
             throw new ObjectDisposedException("");
-        }
-    }
-
-    internal class ImmutableList<T>
-    {
-        public static readonly ImmutableList<T> Empty = new ImmutableList<T>();
-
-        private T[] data;
-
-        public T[] Data => data;
-
-        private ImmutableList()
-        {
-            data = Array.Empty<T>();
-        }
-
-        public ImmutableList(T[] data)
-        {
-            this.data = data;
-        }
-
-        public ImmutableList<T> Add(T value)
-        {
-            var newData = new T[data.Length + 1];
-            Array.Copy(data, newData, data.Length);
-            newData[data.Length] = value;
-            return new ImmutableList<T>(newData);
-        }
-
-        public ImmutableList<T> Remove(T value)
-        {
-            var i = IndexOf(value);
-            if (i < 0) return this;
-
-            var length = data.Length;
-            if (length == 1) return Empty;
-
-            var newData = new T[length - 1];
-
-            Array.Copy(data, 0, newData, 0, i);
-            Array.Copy(data, i + 1, newData, i, length - i - 1);
-
-            return new ImmutableList<T>(newData);
-        }
-
-        public int IndexOf(T value)
-        {
-            var comparer = EqualityComparer<T>.Default;
-            for (var i = 0; i < data.Length; ++i)
-            {
-                // ImmutableList only use for IObserver(no worry for boxed)
-                if (comparer.Equals(data[i], value)) return i;
-            }
-            return -1;
         }
     }
 }

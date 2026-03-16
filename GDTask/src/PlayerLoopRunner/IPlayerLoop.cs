@@ -3,9 +3,18 @@ using Godot;
 
 namespace GodotTask;
 
+/// <summary>
+/// A loop with events that are invoked on process and predelete.
+/// </summary>
 public interface IPlayerLoop
 {
+    /// <summary>
+    /// An event that should be invoked each frame.
+    /// </summary>
     event Action<double> OnProcess;
+    /// <summary>
+    /// An event that should be invoked just before the loop is deleted.
+    /// </summary>
     event Action OnPredelete;
 }
 
@@ -35,7 +44,7 @@ public enum PlayerLoopTiming
     IsolatedPhysicsProcess = 3,
          
     /// <summary>
-    /// The <see cref="Node.CallDeferred"/> invoked in the <see cref="Node._Process"/> from the player loop, which means it runs after all the <see cref="Node._Process"/> and <see cref="Node._PhysicsProcess"/>.
+    /// The <see cref="GodotObject.CallDeferred"/> invoked in the <see cref="Node._Process"/> from the player loop, which means it runs after all the <see cref="Node._Process"/> and <see cref="Node._PhysicsProcess"/>.
     /// </summary>
     DeferredProcess = 4,
 }

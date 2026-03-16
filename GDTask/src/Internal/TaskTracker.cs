@@ -38,7 +38,7 @@ namespace GodotTask
         internal static readonly ObservableProperty _enableTracking = new(false);
         internal static readonly ObservableProperty _enableStackTrace = new(true);
 
-        private static readonly ConditionalWeakTable<IGDTaskSource, TrackingData> tracking = new();
+        private static readonly ConditionalWeakTable<IGDTaskSource, TrackingData> tracking = [];
 
         internal static void TrackActiveTask(IGDTaskSource task, int skipFrame)
         {
