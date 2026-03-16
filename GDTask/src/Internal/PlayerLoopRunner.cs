@@ -15,12 +15,12 @@ namespace GodotTask.Internal
         private readonly object runningAndQueueLock = new();
         private readonly object arrayLock = new();
 #endif
-        private readonly Action<Exception> unhandledExceptionCallback= ex => GD.PrintErr(ex);
+        private readonly Action<Exception> unhandledExceptionCallback = ex => GD.PrintErr(ex);
 
         private int tail = 0;
         private bool running = false;
         private IPlayerLoopItem[] loopItems = new IPlayerLoopItem[InitialSize];
-        private readonly MinimumQueue<IPlayerLoopItem> waitQueue = new MinimumQueue<IPlayerLoopItem>(InitialSize);
+        private readonly MinimumQueue<IPlayerLoopItem> waitQueue = new(InitialSize);
 
         public void AddAction(IPlayerLoopItem item)
         {

@@ -9,7 +9,7 @@ namespace GodotTask.Internal
         private const int MaxArrayLength = 0X7FEFFFFF;
         private const int InitialSize = 16;
 
-        private SpinLock gate = new SpinLock(false);
+        private SpinLock gate = new(false);
         private bool dequeuing = false;
 
         private int actionListCount = 0;

@@ -73,7 +73,7 @@ namespace GodotTask
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return (GDTask.FromCanceled(cancellationToken), default(CancellationTokenRegistration));
+                return (GDTask.FromCanceled(cancellationToken), default);
             }
 
             var promise = new GDTaskCompletionSource();

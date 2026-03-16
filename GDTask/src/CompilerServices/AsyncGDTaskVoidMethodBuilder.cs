@@ -21,7 +21,7 @@ namespace GodotTask.CompilerServices
         }
 
         // 2. TaskLike Task property(void)
-        public GDTaskVoid Task
+        public readonly GDTaskVoid Task
         {
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

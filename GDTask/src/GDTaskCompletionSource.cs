@@ -95,7 +95,7 @@ namespace GodotTask
             continuationState = null;
         }
 
-        private void ReportUnhandledError()
+        private readonly void ReportUnhandledError()
         {
             if (hasUnhandledError)
             {
@@ -190,13 +190,13 @@ namespace GodotTask
 
         /// <summary>Gets the operation version.</summary>
         [DebuggerHidden]
-        public short Version => version;
+        public readonly short Version => version;
 
         /// <summary>Gets the status of the operation.</summary>
         /// <param name="token">Opaque value that was provided to the <see cref="GDTask"/>'s constructor.</param>
         [DebuggerHidden]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public GDTaskStatus GetStatus(short token)
+        public readonly GDTaskStatus GetStatus(short token)
         {
             ValidateToken(token);
             return (continuation == null || (completedCount == 0)) ? GDTaskStatus.Pending
@@ -208,7 +208,7 @@ namespace GodotTask
         /// <summary>Gets the status of the operation without token validation.</summary>
         [DebuggerHidden]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public GDTaskStatus UnsafeGetStatus()
+        public readonly GDTaskStatus UnsafeGetStatus()
         {
             return (continuation == null || (completedCount == 0)) ? GDTaskStatus.Pending
                  : (error == null) ? GDTaskStatus.Succeeded
@@ -294,7 +294,7 @@ namespace GodotTask
 
         [DebuggerHidden]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ValidateToken(short token)
+        private readonly void ValidateToken(short token)
         {
             if (token != version)
             {

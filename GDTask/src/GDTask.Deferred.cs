@@ -122,7 +122,7 @@ public partial struct GDTask
         /// <summary>
         /// Gets an awaiter used to await this <see cref="DeferredAwaitable"/>.
         /// </summary>
-        public Awaiter GetAwaiter() => new Awaiter();
+        public Awaiter GetAwaiter() => new();
 
         /// <summary>
         /// Creates a <see cref="GDTask"/> that represents this <see cref="DeferredAwaitable"/>.

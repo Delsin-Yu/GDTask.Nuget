@@ -156,7 +156,7 @@ namespace GodotTask
         /// <summary>
         /// Gets an awaiter used to await this <see cref="SwitchToMainThreadAwaitable"/>.
         /// </summary>
-        public Awaiter GetAwaiter() => new Awaiter(playerLoop, cancellationToken);
+        public Awaiter GetAwaiter() => new(playerLoop, cancellationToken);
 
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="SwitchToMainThreadAwaitable"/>.
@@ -258,7 +258,7 @@ namespace GodotTask
             public Awaiter GetAwaiter() => this;
 
             /// <summary>
-            /// Gets whether the current <see cref="GDTaskPlayerLoopRunner.MainThreadId"/> is <see cref="Environment.CurrentManagedThreadId"/>.
+            /// Gets whether the current <see cref="GDTaskScheduler.MainThreadId"/> is <see cref="Environment.CurrentManagedThreadId"/>.
             /// </summary>
             public bool IsCompleted => GDTaskScheduler.MainThreadId == Environment.CurrentManagedThreadId;
 
@@ -290,7 +290,7 @@ namespace GodotTask
     /// <summary>
     /// An context that, when disposed, will asynchronously yields to the thread pool.
     /// </summary>
-    public struct SwitchToThreadPoolAwaitable
+    public readonly struct SwitchToThreadPoolAwaitable
     {
         /// <summary>
         /// Initializes the <see cref="SwitchToThreadPoolAwaitable"/>.
@@ -301,7 +301,7 @@ namespace GodotTask
         /// <summary>
         /// Gets an awaiter used to await this <see cref="SwitchToThreadPoolAwaitable"/>.
         /// </summary>
-        public Awaiter GetAwaiter() => new Awaiter();
+        public Awaiter GetAwaiter() => new();
 
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="SwitchToThreadPoolAwaitable"/>.
@@ -368,7 +368,7 @@ namespace GodotTask
         /// <summary>
         /// Gets an awaiter used to await this <see cref="SwitchToSynchronizationContextAwaitable"/>.
         /// </summary>
-        public Awaiter GetAwaiter() => new Awaiter(synchronizationContext, cancellationToken);
+        public Awaiter GetAwaiter() => new(synchronizationContext, cancellationToken);
 
         /// <summary>
         /// Provides an awaiter for awaiting a <see cref="SwitchToSynchronizationContextAwaitable"/>.

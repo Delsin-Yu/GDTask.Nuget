@@ -22,7 +22,7 @@ namespace GodotTask.CompilerServices
         }
 
         // 2. TaskLike Task property.
-        public GDTask Task
+        public readonly GDTask Task
         {
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -133,7 +133,7 @@ namespace GodotTask.CompilerServices
         }
 
         // 2. TaskLike Task property.
-        public GDTask<T> Task
+        public readonly GDTask<T> Task
         {
             [DebuggerHidden]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

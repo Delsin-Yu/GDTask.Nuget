@@ -93,7 +93,7 @@ namespace GodotTask
         // root <-- node2 <-- node3 <-- node4
         private T root;
 
-        public int Size => size;
+        public readonly int Size => size;
 
         // Methods are inlined, meaning the method body replaces all calls of the method, making the 
         // method run fast, but taking up more memory.
@@ -117,7 +117,7 @@ namespace GodotTask
                 // Basically if the gate was 0, then the pool is free to be used, so we set it to 1
                 // and start popping.
                 var v = root;
-                if (!(v is null))
+                if (v is not null)
                 {
                     // Our pool is not empty, so we can pop.
                     // Pop from start of linked list O(1) time
