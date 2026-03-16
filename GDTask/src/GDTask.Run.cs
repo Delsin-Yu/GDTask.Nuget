@@ -72,9 +72,6 @@ namespace GodotTask
 
             cancellationToken.ThrowIfCancellationRequested();
         }
-        /// <inheritdoc cref="RunOnThreadPool{TState}(Action{TState}, TState, bool, CancellationToken)"/>
-        public static GDTask RunOnThreadPool(Action<object> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
-            => RunOnThreadPool<object>(action, state, configureAwait, cancellationToken);
 
         /// <summary>
         /// Create and queues the specified task to run on the ThreadPool and returns a <see cref="GDTask"/> handle for that work.
@@ -143,9 +140,6 @@ namespace GodotTask
 
             cancellationToken.ThrowIfCancellationRequested();
         }
-        /// <inheritdoc cref="RunOnThreadPool{TState}(Func{TState, GDTask}, TState, bool, CancellationToken)"/>
-        public static GDTask RunOnThreadPool(Func<object, GDTask> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
-            => RunOnThreadPool<object>(action, state, configureAwait, cancellationToken);
 
         /// <summary>
         /// Queues the specified work to run on the ThreadPool and returns a <see cref="GDTask"/> handle for that work.
@@ -250,9 +244,6 @@ namespace GodotTask
                 return func(state);
             }
         }
-        /// <inheritdoc cref="RunOnThreadPool{T, TState}(Func{TState, T}, TState, bool, CancellationToken)"/>
-        public static GDTask<T> RunOnThreadPool<T>(Func<object, T> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
-            => RunOnThreadPool<T, object>(func, state, configureAwait, cancellationToken);
 
         /// <summary>
         /// Create and queues the specified task to run on the ThreadPool and returns a <see cref="GDTask"/> handle for that work.
@@ -291,9 +282,6 @@ namespace GodotTask
                 return result;
             }
         }
-        /// <inheritdoc cref="RunOnThreadPool{T, TState}(Func{TState, T}, TState, bool, CancellationToken)"/>
-        public static GDTask<T> RunOnThreadPool<T>(Func<object, GDTask<T>> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
-            => RunOnThreadPool<T, object>(func, state, configureAwait, cancellationToken);
     }
 }
 
