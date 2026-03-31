@@ -179,12 +179,12 @@ dotnet add package GDTask.GlobalCancellation
 Example usage:
 
 ```csharp
-GDTask.Delay(TimeSpan.FromSeconds(3.0)).AttachGlobalCancellation();
-GDTask.Delay(TimeSpan.FromSeconds(2.0)).AttachGlobalCancellation();
+GDTask.Delay(TimeSpan.FromSeconds(3.0), GDTaskGlobalCancellation.GetToken());
+GDTask.Delay(TimeSpan.FromSeconds(2.0), GDTaskGlobalCancellation.GetToken());
 GDTask.Delay(TimeSpan.FromSeconds(5.0)).AttachGlobalCancellation();
 GDTask.Delay(TimeSpan.FromSeconds(1.0)).AttachGlobalCancellation();
 
-GDTaskGlobalCancellationManager.Cancel();
+GDTaskGlobalCancellation.Cancel();
 ```
 
 ---
