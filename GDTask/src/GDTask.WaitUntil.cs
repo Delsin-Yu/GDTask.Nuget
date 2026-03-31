@@ -20,6 +20,11 @@ namespace GodotTask
         {
             return WaitUntil(null, predicate, timing, cancellationToken);
         }
+        /// <inheritdoc cref="WaitUntil(Func{bool}, PlayerLoopTiming, CancellationToken)"/>
+        public static GDTask WaitUntil(Func<bool> predicate, CancellationToken cancellationToken)
+        {
+            return WaitUntil(predicate, PlayerLoopTiming.Process, cancellationToken);
+        }
 
         /// <summary>
         /// Creates a task that will complete at the next provided <see cref="IPlayerLoop"/> when the supplied <paramref name="predicate"/> evaluates to true, with specified <see cref="CancellationToken"/>
@@ -30,7 +35,6 @@ namespace GodotTask
             GodotTask.Internal.Error.ThrowArgumentNullException(playerLoop, nameof(playerLoop));
             return new GDTask(WaitUntilPromise.Create(target, predicate, playerLoop, cancellationToken, out var token), token);
         }
-
         /// <inheritdoc cref="WaitUntil(GodotObject, Func{bool}, IPlayerLoop, CancellationToken)"/>
         public static GDTask WaitUntil(Func<bool> predicate, IPlayerLoop playerLoop, CancellationToken cancellationToken = default)
         {
@@ -50,6 +54,11 @@ namespace GodotTask
         {
             return WaitWhile(null, predicate, timing, cancellationToken);
         }
+        /// <inheritdoc cref="WaitWhile(Func{bool}, PlayerLoopTiming, CancellationToken)"/>
+        public static GDTask WaitWhile(Func<bool> predicate, CancellationToken cancellationToken)
+        {
+            return WaitWhile(predicate, PlayerLoopTiming.Process, cancellationToken: cancellationToken);
+        }
 
         /// <summary>
         /// Creates a task that will complete at the next provided <see cref="IPlayerLoop"/> when the supplied <paramref name="predicate"/> evaluates to false, with specified <see cref="CancellationToken"/>.
@@ -60,7 +69,6 @@ namespace GodotTask
             GodotTask.Internal.Error.ThrowArgumentNullException(playerLoop, nameof(playerLoop));
             return new GDTask(WaitWhilePromise.Create(target, predicate, playerLoop, cancellationToken, out var token), token);
         }
-
         /// <inheritdoc cref="WaitWhile(GodotObject, Func{bool}, IPlayerLoop, CancellationToken)"/>
         public static GDTask WaitWhile(Func<bool> predicate, IPlayerLoop playerLoop, CancellationToken cancellationToken = default)
         {
