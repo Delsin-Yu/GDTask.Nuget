@@ -162,12 +162,17 @@ namespace GodotTask
 
             return new GDTask(DelayFramePromise.Create(delayFrameCount, GDTaskScheduler.GetPlayerLoop(delayTiming), cancellationToken, out var token), token);
         }
+        /// <inheritdoc cref="DelayFrame(int, PlayerLoopTiming, CancellationToken)"/>
+        public static GDTask DelayFrame(int delayFrameCount, CancellationToken cancellationToken)
+        {
+            return DelayFrame(delayFrameCount, PlayerLoopTiming.Process, cancellationToken);
+        }
 
         /// <summary>
         /// Delay the execution after frame(s) of the provided <see cref="IPlayerLoop"/>, with specified <see cref="CancellationToken"/>.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="delayFrameCount"/> is less than 0.</exception>
-        public static GDTask DelayFrame(int delayFrameCount, IPlayerLoop delayLoop, CancellationToken cancellationToken = default(CancellationToken))
+        public static GDTask DelayFrame(int delayFrameCount, IPlayerLoop delayLoop, CancellationToken cancellationToken = default)
         {
             if (delayFrameCount < 0)
             {
@@ -187,12 +192,16 @@ namespace GodotTask
             var delayTimeSpan = TimeSpan.FromMilliseconds(millisecondsDelay);
             return Delay(delayTimeSpan, delayTiming, cancellationToken);
         }
-
+        /// <inheritdoc cref="Delay(int, PlayerLoopTiming, CancellationToken)"/>
+        public static GDTask Delay(int millisecondsDelay, CancellationToken cancellationToken)
+        {
+            return Delay(millisecondsDelay, PlayerLoopTiming.Process, cancellationToken);
+        }
         /// <summary>
         /// Delay the execution after <paramref name="millisecondsDelay"/> on provided <see cref="IPlayerLoop"/> with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="millisecondsDelay"/> is less than 0.</exception>
-        public static GDTask Delay(int millisecondsDelay, IPlayerLoop delayLoop, CancellationToken cancellationToken = default(CancellationToken))
+        public static GDTask Delay(int millisecondsDelay, IPlayerLoop delayLoop, CancellationToken cancellationToken = default)
         {
             var delayTimeSpan = TimeSpan.FromMilliseconds(millisecondsDelay);
             return Delay(delayTimeSpan, delayLoop, cancellationToken);
@@ -206,12 +215,16 @@ namespace GodotTask
         {
             return Delay(delayTimeSpan, DelayType.DeltaTime, delayTiming, cancellationToken);
         }
-
+        /// <inheritdoc cref="Delay(TimeSpan, PlayerLoopTiming, CancellationToken)"/>
+        public static GDTask Delay(TimeSpan delayTimeSpan, CancellationToken cancellationToken)
+        {
+            return Delay(delayTimeSpan, PlayerLoopTiming.Process, cancellationToken);
+        }
         /// <summary>
         /// Delay the execution after <paramref name="delayTimeSpan"/> on provided <see cref="IPlayerLoop"/> with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="delayTimeSpan"/> is less than 0.</exception>
-        public static GDTask Delay(TimeSpan delayTimeSpan, IPlayerLoop delayLoop, CancellationToken cancellationToken = default(CancellationToken))
+        public static GDTask Delay(TimeSpan delayTimeSpan, IPlayerLoop delayLoop, CancellationToken cancellationToken = default)
         {
             return Delay(delayTimeSpan, DelayType.DeltaTime, delayLoop, cancellationToken);
         }
@@ -225,12 +238,16 @@ namespace GodotTask
             var delayTimeSpan = TimeSpan.FromMilliseconds(millisecondsDelay);
             return Delay(delayTimeSpan, delayType, delayTiming, cancellationToken);
         }
-
+        /// <inheritdoc cref="Delay(int, DelayType, PlayerLoopTiming, CancellationToken)"/>
+        public static GDTask Delay(int millisecondsDelay, DelayType delayType, CancellationToken cancellationToken)
+        {
+            return Delay(millisecondsDelay, delayType, PlayerLoopTiming.Process, cancellationToken);
+        }
         /// <summary>
         /// Delay the execution after <paramref name="millisecondsDelay"/> on provided <see cref="IPlayerLoop"/> with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="millisecondsDelay"/> is less than 0.</exception>
-        public static GDTask Delay(int millisecondsDelay, DelayType delayType, IPlayerLoop delayLoop, CancellationToken cancellationToken = default(CancellationToken))
+        public static GDTask Delay(int millisecondsDelay, DelayType delayType, IPlayerLoop delayLoop, CancellationToken cancellationToken = default)
         {
             var delayTimeSpan = TimeSpan.FromMilliseconds(millisecondsDelay);
             return Delay(delayTimeSpan, delayType, delayLoop, cancellationToken);
@@ -244,12 +261,16 @@ namespace GodotTask
         {
             return Delay(delayTimeSpan, delayType, GDTaskScheduler.GetPlayerLoop(delayTiming), cancellationToken);
         }
-
+        /// <inheritdoc cref="Delay(TimeSpan, DelayType, PlayerLoopTiming, CancellationToken)"/>
+        public static GDTask Delay(TimeSpan delayTimeSpan, DelayType delayType, CancellationToken cancellationToken)
+        {
+            return Delay(delayTimeSpan, delayType, PlayerLoopTiming.Process, cancellationToken);
+        }
         /// <summary>
         /// Delay the execution after <paramref name="delayTimeSpan"/> on provided <see cref="IPlayerLoop"/> with <see cref="DelayType.DeltaTime"/> provider, with specified <see cref="CancellationToken"/>.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="delayTimeSpan"/> is less than 0.</exception>
-        public static GDTask Delay(TimeSpan delayTimeSpan, DelayType delayType, IPlayerLoop delayLoop, CancellationToken cancellationToken = default(CancellationToken))
+        public static GDTask Delay(TimeSpan delayTimeSpan, DelayType delayType, IPlayerLoop delayLoop, CancellationToken cancellationToken = default)
         {
             if (delayTimeSpan < TimeSpan.Zero)
             {
