@@ -261,11 +261,6 @@ public partial struct GDTask
         private GDTaskCompletionSourceCore<object> _core;
         private YieldPromise _nextNode;
 
-        static YieldPromise()
-        {
-            TaskPool.RegisterSizeGetter(typeof(YieldPromise), () => Pool.Size);
-        }
-
         private YieldPromise() { }
 
         public void GetResult(short token)
@@ -329,11 +324,6 @@ public partial struct GDTask
         private bool _isMainThread;
         private NextFramePromise _nextNode;
         private bool _usesEngineFrameBoundary;
-
-        static NextFramePromise()
-        {
-            TaskPool.RegisterSizeGetter(typeof(NextFramePromise), () => Pool.Size);
-        }
 
         private NextFramePromise() { }
 
@@ -408,11 +398,6 @@ public partial struct GDTask
         private bool _isMainThread;
         private DelayFramePromise _nextNode;
         private bool _usesEngineFrameBoundary;
-
-        static DelayFramePromise()
-        {
-            TaskPool.RegisterSizeGetter(typeof(DelayFramePromise), () => Pool.Size);
-        }
 
         private DelayFramePromise() { }
 
@@ -505,11 +490,6 @@ public partial struct GDTask
         private DelayPromise _nextNode;
         private bool _usesEngineFrameBoundary;
 
-        static DelayPromise()
-        {
-            TaskPool.RegisterSizeGetter(typeof(DelayPromise), () => Pool.Size);
-        }
-
         private DelayPromise() { }
 
         public void GetResult(short token)
@@ -595,11 +575,6 @@ public partial struct GDTask
         private long _delayTimeSpanTicks;
         private DelayRealtimePromise _nextNode;
         private ValueStopwatch _stopwatch;
-
-        static DelayRealtimePromise()
-        {
-            TaskPool.RegisterSizeGetter(typeof(DelayRealtimePromise), () => Pool.Size);
-        }
 
         private DelayRealtimePromise() { }
 

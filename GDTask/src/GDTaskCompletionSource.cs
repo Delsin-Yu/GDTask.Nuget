@@ -275,11 +275,6 @@ class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolNode<AutoResetGD
     private GDTaskCompletionSourceCore<AsyncUnit> _core;
     private AutoResetGDTaskCompletionSource _nextNode;
 
-    static AutoResetGDTaskCompletionSource()
-    {
-        TaskPool.RegisterSizeGetter(typeof(AutoResetGDTaskCompletionSource), () => Pool.Size);
-    }
-
     private AutoResetGDTaskCompletionSource() { }
 
     public GDTask Task
@@ -366,11 +361,6 @@ class AutoResetGDTaskCompletionSource<T> : IGDTaskSource<T>, ITaskPoolNode<AutoR
 
     private GDTaskCompletionSourceCore<T> _core;
     private AutoResetGDTaskCompletionSource<T> _nextNode;
-
-    static AutoResetGDTaskCompletionSource()
-    {
-        TaskPool.RegisterSizeGetter(typeof(AutoResetGDTaskCompletionSource<T>), () => Pool.Size);
-    }
 
     private AutoResetGDTaskCompletionSource() { }
 

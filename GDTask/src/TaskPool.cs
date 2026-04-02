@@ -1,56 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace GodotTask;
 
-// Taken from GDTask library
-// Holds static data about all task pools. Right now this is just the size of each pool.
-static class TaskPool
+/// <summary>
+/// Contains data about all task pools, used for pooling <see cref="IGDTaskSource"/>.
+/// </summary>
+public static class TaskPool
 {
-    internal static int MaxPoolSize;
-
-    // Avoid to use ConcurrentDictionary for safety of WebGL build.
-    private static readonly Dictionary<Type, Func<int>> Sizes = new();
-
-    static TaskPool()
-    {
-        try
-        {
-            // Pulls from environment, although Godot doesn't support passing env vars, 
-            // so maybe delete this?
-            var value = Environment.GetEnvironmentVariable("GDTASK_MAX_POOLSIZE");
-
-            if (value != null)
-                if (int.TryParse(value, out var size))
-                {
-                    MaxPoolSize = size;
-                    return;
-                }
-        }
-        catch { }
-
-        MaxPoolSize = int.MaxValue;
-    }
-
-    public static void SetMaxPoolSize(int maxPoolSize) => MaxPoolSize = maxPoolSize;
-
-    public static IEnumerable<(Type, int)> GetCacheSizeInfo()
-    {
-        // Making calls thread safe
-        lock (Sizes)
-        {
-            foreach (var item in Sizes) yield return (item.Key, item.Value());
-        }
-    }
-
-    public static void RegisterSizeGetter(Type type, Func<int> getSize)
-    {
-        // Making calls thread safe
-        lock (Sizes) { Sizes[type] = getSize; }
-    }
+    /// <summary>
+    /// The max size of each task pool.
+    /// <br/>
+    /// Default: <see cref="int.MaxValue"/>
+    /// </summary>
+    public static int MaxPoolSize { get; set; } = int.MaxValue;
 }
 
 /// <summary>

@@ -124,11 +124,6 @@ public partial struct GDTask
 
         private GodotObject _target;
 
-        static WaitUntilPromise()
-        {
-            TaskPool.RegisterSizeGetter(typeof(WaitUntilPromise), () => Pool.Size);
-        }
-
         private WaitUntilPromise() { }
 
         public void GetResult(short token)
@@ -206,11 +201,6 @@ public partial struct GDTask
 
         private GodotObject _target;
 
-        static WaitWhilePromise()
-        {
-            TaskPool.RegisterSizeGetter(typeof(WaitWhilePromise), () => Pool.Size);
-        }
-
         private WaitWhilePromise() { }
 
         public void GetResult(short token)
@@ -287,11 +277,6 @@ public partial struct GDTask
 
         private GodotObject _target;
 
-        static WaitUntilCanceledPromise()
-        {
-            TaskPool.RegisterSizeGetter(typeof(WaitUntilCanceledPromise), () => Pool.Size);
-        }
-
         private WaitUntilCanceledPromise() { }
 
         public void GetResult(short token)
@@ -359,11 +344,6 @@ public partial struct GDTask
 
         private T _target;
         private GodotObject _targetGodotObject;
-
-        static WaitUntilValueChangedGodotObjectPromise()
-        {
-            TaskPool.RegisterSizeGetter(typeof(WaitUntilValueChangedGodotObjectPromise<T, TU>), () => Pool.Size);
-        }
 
         private WaitUntilValueChangedGodotObjectPromise() { }
 
@@ -455,11 +435,6 @@ public partial struct GDTask
         private WaitUntilValueChangedStandardObjectPromise<T, TU> _nextNode;
 
         private WeakReference<T> _target;
-
-        static WaitUntilValueChangedStandardObjectPromise()
-        {
-            TaskPool.RegisterSizeGetter(typeof(WaitUntilValueChangedStandardObjectPromise<T, TU>), () => Pool.Size);
-        }
 
         private WaitUntilValueChangedStandardObjectPromise() { }
 
