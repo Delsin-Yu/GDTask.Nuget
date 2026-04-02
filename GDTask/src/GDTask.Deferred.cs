@@ -24,11 +24,6 @@ public partial struct GDTask
         private GDTaskCompletionSourceCore<object> _core;
         private DeferredPromise _nextNode;
 
-        static DeferredPromise()
-        {
-            TaskPool.RegisterSizeGetter(typeof(DeferredPromise), () => Pool.Size);
-        }
-
         private DeferredPromise() { }
 
         public void GetResult(short token)

@@ -38,11 +38,6 @@ sealed class AsyncGDTaskVoid<TStateMachine> : IStateMachineRunner, ITaskPoolNode
 
     private TStateMachine _stateMachine;
 
-    static AsyncGDTaskVoid()
-    {
-        TaskPool.RegisterSizeGetter(typeof(AsyncGDTaskVoid<TStateMachine>), () => Pool.Size);
-    }
-
     private AsyncGDTaskVoid()
     {
         MoveNext = Run;
@@ -91,11 +86,6 @@ sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, ITaskPoolN
     private AsyncGDTask<TStateMachine> _nextNode;
 
     private TStateMachine _stateMachine;
-
-    static AsyncGDTask()
-    {
-        TaskPool.RegisterSizeGetter(typeof(AsyncGDTask<TStateMachine>), () => Pool.Size);
-    }
 
     private AsyncGDTask()
     {
@@ -172,11 +162,6 @@ sealed class AsyncGDTask<TStateMachine, T> : IStateMachineRunnerPromise<T>, ITas
     private AsyncGDTask<TStateMachine, T> _nextNode;
 
     private TStateMachine _stateMachine;
-
-    static AsyncGDTask()
-    {
-        TaskPool.RegisterSizeGetter(typeof(AsyncGDTask<TStateMachine, T>), () => Pool.Size);
-    }
 
     private AsyncGDTask()
     {
