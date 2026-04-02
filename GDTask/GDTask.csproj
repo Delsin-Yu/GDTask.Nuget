@@ -10,8 +10,9 @@
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <OutputPath>./nupkg</OutputPath>
         <DebugType>portable</DebugType>
-        <IsTrimmable>true</IsTrimmable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+        <IsAotCompatible>True</IsAotCompatible>
 
         <Title>GDTask</Title>
         <PackageId>GDTask</PackageId>
@@ -35,7 +36,6 @@
 
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
 
         <IsGodotToolsProject>true</IsGodotToolsProject>
     </PropertyGroup>

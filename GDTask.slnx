@@ -1,11 +1,4 @@
 <Solution>
-  <Configurations>
-    <BuildType Name="Debug" />
-    <BuildType Name="ExportDebug" />
-    <BuildType Name="ExportRelease" />
-  </Configurations>
-  <Project Path="GDTask/GDTask.csproj">
-    <BuildType Project="Debug" />
-  </Project>
+  <Project Path="GDTask/GDTask.csproj" />
   <Project Path="GDTask.Tests/GDTask.Tests.csproj" />
 </Solution>
