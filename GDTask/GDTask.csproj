@@ -13,7 +13,6 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
         <IsAotCompatible>True</IsAotCompatible>
-        <IsTrimmable>true</IsTrimmable>
 
         <Title>GDTask</Title>
         <PackageId>GDTask</PackageId>
@@ -37,7 +36,6 @@
 
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
 
         <IsGodotToolsProject>true</IsGodotToolsProject>
     </PropertyGroup>
