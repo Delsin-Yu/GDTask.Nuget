@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Godot;
 
 namespace GodotTask;
 
@@ -10,46 +12,31 @@ namespace GodotTask;
 // Holds static data about all task pools. Right now this is just the size of each pool.
 static class TaskPool
 {
-    internal static int MaxPoolSize;
+    internal static int MaxPoolSize { get; set; }
 
-    // Avoid to use ConcurrentDictionary for safety of WebGL build.
-    private static readonly Dictionary<Type, Func<int>> Sizes = new();
+    private static readonly ConcurrentDictionary<Type, Func<int>> _sizes = [];
 
     static TaskPool()
     {
-        try
+        string value = OS.GetEnvironment("GDTASK_MAX_POOLSIZE");
+        if (!string.IsNullOrEmpty(value) && int.TryParse(value, out var size))
         {
-            // Pulls from environment, although Godot doesn't support passing env vars, 
-            // so maybe delete this?
-            var value = Environment.GetEnvironmentVariable("GDTASK_MAX_POOLSIZE");
-
-            if (value != null)
-                if (int.TryParse(value, out var size))
-                {
-                    MaxPoolSize = size;
-                    return;
-                }
+            MaxPoolSize = size;
         }
-        catch { }
-
-        MaxPoolSize = int.MaxValue;
+        else
+        {
+            MaxPoolSize = int.MaxValue;
+        }
     }
-
-    public static void SetMaxPoolSize(int maxPoolSize) => MaxPoolSize = maxPoolSize;
 
     public static IEnumerable<(Type, int)> GetCacheSizeInfo()
     {
-        // Making calls thread safe
-        lock (Sizes)
-        {
-            foreach (var item in Sizes) yield return (item.Key, item.Value());
-        }
+        foreach (var item in _sizes) yield return (item.Key, item.Value());
     }
 
     public static void RegisterSizeGetter(Type type, Func<int> getSize)
     {
-        // Making calls thread safe
-        lock (Sizes) { Sizes[type] = getSize; }
+        _sizes[type] = getSize;
     }
 }
 
