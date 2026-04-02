@@ -10,8 +10,10 @@
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <OutputPath>./nupkg</OutputPath>
         <DebugType>portable</DebugType>
-        <IsTrimmable>true</IsTrimmable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+        <IsAotCompatible>True</IsAotCompatible>
+        <IsTrimmable>true</IsTrimmable>
 
         <Title>GDTask</Title>
         <PackageId>GDTask</PackageId>
