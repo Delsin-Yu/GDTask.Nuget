@@ -24,6 +24,7 @@
 - [Basic API usage](#basic-api-usage)
 - [Extended Feature Packages](#extended-feature-packages)
 - [Task Profiling](#task-profiling)
+- [Object Pool Configuration](#object-pool-configuration)
 - [Compare with Standard .Net Task API](#compare-with-standard-net-task-api)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -222,6 +223,14 @@ When calling `TaskTracker.ShowTrackerWindow()` in your code base, the GDTask sys
 > - Closing an active `GDTask Tracker` window does not stop the background status collection system, remember to toggle off `Enable Tracking` or set `TaskTracker.EnableTracking` to `false` in your code.
 > - Godot Games embeds sub-windows by default, you can disable the `Embed Subwindows` option located in `ProjectSettings (Advanced Settings enabled)Display/Window/Subwindows/Embed Subwindows` for them to become Standalone Windows.
 > - This window reacts to the `window closing command` (`NotificationWMCloseRequest`) correctly so it closes itself when you click the close button, to relaunch this window simply call `TaskTracker.ShowTrackerWindow()` again.
+
+## Object Pool Configuration
+
+GDTask internally pools and reuses the promise and state-machine objects behind operations such as `Delay`, `WaitUntil`, completion sources, and async runners. `TaskPool.MaxPoolSize` controls how many objects each individual internal pool is allowed to retain, with a default of `int.MaxValue`. The value is checked only when a completed object is returned to its pool, so changing it affects future returns only: lowering it does not trim objects that are already pooled, and once a pool is at or above the new limit, additional returns are simply skipped until its size drops below that cap.
+
+> **Tip:** In most projects the default (unbounded) is fine. Consider lowering `MaxPoolSize` only if you observe unexpectedly high retained memory from pooled GDTask objects — for example, after a burst of thousands of concurrent tasks that are unlikely to recur.
+
+---
 
 ## Compare with Standard .Net Task API
 

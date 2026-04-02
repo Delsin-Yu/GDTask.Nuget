@@ -5,14 +5,38 @@ using System.Threading;
 namespace GodotTask;
 
 /// <summary>
-/// Contains data about all task pools, used for pooling <see cref="IGDTaskSource"/>.
+/// Global configuration for all GDTask internal object pools.
+/// <para>
+/// GDTask async operations (delays, waits, completion sources, state-machine runners, etc.)
+/// internally pool and reuse <see cref="IGDTaskSource"/> instances to reduce GC pressure.
+/// Each concrete type maintains its own independent <c>TaskPool&lt;T&gt;</c> instance;
+/// for generic types, each closed generic type combination has its own separate pool as well.
+/// </para>
+/// <para>
+/// The <see cref="MaxPoolSize"/> property exposed by this class acts as a unified capacity
+/// cap applied to every pool individually.
+/// </para>
 /// </summary>
 public static class TaskPool
 {
     /// <summary>
-    /// The max size of each task pool.
-    /// <br/>
-    /// Default: <see cref="int.MaxValue"/>
+    /// Gets or sets the maximum number of objects each object pool is allowed to retain.
+    /// <para>
+    /// When an async operation completes and attempts to return its object to the pool,
+    /// the return is silently discarded if the pool has already reached this cap,
+    /// and the object becomes eligible for normal garbage collection.
+    /// </para>
+    /// <para>
+    /// <b>Runtime mutation behavior:</b> Changing this value only affects future return-to-pool
+    /// operations. Objects already stored in a pool are never trimmed or evicted.
+    /// For example, after lowering the value from <see cref="int.MaxValue"/> to 10,
+    /// existing pooled objects can still be popped and reused, but no new objects will be
+    /// accepted until the pool size drops below 10.
+    /// </para>
+    /// <para>
+    /// This cap is enforced per pool instance, not as a sum across all pools.
+    /// </para>
+    /// <para>Default: <see cref="int.MaxValue"/> (effectively unbounded).</para>
     /// </summary>
     public static int MaxPoolSize { get; set; } = int.MaxValue;
 }
