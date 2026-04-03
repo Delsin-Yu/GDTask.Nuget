@@ -26,11 +26,15 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>Godot GDTask GodotTask Task Async</PackageTags>
         <PackageReleaseNotes>
-            - Breaking change: AsyncTriggers are no longer included in the main GDTask package.
-            - Support matrix: GDTask 3.0.0 targets .NET 6 through .NET 10 and depends on GodotSharp 4.1.0 or newer.
-            - Packaging: Godot.SourceGenerators remains build-only for GDTask and does not flow transitively to consumers; explicit higher GodotSharp overrides remain supported.
-            - Added customizable player loop support through IPlayerLoop-enabled overloads across scheduling and waiting APIs.
-            - Simplified AttachExternalCancellation internals by removing pooling and improving cancellation registration robustness.
+            - Breaking: `AsyncTriggers` are no longer included in the main GDTask package.
+            - Breaking: non-generic object-state overloads of `RunOnThreadPool` were removed; use the generic `TState` overloads instead.
+              - Changed `GDTask.WhenAll` to wait for every input before completing.
+              - Changed `GDTask.WhenAny` and `GDTask.WhenEach` semantics to better align with Microsoft's official `Task.WhenAny` and `Task.WhenEach` behavior.
+            - Added `IPlayerLoop`-based overloads across scheduling, delay, timeout, cancellation, and waiting APIs.
+            - Added simpler `CancellationToken` overloads for `GDTask.WaitUntil`, `GDTask.WaitWhile`, `GDTask.Delay`, and `GDTask.DelayFrame`.
+            - Added collection-friendly coordination improvements, including broader `IEnumerable` support for `GDTask.WhenAll` and `GDTask.WhenAny`, plus shorthand await support for task collections.
+            - Added public pool configuration through `TaskPool.MaxPoolSize`.
+            - Fixed `GDTask.WhenEach`, `SwitchToMainThread`, `TimeoutWithoutException`, `AsyncLazy`, and `GDTaskCompletionSource` semantics in edge-case and concurrency scenarios.
         </PackageReleaseNotes>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
 
