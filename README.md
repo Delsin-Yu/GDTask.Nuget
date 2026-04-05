@@ -48,6 +48,8 @@
 - Built on the [task-like custom async method builder feature](https://github.com/dotnet/roslyn/blob/main/docs/features/task-types.md) of C# 7.0. `GDTask` / `GDTask<T>` are `readonly struct` types holding only a poolable `IGDTaskSource` reference and a version token. When a task completes synchronously the result is inlined in the struct with zero heap traffic; when it truly suspends, the async state machine is copied into a pooled runner object, not a new `Task`, and the runner's `MoveNext` delegate is pre-allocated and reused.
 - The core completion primitive (`GDTaskCompletionSourceCore<T>`) explicitly never captures [ExecutionContext](https://learn.microsoft.com/en-us/dotnet/api/system.threading.executioncontext) or [SynchronizationContext](https://learn.microsoft.com/en-us/dotnet/api/system.threading.synchronizationcontext). Returning to the main thread is handled by enqueuing continuations into the player-loop-driven `ContinuationQueue` on the singleton node [GDTaskPlayerLoopRunner](https://github.com/Delsin-Yu/GDTask.Nuget/blob/main/GDTask/src/PlayerLoopRunner/PlayerLoopRunnerProvider.cs), not by posting back through a synchronization context.
 
+> **Deep dive →** [docs/gdtask-internals.md](docs/gdtask-internals.md) — full architecture walkthrough with diagrams.
+
 ## Installation via Nuget
 
 For .Net CLI
