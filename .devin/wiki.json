@@ -1,0 +1,131 @@
+{
+  "repo_notes": [
+    {
+      "content": "GDTask is a Godot-native async/await framework for C# that delivers near-zero-allocation async/await by combining value-type task handles, pooled completion sources, a custom async method builder, and a player-loop-driven scheduler. It is based on Atlinx's GDTask addon (a port of Cysharp's UniTask for Unity) and distributed as a NuGet package. The main library source lives in GDTask/src/, tests live in GDTask.Tests/test/, and the detailed architecture document is in docs/gdtask-internals.md.",
+      "author": "Repository Maintainer"
+    },
+    {
+      "content": "The five core subsystems are: (1) GDTask/GDTask<T> readonly structs (the public handle), (2) IGDTaskSource pooled completion sources (the strategy interface), (3) GDTaskCompletionSourceCore<T> (shared completion engine), (4) TaskPool<T> (lock-free intrusive linked-list object pool), and (5) the player-loop scheduler (Godot scene-tree integration via PlayerLoopRunnerProvider, ContinuationQueue, and PlayerLoopRunner). Understanding these five subsystems is essential to understanding the codebase.",
+      "author": "Repository Maintainer"
+    },
+    {
+      "content": "Key source directories: GDTask/src/CompilerServices/ contains the custom async method builders (AsyncGDTaskMethodBuilder, AsyncGDTaskVoidMethodBuilder) and pooled state-machine runners (StateMachineRunner.cs). GDTask/src/Internal/ contains ContinuationQueue, PlayerLoopRunner, StatePool, TaskTracker, ValueStopwatch, and Channel. GDTask/src/PlayerLoopRunner/ contains the Godot scene-tree integration: GDTaskScheduler, IPlayerLoop interface, PlayerLoopRunnerProvider, and IsolatedGDTaskPlayerLoopRunner. GDTask/src/RuntimeGuard/ contains runtime safety utilities.",
+      "author": "Repository Maintainer"
+    },
+    {
+      "content": "GDTask intentionally skips ExecutionContext and SynchronizationContext capture for performance. Continuations are dispatched through the player-loop scheduler (ContinuationQueue for one-shot yields, PlayerLoopRunner for persistent polling items like delays) rather than through SynchronizationContext.Post. This is a deliberate design decision for game code where security context flow is unnecessary. The five built-in loop timings are: Process, PhysicsProcess, IsolatedProcess, IsolatedPhysicsProcess, and DeferredProcess.",
+      "author": "Repository Maintainer"
+    }
+  ],
+  "pages": [
+    {
+      "title": "Architecture Overview",
+      "purpose": "High-level overview of GDTask's five cooperating subsystems (value-type handles, pooled sources, completion core, object pool, player-loop scheduler), their relationships, and the typical lifecycle of an await from handle creation through suspension, resumption, and pool recycling. Reference docs/gdtask-internals.md sections 1 and the component relationship diagram."
+    },
+    {
+      "title": "GDTask Value Types",
+      "purpose": "Document the GDTask and GDTask<T> readonly struct layout in GDTask/src/GDTask.cs and GDTask/src/IGDTask.cs: the two-field (source + token) design, the inline result fast-path when source is null, the nested Awaiter struct implementing the C# awaiter pattern, the [AsyncMethodBuilder] attribute binding, and the Preserve()/MemoizeSource mechanism for multi-await.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "IGDTaskSource Contracts",
+      "purpose": "Document the IGDTaskSource and IGDTaskSource<T> strategy interfaces in GDTask/src/IGDTaskSource.cs: the minimal GetStatus/GetResult/OnCompleted contract, the await-once consumption rule, version token enforcement, and IValueTaskSource compatibility for AsValueTask() conversion.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "GDTaskCompletionSourceCore",
+      "purpose": "Document the GDTaskCompletionSourceCore<TResult> struct in GDTask/src/GDTaskCompletionSource.cs: the struct layout (result, error, completedCount, continuation, version), the three-phase Pending→Completing→Completed state transition via Interlocked.CompareExchange, the continuation registration race-condition handling (consumer-first, producer-first, and sentinel-based race patterns), and the deliberate omission of ExecutionContext/SynchronizationContext capture.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Object Pooling — TaskPool",
+      "purpose": "Document the TaskPool<T> lock-free object pool in GDTask/src/TaskPool.cs: the ITaskPoolNode<T> intrusive linked-list pattern, the CAS-based try-once TryPop/TryPush operations, the MaxPoolSize cap, and how each concrete source type maintains its own static pool instance.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Custom Async Method Builders",
+      "purpose": "Document AsyncGDTaskMethodBuilder and AsyncGDTaskMethodBuilder<T> in GDTask/src/CompilerServices/AsyncGDTaskMethodBuilder.cs: the Create→Start→AwaitUnsafeOnCompleted→SetResult lifecycle, the synchronous fast-path (no runner allocated), the pooled runner checkout on first suspension, and how the builder's generic TAwaiter constraint accepts any ICriticalNotifyCompletion awaiter including TaskAwaiter. Also cover AsyncGDTaskVoidMethodBuilder for fire-and-forget GDTaskVoid.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Pooled State-Machine Runners",
+      "purpose": "Document AsyncGDTask<TStateMachine>, AsyncGDTask<TStateMachine,T>, and AsyncGDTaskVoid<TStateMachine> in GDTask/src/CompilerServices/StateMachineRunner.cs: how the runner doubles as the IGDTaskSource (no separate allocation), the pre-allocated MoveNext delegate, the checkout→copy→MoveNext→return lifecycle, and the per-closed-generic pool strategy.",
+      "parent": "Custom Async Method Builders"
+    },
+    {
+      "title": "Player-Loop Dispatch Infrastructure",
+      "purpose": "Document the player-loop scheduling system in GDTask/src/PlayerLoopRunner/: the IPlayerLoop interface, PlayerLoopTiming enum, IPlayerLoopItem polling interface, GDTaskScheduler central dispatcher, and how ContinuationQueue (one-shot) and PlayerLoopRunner (persistent) are driven by Godot scene-tree callbacks.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "PlayerLoopRunnerProvider and Scene-Tree Integration",
+      "purpose": "Document PlayerLoopRunnerProvider in GDTask/src/PlayerLoopRunner/PlayerLoopRunnerProvider.cs and IsolatedGDTaskPlayerLoopRunner: the five built-in proxies (Process, PhysicsProcess, IsolatedProcess, IsolatedPhysicsProcess, DeferredProcess), lazy thread-safe initialization, and how isolated proxies run with ProcessMode=Always to fire during scene-tree pause.",
+      "parent": "Player-Loop Dispatch Infrastructure"
+    },
+    {
+      "title": "ContinuationQueue and PlayerLoopRunner Internals",
+      "purpose": "Document ContinuationQueue (double-buffered one-shot dispatch) and PlayerLoopRunner (persistent item runner with swap-from-tail compaction) in GDTask/src/Internal/ContinuationQueue.cs and GDTask/src/Internal/PlayerLoopRunner.cs. Explain the double-buffer swap semantics ensuring enqueued continuations run on the next tick, and the array compaction strategy for persistent items.",
+      "parent": "Player-Loop Dispatch Infrastructure"
+    },
+    {
+      "title": "Delay and Yield Primitives",
+      "purpose": "Document the delay/yield promise types in GDTask/src/GDTask.Delay.cs: YieldAwaitable (zero-alloc struct yield), YieldPromise, NextFramePromise, DelayFramePromise (frame-based), DelayPromise (delta-time), DelayRealtimePromise (stopwatch-based), the triple-interface pattern (IGDTaskSource + IPlayerLoopItem + ITaskPoolNode), and the editor override that forces Realtime delay type.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "WaitUntil and Conditional Polling",
+      "purpose": "Document WaitUntilPromise, WaitWhilePromise, WaitUntilCanceledPromise, and WaitUntilValueChanged in GDTask/src/GDTask.WaitUntil.cs: predicate polling each frame, automatic GodotObject lifetime tracking via IsInstanceValid, WeakReference-based tracking for standard objects, and the IEqualityComparer-based value change detection.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Task and GDTask Interop",
+      "purpose": "Document the conversion helpers in GDTask/src/GDTaskExtensions.cs: AsGDTask (Task→GDTask via ContinueWith), AsTask (GDTask→Task via TaskCompletionSource with sync fast-path), AsValueTask (zero-alloc direct IValueTaskSource wrapping), Unwrap for nested types, and the StateTuple pooled helper from Internal/StatePool.cs. Include the cross-await interop patterns: awaiting Task inside async GDTask (works natively via generic TAwaiter) vs awaiting GDTask from Task-based code (requires explicit conversion).",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Task vs GDTask Comparison",
+      "purpose": "Document the allocation-level comparison between standard .NET Task and GDTask: the four worst-case Task allocations (Task object, state-machine runner, boxed state machine, MoveNext delegate) and how GDTask eliminates each one. Cover synchronous completion fast-paths, suspension/continuation registration differences, resume scheduling behavior, and the cannot-await-twice constraint.",
+      "parent": "Task and GDTask Interop"
+    },
+    {
+      "title": "Combinators — WhenAll, WhenAny, WhenEach",
+      "purpose": "Document the task combinator APIs in GDTask/src/GDTask.WhenAll.cs, GDTask.WhenAny.cs, GDTask.WhenEach.cs, and their generated overloads (GDTask.WhenAll.Generated.cs, GDTask.WhenAny.Generated.cs). Explain how multiple GDTasks are combined, the promise pooling for combinators, and cancellation propagation.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Factory Methods and Threading",
+      "purpose": "Document GDTask.Factory.cs (Create, Lazy, Defer, Never, action-based factories), GDTask.Run.cs (thread-pool dispatch), GDTask.Threading.cs (SwitchToMainThread, SwitchToThreadPool, thread-switching awaitables), and GDTask.Deferred.cs (deferred completion pattern).",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Cancellation Support",
+      "purpose": "Document GDTask/src/CancellationTokenExtensions.cs, CancellationTokenSourceExtensions.cs, and CancellationTokenEqualityComparer.cs: how cancellation integrates with GDTask promises, the WaitUntilCanceled helper, token-based promise cancellation in MoveNext loops, and GodotObject lifetime-linked cancellation.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Signal Extensions",
+      "purpose": "Document GDTask/src/GDTaskExtensions.Signal.cs: how Godot signals are converted to awaitable GDTasks, the signal-to-completion-source bridging, and usage patterns for awaiting Godot signals in async code.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Exception Handling",
+      "purpose": "Document GDTask/src/GDTaskExceptionHandler.cs: the unobserved exception routing for GDTaskVoid (fire-and-forget), the PublishUnobservedTaskException mechanism, and how game code can configure custom exception handling.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "AsyncEnumerable Support",
+      "purpose": "Document GDTask/src/IGDTaskAsyncEnumerable.cs and GDTaskAsyncEnumerableExtensions.cs: the GDTask-native async enumerable/enumerator interfaces and LINQ-style extension methods for async streams.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Diagnostics — TaskTracker",
+      "purpose": "Document the diagnostic infrastructure in GDTask/src/Internal/TaskTracker.cs, TaskTracker.Models.cs, TaskTrackerWindow.cs: how active GDTask sources are tracked for debugging, the tracking window UI, and how sources register/unregister with the tracker.",
+      "parent": "Architecture Overview"
+    },
+    {
+      "title": "Test Suite",
+      "purpose": "Document the test project structure in GDTask.Tests/: the gdUnit4 test framework integration, how tests exercise core GDTask functionality (completion sources, delays, cancellation, WaitUntil, combinators, deferred), and how to run tests with Godot.",
+      "parent": "Architecture Overview"
+    }
+  ]
+}
