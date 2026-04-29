@@ -292,6 +292,54 @@ public static partial class GDTaskExtensions
             await task;
             return await continuationFunction();
         }
+
+        /// <summary>
+        /// Creates a lightweight continuation that executes when the target <see cref="GDTask" /> completes and does not have an awaitable completion.
+        /// </summary>
+        public void ContinueWithVoid(Action<T> continuationFunction)
+        {
+            static async GDTaskVoid ContinueWithGDTaskVoid(GDTask<T> task, Action<T> continuationFunction)
+            {
+                continuationFunction(await task);
+            }
+
+            ContinueWithGDTaskVoid(task, continuationFunction).Forget();
+        }
+
+        /// <inheritdoc cref="ContinueWithVoid{T}(GDTask{T}, Action{T})" />
+        public void ContinueWithVoid(Action continuationFunction)
+        {
+            static async GDTaskVoid ContinueWithGDTaskVoid(GDTask<T> task, Action continuationFunction)
+            {
+                await task;
+                continuationFunction();
+            }
+
+            ContinueWithGDTaskVoid(task, continuationFunction).Forget();
+        }
+
+        /// <inheritdoc cref="ContinueWithVoid{T}(GDTask{T}, Action{T})" />
+        public void ContinueWithVoid(Func<T, GDTaskVoid> continuationFunction)
+        {
+            static async GDTaskVoid ContinueWithGDTaskVoid(GDTask<T> task, Func<T, GDTaskVoid> continuationFunction)
+            {
+                continuationFunction(await task).Forget();
+            }
+
+            ContinueWithGDTaskVoid(task, continuationFunction).Forget();
+        }
+
+        /// <inheritdoc cref="ContinueWithVoid{T}(GDTask{T}, Action{T})" />
+        public void ContinueWithVoid(Func<GDTaskVoid> continuationFunction)
+        {
+            static async GDTaskVoid ContinueWithGDTaskVoid(GDTask<T> task, Func<GDTaskVoid> continuationFunction)
+            {
+                await task;
+                continuationFunction().Forget();
+            }
+
+            ContinueWithGDTaskVoid(task, continuationFunction).Forget();
+        }
     }
 
     /// <param name="task">The <see cref="GDTask" /> to associate the time out to</param>
@@ -539,6 +587,30 @@ public static partial class GDTaskExtensions
         {
             await task;
             return await continuationFunction();
+        }
+
+        /// <inheritdoc cref="ContinueWithVoid{T}(GDTask{T}, Action{T})" />
+        public void ContinueWithVoid(Action continuationFunction)
+        {
+            static async GDTaskVoid ContinueWithGDTaskVoid(GDTask task, Action continuationFunction)
+            {
+                await task;
+                continuationFunction();
+            }
+
+            ContinueWithGDTaskVoid(task, continuationFunction).Forget();
+        }
+
+        /// <inheritdoc cref="ContinueWithVoid{T}(GDTask{T}, Action{T})" />
+        public void ContinueWithVoid(Func<GDTaskVoid> continuationFunction)
+        {
+            static async GDTaskVoid ContinueWithGDTaskVoid(GDTask task, Func<GDTaskVoid> continuationFunction)
+            {
+                await task;
+                continuationFunction().Forget();
+            }
+
+            ContinueWithGDTaskVoid(task, continuationFunction).Forget();
         }
     }
 
