@@ -469,6 +469,88 @@ public class GDTaskTest_Utils
     }
 
     [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_ContinueWithVoid()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var result = false;
+        Constants.DelayHalf().ContinueWithVoid(() => result = true);
+        await Constants.Delay();
+        Assertions.AssertThat(result).IsTrue();
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTask_ContinueWithVoid_GDTaskVoid()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var result = false;
+        Constants.DelayHalf().ContinueWithVoid(async () =>
+        {
+            await GDTask.NextFrame();
+            result = true;
+        });
+        await Constants.Delay();
+        Assertions.AssertThat(result).IsTrue();
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTaskT_ContinueWithVoid_T()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var result = false;
+        Constants.DelayHalfWithReturn().ContinueWithVoid(value =>
+        {
+            if (value == Constants.ReturnValue)
+            {
+                result = true;
+            }
+        });
+        await Constants.Delay();
+        Assertions.AssertThat(result).IsTrue();
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTaskT_ContinueWithVoid()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var result = false;
+        Constants.DelayHalfWithReturn().ContinueWithVoid(() => result = true);
+        await Constants.Delay();
+        Assertions.AssertThat(result).IsTrue();
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTaskT_ContinueWithVoid_T_GDTaskVoid()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var result = false;
+        Constants.DelayHalfWithReturn().ContinueWithVoid(async value =>
+        {
+            await GDTask.NextFrame();
+            if (value == Constants.ReturnValue)
+            {
+                await GDTask.NextFrame();
+                result = true;
+            }
+        });
+        await Constants.Delay();
+        Assertions.AssertThat(result).IsTrue();
+    }
+
+    [TestCase, RequireGodotRuntime]
+    public static async Task GDTaskT_ContinueWithVoid_GDTaskVoid()
+    {
+        await Constants.WaitForTaskReadyAsync();
+        var result = false;
+        Constants.DelayHalfWithReturn().ContinueWithVoid(async () =>
+        {
+            await GDTask.NextFrame();
+            result = true;
+        });
+        await Constants.Delay();
+        Assertions.AssertThat(result).IsTrue();
+    }
+
+    [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Unwrap_GDTask_GDTask()
     {
         await Constants.WaitForTaskReadyAsync();
