@@ -23,7 +23,7 @@ partial struct GDTask
         return await tcs.Task;
     }
 
-    /// <inheritdoc cref="FromSignal(Godot.GodotObject,Godot.StringName,System.Threading.CancellationToken)" />
+    /// <inheritdoc cref="FromSignal(GodotObject, StringName, CancellationToken)" />
     public static async GDTask<T> FromSignal<[MustBeVariant] T>(GodotObject signalOwner, StringName signalName, CancellationToken cancellationToken)
     {
         var tcs = new GDTaskCompletionSource<T>();
@@ -38,7 +38,7 @@ partial struct GDTask
         return await tcs.Task;
     }
 
-    /// <inheritdoc cref="FromSignal(Godot.GodotObject,Godot.StringName,System.Threading.CancellationToken)" />
+    /// <inheritdoc cref="FromSignal(GodotObject, StringName, CancellationToken)" />
     public static async GDTask<(T1, T2)> FromSignal<[MustBeVariant] T1, [MustBeVariant] T2>(GodotObject signalOwner, StringName signalName, CancellationToken cancellationToken)
     {
         var tcs = new GDTaskCompletionSource<(T1, T2)>();
@@ -53,7 +53,7 @@ partial struct GDTask
         return await tcs.Task;
     }
 
-    /// <inheritdoc cref="FromSignal(Godot.GodotObject,Godot.StringName,System.Threading.CancellationToken)" />
+    /// <inheritdoc cref="FromSignal(GodotObject, StringName, CancellationToken)" />
     public static async GDTask<(T1, T2, T3)> FromSignal<[MustBeVariant] T1, [MustBeVariant] T2, [MustBeVariant] T3>(GodotObject signalOwner, StringName signalName, CancellationToken cancellationToken)
     {
         var tcs = new GDTaskCompletionSource<(T1, T2, T3)>();
@@ -68,7 +68,7 @@ partial struct GDTask
         return await tcs.Task;
     }
 
-    /// <inheritdoc cref="FromSignal(Godot.GodotObject,Godot.StringName,System.Threading.CancellationToken)" />
+    /// <inheritdoc cref="FromSignal(GodotObject, StringName, CancellationToken)" />
     public static async GDTask<(T1, T2, T3, T4)> FromSignal<[MustBeVariant] T1, [MustBeVariant] T2, [MustBeVariant] T3, [MustBeVariant] T4>(GodotObject signalOwner, StringName signalName, CancellationToken cancellationToken)
     {
         var tcs = new GDTaskCompletionSource<(T1, T2, T3, T4)>();
@@ -83,7 +83,7 @@ partial struct GDTask
         return await tcs.Task;
     }
 
-    /// <inheritdoc cref="FromSignal(Godot.GodotObject,Godot.StringName,System.Threading.CancellationToken)" />
+    /// <inheritdoc cref="FromSignal(GodotObject, StringName, CancellationToken)" />
     public static async GDTask<(T1, T2, T3, T4, T5)> FromSignal<[MustBeVariant] T1, [MustBeVariant] T2, [MustBeVariant] T3, [MustBeVariant] T4, [MustBeVariant] T5>(GodotObject signalOwner, StringName signalName, CancellationToken cancellationToken)
     {
         var tcs = new GDTaskCompletionSource<(T1, T2, T3, T4, T5)>();
@@ -98,27 +98,27 @@ partial struct GDTask
         return await tcs.Task;
     }
 
-    /// <inheritdoc cref="FromSignal(Godot.GodotObject,Godot.StringName,System.Threading.CancellationToken)" />
+    /// <inheritdoc cref="FromSignal(GodotObject, StringName, CancellationToken)" />
     public static GDTask<Variant[]> FromSignal(GodotObject signalOwner, StringName signalName) =>
         signalOwner.ToSignal(signalOwner, signalName).AsGDTask();
 
-    /// <inheritdoc cref="FromSignal(Godot.GodotObject,Godot.StringName,System.Threading.CancellationToken)" />
+    /// <inheritdoc cref="FromSignal(GodotObject, StringName, CancellationToken)" />
     public static GDTask<T> FromSignal<[MustBeVariant] T>(GodotObject signalOwner, StringName signalName) =>
         signalOwner.ToSignal(signalOwner, signalName).AsGDTask<T>();
 
-    /// <inheritdoc cref="FromSignal(Godot.GodotObject,Godot.StringName,System.Threading.CancellationToken)" />
+    /// <inheritdoc cref="FromSignal(GodotObject, StringName, CancellationToken)" />
     public static GDTask<(T1, T2)> FromSignal<[MustBeVariant] T1, [MustBeVariant] T2>(GodotObject signalOwner, StringName signalName) =>
         signalOwner.ToSignal(signalOwner, signalName).AsGDTask<T1, T2>();
 
-    /// <inheritdoc cref="FromSignal(Godot.GodotObject,Godot.StringName,System.Threading.CancellationToken)" />
+    /// <inheritdoc cref="FromSignal(GodotObject, StringName, CancellationToken)" />
     public static GDTask<(T1, T2, T3)> FromSignal<[MustBeVariant] T1, [MustBeVariant] T2, [MustBeVariant] T3>(GodotObject signalOwner, StringName signalName) =>
         signalOwner.ToSignal(signalOwner, signalName).AsGDTask<T1, T2, T3>();
 
-    /// <inheritdoc cref="FromSignal(Godot.GodotObject,Godot.StringName,System.Threading.CancellationToken)" />
+    /// <inheritdoc cref="FromSignal(GodotObject, StringName, CancellationToken)" />
     public static GDTask<(T1, T2, T3, T4)> FromSignal<[MustBeVariant] T1, [MustBeVariant] T2, [MustBeVariant] T3, [MustBeVariant] T4>(GodotObject signalOwner, StringName signalName) =>
         signalOwner.ToSignal(signalOwner, signalName).AsGDTask<T1, T2, T3, T4>();
 
-    /// <inheritdoc cref="FromSignal(Godot.GodotObject,Godot.StringName,System.Threading.CancellationToken)" />
+    /// <inheritdoc cref="FromSignal(GodotObject, StringName, CancellationToken)" />
     public static GDTask<(T1, T2, T3, T4, T5)> FromSignal<[MustBeVariant] T1, [MustBeVariant] T2, [MustBeVariant] T3, [MustBeVariant] T4, [MustBeVariant] T5>(GodotObject signalOwner, StringName signalName) =>
         signalOwner.ToSignal(signalOwner, signalName).AsGDTask<T1, T2, T3, T4, T5>();
 }
