@@ -139,7 +139,7 @@ public static partial class GDTaskExtensions
         /// <inheritdoc cref="Timeout(GDTask, TimeSpan, DelayType, PlayerLoopTiming, CancellationTokenSource)" />
         public async GDTask<T> Timeout(TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null) => await task.Timeout(timeout, delayType, GDTaskScheduler.GetPlayerLoop(timeoutCheckTiming), taskCancellationTokenSource);
 
-        /// <inheritdoc cref="Timeout(GDTask,System.TimeSpan,DelayType,IPlayerLoop,System.Threading.CancellationTokenSource)" />
+        /// <inheritdoc cref="Timeout(GDTask, TimeSpan, DelayType, IPlayerLoop, CancellationTokenSource)" />
         public async GDTask<T> Timeout(TimeSpan timeout, DelayType delayType, IPlayerLoop timeoutCheckLoop, CancellationTokenSource taskCancellationTokenSource = null)
         {
             Error.ThrowArgumentNullException(timeoutCheckLoop, nameof(timeoutCheckLoop));
@@ -180,8 +180,7 @@ public static partial class GDTaskExtensions
         /// <inheritdoc cref="TimeoutWithoutException(GDTask, TimeSpan, DelayType, PlayerLoopTiming, CancellationTokenSource)" />
         public async GDTask<(bool IsTimeout, T Result)> TimeoutWithoutException(TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null) => await task.TimeoutWithoutException(timeout, delayType, GDTaskScheduler.GetPlayerLoop(timeoutCheckTiming), taskCancellationTokenSource);
 
-        /// <inheritdoc
-        ///     cref="TimeoutWithoutException(GDTask,System.TimeSpan,DelayType,IPlayerLoop,System.Threading.CancellationTokenSource)" />
+        /// <inheritdoc cref="TimeoutWithoutException(GDTask, TimeSpan, DelayType, IPlayerLoop, CancellationTokenSource)" />
         public async GDTask<(bool IsTimeout, T Result)> TimeoutWithoutException(TimeSpan timeout, DelayType delayType, IPlayerLoop timeoutCheckLoop, CancellationTokenSource taskCancellationTokenSource = null)
         {
             Error.ThrowArgumentNullException(timeoutCheckLoop, nameof(timeoutCheckLoop));
@@ -257,37 +256,37 @@ public static partial class GDTaskExtensions
         /// </summary>
         public async GDTask ContinueWith(Action<T> continuationFunction) => continuationFunction(await task);
 
-        /// <inheritdoc cref="GDTaskExtensions.ContinueWith{T}(GodotTask.GDTask{T},System.Action{T})" />
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T}, Action{T})" />
         public async GDTask ContinueWith(Func<T, GDTask> continuationFunction) => await continuationFunction(await task);
 
-        /// <inheritdoc cref="GDTaskExtensions.ContinueWith{T}(GodotTask.GDTask{T},System.Action{T})" />
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T}, Action{T})" />
         public async GDTask<TReturn> ContinueWith<TReturn>(Func<T, TReturn> continuationFunction) => continuationFunction(await task);
 
-        /// <inheritdoc cref="GDTaskExtensions.ContinueWith{T}(GodotTask.GDTask{T},System.Action{T})" />
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T}, Action{T})" />
         public async GDTask<TReturn> ContinueWith<TReturn>(Func<T, GDTask<TReturn>> continuationFunction) => await continuationFunction(await task);
 
-        /// <inheritdoc cref="GDTaskExtensions.ContinueWith{T}(GodotTask.GDTask{T},System.Action{T})" />
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T}, Action{T})" />
         public async GDTask ContinueWith(Action continuationFunction)
         {
             await task;
             continuationFunction();
         }
 
-        /// <inheritdoc cref="GDTaskExtensions.ContinueWith{T}(GodotTask.GDTask{T},System.Action{T})" />
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T}, Action{T})" />
         public async GDTask ContinueWith(Func<GDTask> continuationFunction)
         {
             await task;
             await continuationFunction();
         }
 
-        /// <inheritdoc cref="GDTaskExtensions.ContinueWith{T}(GodotTask.GDTask{T},System.Action{T})" />
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T}, Action{T})" />
         public async GDTask<TR> ContinueWith<TR>(Func<TR> continuationFunction)
         {
             await task;
             return continuationFunction();
         }
 
-        /// <inheritdoc cref="GDTaskExtensions.ContinueWith{T}(GodotTask.GDTask{T},System.Action{T})" />
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T}, Action{T})" />
         public async GDTask<TR> ContinueWith<TR>(Func<GDTask<TR>> continuationFunction)
         {
             await task;
@@ -562,28 +561,28 @@ public static partial class GDTaskExtensions
             else ForgetCoreWithCatch(task, exceptionHandler, handleExceptionOnMainThread).Forget();
         }
 
-        /// <inheritdoc cref="GDTaskExtensions.ContinueWith{T}(GodotTask.GDTask{T},System.Action{T})" />
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T}, Action{T})" />
         public async GDTask ContinueWith(Action continuationFunction)
         {
             await task;
             continuationFunction();
         }
 
-        /// <inheritdoc cref="GDTaskExtensions.ContinueWith{T}(GodotTask.GDTask{T},System.Action{T})" />
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T}, Action{T})" />
         public async GDTask ContinueWith(Func<GDTask> continuationFunction)
         {
             await task;
             await continuationFunction();
         }
 
-        /// <inheritdoc cref="GDTaskExtensions.ContinueWith{T}(GodotTask.GDTask{T},System.Action{T})" />
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T}, Action{T})" />
         public async GDTask<T> ContinueWith<T>(Func<T> continuationFunction)
         {
             await task;
             return continuationFunction();
         }
 
-        /// <inheritdoc cref="GDTaskExtensions.ContinueWith{T}(GodotTask.GDTask{T},System.Action{T})" />
+        /// <inheritdoc cref="ContinueWith{T}(GDTask{T}, Action{T})" />
         public async GDTask<T> ContinueWith<T>(Func<GDTask<T>> continuationFunction)
         {
             await task;
