@@ -16,7 +16,7 @@
 
         <Title>GDTask</Title>
         <PackageId>GDTask</PackageId>
-        <PackageVersion>3.0.0</PackageVersion>
+        <PackageVersion>3.1.0</PackageVersion>
         <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
         <Description>Provides efficient async/await integration for Godot .NET projects on .NET 6 through .NET 10 with a GodotSharp 4.1.0+ dependency floor</Description>
         <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
@@ -25,17 +25,7 @@
         <RepositoryUrl>https://github.com/Delsin-Yu/GDTask.Nuget</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>Godot GDTask GodotTask Task Async</PackageTags>
-        <PackageReleaseNotes>
-            - Breaking: `AsyncTriggers` are no longer included in the main GDTask package.
-            - Breaking: non-generic object-state overloads of `RunOnThreadPool` were removed; use the generic `TState` overloads instead.
-              - Changed `GDTask.WhenAll` to wait for every input before completing.
-              - Changed `GDTask.WhenAny` and `GDTask.WhenEach` semantics to better align with Microsoft's official `Task.WhenAny` and `Task.WhenEach` behavior.
-            - Added `IPlayerLoop`-based overloads across scheduling, delay, timeout, cancellation, and waiting APIs.
-            - Added simpler `CancellationToken` overloads for `GDTask.WaitUntil`, `GDTask.WaitWhile`, `GDTask.Delay`, and `GDTask.DelayFrame`.
-            - Added collection-friendly coordination improvements, including broader `IEnumerable` support for `GDTask.WhenAll` and `GDTask.WhenAny`, plus shorthand await support for task collections.
-            - Added public pool configuration through `TaskPool.MaxPoolSize`.
-            - Fixed `GDTask.WhenEach`, `SwitchToMainThread`, `TimeoutWithoutException`, `AsyncLazy`, and `GDTaskCompletionSource` semantics in edge-case and concurrency scenarios.
-        </PackageReleaseNotes>
+        <PackageReleaseNotesFile>RELEASE_NOTES.md</PackageReleaseNotesFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
 
         <IncludeSymbols>true</IncludeSymbols>
@@ -48,6 +38,7 @@
         <None Include="../Logo.png" Pack="true" PackagePath="\"/>
         <None Include="../README.md" Pack="true" PackagePath="\"/>
         <None Include="../LICENSE" Pack="true" PackagePath="\"/>
+        <None Include="RELEASE_NOTES.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
     <ItemGroup>
