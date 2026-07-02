@@ -263,6 +263,8 @@ You can lower `MaxPoolSize` at runtime (for example, to conserve memory in a res
 
 Because each concrete source type (e.g., `DelayPromise`, `YieldPromise`, `AutoResetGDTaskCompletionSource`, and each closed generic such as `AsyncGDTask<TStateMachine>`) maintains its **own** `static TaskPool<T>` field, the cap applies per type, not as a global sum across all pools.
 
+`AutoResetGDTaskCompletionSource` / `AutoResetGDTaskCompletionSource<T>` are also part of the public API (since 3.2.0) for user code that needs pooled, reusable completion sources. Their pool linkage (`ITaskPoolNode<T>.NextNode`) is implemented explicitly and is not exposed on the public type surface.
+
 ---
 
 ## 6. Custom Async Method Builders
