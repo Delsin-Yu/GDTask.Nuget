@@ -51,7 +51,6 @@ public partial struct GDTask
     /// <returns>The successfully completed task.</returns>
     public static GDTask<T> FromResult<T>(T value) => new(value);
 
-
     /// <summary>
     /// Creates a <see cref="GDTask" /> that has completed due to cancellation with the specified cancellation token.
     /// </summary>

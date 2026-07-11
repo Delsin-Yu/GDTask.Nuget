@@ -201,7 +201,6 @@ public partial struct GDTask
         }
     }
 
-
     private sealed class WhenAnyPromise<T> : IGDTaskSource<(int, T)>
     {
         private int _completedCount;

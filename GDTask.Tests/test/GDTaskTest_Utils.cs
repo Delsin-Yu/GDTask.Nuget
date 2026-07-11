@@ -78,7 +78,6 @@ public class GDTaskTest_Utils
         }
     }
 
-
     [TestCase, RequireGodotRuntime]
     public static async Task GDTask_AttachExternalCancellation_CancelTokenAfterUse()
     {

@@ -11,8 +11,6 @@ namespace GodotTask.Tests;
 [TestSuite]
 public class GDTaskTest_Delay
 {
-
-
     [TestCase, RequireGodotRuntime]
     public static async Task GDTask_Yield_Process()
     {
