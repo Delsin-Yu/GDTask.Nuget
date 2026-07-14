@@ -275,8 +275,8 @@ static class GDTaskCompletionSourceCoreShared // separated out of generic to avo
 /// <remarks>
 /// <para>
 /// Unlike <see cref="GDTaskCompletionSource" />, this type is pooled and automatically resets when the
-/// awaiter consumes the result. Obtain instances through <see cref="Create" /> or the <c>CreateFrom*</c>
-/// factory methods rather than constructing directly.
+/// awaiter consumes the result. Obtain instances through <see cref="Create" /> rather than constructing
+/// directly.
 /// </para>
 /// <para>
 /// After <c>await source.Task</c>, the instance is reset and returned to the pool. Do not retain a
@@ -305,54 +305,21 @@ public class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolNode<Auto
         get => new(this, _core.Version);
     }
 
-    /// <summary>
-    /// Gets the result of the underlying <see cref="GDTask" />.
-    /// </summary>
-    /// <param name="token">The version token associated with the task.</param>
-    /// <remarks>
-    /// This method is used by the compiler to implement the await operator.
-    /// It is not intended to be called directly by user code.
-    /// </remarks>
     [DebuggerHidden]
-    public void GetResult(short token)
+    void IGDTaskSource.GetResult(short token)
     {
         try { _core.GetResult(token); }
         finally { TryReturn(); }
     }
 
-    /// <summary>
-    /// Gets the status of the underlying <see cref="GDTask" />.
-    /// </summary>
-    /// <param name="token">The version token associated with the task.</param>
-    /// <remarks>
-    /// This method is used by the compiler to implement the await operator.
-    /// It is not intended to be called directly by user code.
-    /// </remarks>
     [DebuggerHidden]
-    public GDTaskStatus GetStatus(short token) => _core.GetStatus(token);
+    GDTaskStatus IGDTaskSource.GetStatus(short token) => _core.GetStatus(token);
 
-    /// <summary>
-    /// Gets the status of the underlying <see cref="GDTask" /> without validating the token.
-    /// </summary>
-    /// <remarks>
-    /// This method is used by the compiler to implement the await operator.
-    /// It is not intended to be called directly by user code.
-    /// </remarks>
     [DebuggerHidden]
-    public GDTaskStatus UnsafeGetStatus() => _core.UnsafeGetStatus();
+    GDTaskStatus IGDTaskSource.UnsafeGetStatus() => _core.UnsafeGetStatus();
 
-    /// <summary>
-    /// Schedules the continuation action for this operation.
-    /// </summary>
-    /// <param name="continuation">The continuation action to schedule.</param>
-    /// <param name="state">The state to pass to the continuation action.</param>
-    /// <param name="token">The version token associated with the task.</param>
-    /// <remarks>
-    /// This method is used by the compiler to implement the await operator.
-    /// It is not intended to be called directly by user code.
-    /// </remarks>
     [DebuggerHidden]
-    public void OnCompleted(Action<object> continuation, object state, short token) => _core.OnCompleted(continuation, state, token);
+    void IGDTaskSource.OnCompleted(Action<object> continuation, object state, short token) => _core.OnCompleted(continuation, state, token);
 
     /// <summary>
     /// Attempts to transition the underlying <see cref="GDTask" /> into the <see cref="GDTaskStatus.Succeeded" /> state.
@@ -391,14 +358,8 @@ public class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolNode<Auto
         return result;
     }
 
-    /// <summary>
-    /// Creates a pooled completion source that is already in the canceled state.
-    /// </summary>
-    /// <param name="cancellationToken">The cancellation token to associate with the canceled task.</param>
-    /// <param name="token">The version token associated with the returned task.</param>
-    /// <returns>A completion source whose task is already canceled.</returns>
     [DebuggerHidden]
-    public static AutoResetGDTaskCompletionSource CreateFromCanceled(CancellationToken cancellationToken, out short token)
+    internal static AutoResetGDTaskCompletionSource CreateFromCanceled(CancellationToken cancellationToken, out short token)
     {
         var source = Create();
         source.TrySetCanceled(cancellationToken);
@@ -406,14 +367,8 @@ public class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolNode<Auto
         return source;
     }
 
-    /// <summary>
-    /// Creates a pooled completion source that is already in the faulted state.
-    /// </summary>
-    /// <param name="exception">The exception to bind to the task.</param>
-    /// <param name="token">The version token associated with the returned task.</param>
-    /// <returns>A completion source whose task is already faulted.</returns>
     [DebuggerHidden]
-    public static AutoResetGDTaskCompletionSource CreateFromException(Exception exception, out short token)
+    internal static AutoResetGDTaskCompletionSource CreateFromException(Exception exception, out short token)
     {
         var source = Create();
         source.TrySetException(exception);
@@ -421,13 +376,8 @@ public class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolNode<Auto
         return source;
     }
 
-    /// <summary>
-    /// Creates a pooled completion source that is already in the succeeded state.
-    /// </summary>
-    /// <param name="token">The version token associated with the returned task.</param>
-    /// <returns>A completion source whose task is already completed successfully.</returns>
     [DebuggerHidden]
-    public static AutoResetGDTaskCompletionSource CreateCompleted(out short token)
+    internal static AutoResetGDTaskCompletionSource CreateCompleted(out short token)
     {
         var source = Create();
         source.TrySetResult();
@@ -451,8 +401,8 @@ public class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolNode<Auto
 /// <remarks>
 /// <para>
 /// Unlike <see cref="GDTaskCompletionSource{T}" />, this type is pooled and automatically resets when the
-/// awaiter consumes the result. Obtain instances through <see cref="Create" /> or the <c>CreateFrom*</c>
-/// factory methods rather than constructing directly.
+/// awaiter consumes the result. Obtain instances through <see cref="Create" /> rather than constructing
+/// directly.
 /// </para>
 /// <para>
 /// After <c>await source.Task</c>, the instance is reset and returned to the pool. Do not retain a
@@ -482,58 +432,24 @@ public class AutoResetGDTaskCompletionSource<T> : IGDTaskSource<T>, ITaskPoolNod
         get => new(this, _core.Version);
     }
 
-    /// <summary>
-    /// Gets the result of the underlying <see cref="GDTask{T}" />.
-    /// </summary>
-    /// <param name="token">The version token associated with the task.</param>
-    /// <returns>The result of the completed task.</returns>
-    /// <remarks>
-    /// This method is used by the compiler to implement the await operator.
-    /// It is not intended to be called directly by user code.
-    /// </remarks>
     [DebuggerHidden]
-    public T GetResult(short token)
+    T IGDTaskSource<T>.GetResult(short token)
     {
         try { return _core.GetResult(token); }
         finally { TryReturn(); }
     }
 
     [DebuggerHidden]
-    void IGDTaskSource.GetResult(short token) => GetResult(token);
+    void IGDTaskSource.GetResult(short token) => ((IGDTaskSource<T>)this).GetResult(token);
 
-    /// <summary>
-    /// Gets the status of the underlying <see cref="GDTask{T}" />.
-    /// </summary>
-    /// <param name="token">The version token associated with the task.</param>
-    /// <remarks>
-    /// This method is used by the compiler to implement the await operator.
-    /// It is not intended to be called directly by user code.
-    /// </remarks>
     [DebuggerHidden]
-    public GDTaskStatus GetStatus(short token) => _core.GetStatus(token);
+    GDTaskStatus IGDTaskSource.GetStatus(short token) => _core.GetStatus(token);
 
-    /// <summary>
-    /// Gets the status of the underlying <see cref="GDTask{T}" /> without validating the token.
-    /// </summary>
-    /// <remarks>
-    /// This method is used by the compiler to implement the await operator.
-    /// It is not intended to be called directly by user code.
-    /// </remarks>
     [DebuggerHidden]
-    public GDTaskStatus UnsafeGetStatus() => _core.UnsafeGetStatus();
+    GDTaskStatus IGDTaskSource.UnsafeGetStatus() => _core.UnsafeGetStatus();
 
-    /// <summary>
-    /// Schedules the continuation action for this operation.
-    /// </summary>
-    /// <param name="continuation">The continuation action to schedule.</param>
-    /// <param name="state">The state to pass to the continuation action.</param>
-    /// <param name="token">The version token associated with the task.</param>
-    /// <remarks>
-    /// This method is used by the compiler to implement the await operator.
-    /// It is not intended to be called directly by user code.
-    /// </remarks>
     [DebuggerHidden]
-    public void OnCompleted(Action<object> continuation, object state, short token) => _core.OnCompleted(continuation, state, token);
+    void IGDTaskSource.OnCompleted(Action<object> continuation, object state, short token) => _core.OnCompleted(continuation, state, token);
 
     /// <summary>
     /// Attempts to transition the underlying <see cref="GDTask{T}" /> into the <see cref="GDTaskStatus.Succeeded" /> state.
@@ -573,14 +489,8 @@ public class AutoResetGDTaskCompletionSource<T> : IGDTaskSource<T>, ITaskPoolNod
         return result;
     }
 
-    /// <summary>
-    /// Creates a pooled completion source that is already in the canceled state.
-    /// </summary>
-    /// <param name="cancellationToken">The cancellation token to associate with the canceled task.</param>
-    /// <param name="token">The version token associated with the returned task.</param>
-    /// <returns>A completion source whose task is already canceled.</returns>
     [DebuggerHidden]
-    public static AutoResetGDTaskCompletionSource<T> CreateFromCanceled(CancellationToken cancellationToken, out short token)
+    internal static AutoResetGDTaskCompletionSource<T> CreateFromCanceled(CancellationToken cancellationToken, out short token)
     {
         var source = Create();
         source.TrySetCanceled(cancellationToken);
@@ -588,14 +498,8 @@ public class AutoResetGDTaskCompletionSource<T> : IGDTaskSource<T>, ITaskPoolNod
         return source;
     }
 
-    /// <summary>
-    /// Creates a pooled completion source that is already in the faulted state.
-    /// </summary>
-    /// <param name="exception">The exception to bind to the task.</param>
-    /// <param name="token">The version token associated with the returned task.</param>
-    /// <returns>A completion source whose task is already faulted.</returns>
     [DebuggerHidden]
-    public static AutoResetGDTaskCompletionSource<T> CreateFromException(Exception exception, out short token)
+    internal static AutoResetGDTaskCompletionSource<T> CreateFromException(Exception exception, out short token)
     {
         var source = Create();
         source.TrySetException(exception);
@@ -603,14 +507,8 @@ public class AutoResetGDTaskCompletionSource<T> : IGDTaskSource<T>, ITaskPoolNod
         return source;
     }
 
-    /// <summary>
-    /// Creates a pooled completion source that is already in the succeeded state with the specified result.
-    /// </summary>
-    /// <param name="result">The result to set.</param>
-    /// <param name="token">The version token associated with the returned task.</param>
-    /// <returns>A completion source whose task is already completed successfully.</returns>
     [DebuggerHidden]
-    public static AutoResetGDTaskCompletionSource<T> CreateFromResult(T result, out short token)
+    internal static AutoResetGDTaskCompletionSource<T> CreateFromResult(T result, out short token)
     {
         var source = Create();
         source.TrySetResult(result);
