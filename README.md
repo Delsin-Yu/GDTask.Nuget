@@ -266,4 +266,6 @@ Otherwise, the following table shows the GDTask APIs provided that are meant to 
 | `Task.FromResult`                            | `GDTask.FromResult`                                              |
 | `Task.FromCanceled`                          | `GDTask.FromCanceled`                                            |
 | `Task.ContinueWith`                          | `GDTask.ContinueWith`                                            |
+
+**Completion sources:** Use `GDTaskCompletionSource` / `GDTaskCompletionSource<T>` when you need a long-lived, manually completed promise (for example, bridging an external callback). Use `AutoResetGDTaskCompletionSource` / `AutoResetGDTaskCompletionSource<T>` when you need a pooled, reusable promise for repeated one-shot async handoffs. Auto-reset sources return to the pool after their task is awaited; obtain a fresh operation with `Create()` rather than reusing a prior instance reference.
 | `TaskScheduler.UnobservedTaskException`      | `GDTaskExceptionHandler.UnobservedTaskException`                 |

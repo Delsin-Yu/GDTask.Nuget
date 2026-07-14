@@ -1,3 +1,8 @@
+## 3.2.0
+- Restored public access to `AutoResetGDTaskCompletionSource` and `AutoResetGDTaskCompletionSource<T>` (fixes [#55](https://github.com/Delsin-Yu/GDTask.Nuget/issues/55)).
+- Restored public `AutoResetGDTaskCompletionSource<T>.Create()`.
+- Pool-internal `NextNode` is not part of the public API (explicit `ITaskPoolNode<T>` implementation).
+
 ## 3.1.0
 - Added `ContinueWithVoid` overloads on `GDTask` and `GDTask<T>` as fire-and-forget alternatives to `ContinueWith` that return `void` instead of `GDTask`, eliminating the need for `.Forget()`.
   - `GDTask.ContinueWithVoid(Action)`
