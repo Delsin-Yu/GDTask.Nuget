@@ -186,7 +186,6 @@ This package adds support for attaching a global cancellation token to GDTasks w
 
 Package: [GDTask.GlobalCancellation on NuGet](https://www.nuget.org/packages/GDTask.GlobalCancellation)
 
-
 Install:
 
 ```bash

@@ -80,7 +80,6 @@ class AsyncLazy : IAsyncLazy
         }
     }
 
-
     public GDTask.Awaiter GetAwaiter() => Task.GetAwaiter();
 
     private void EnsureInitialized()
@@ -187,7 +186,6 @@ class AsyncLazy<T> : IAsyncLazy<T>
             return _completionSource.Task;
         }
     }
-
 
     public GDTask<T>.Awaiter GetAwaiter() => Task.GetAwaiter();
 

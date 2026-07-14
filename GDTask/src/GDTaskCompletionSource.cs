@@ -288,7 +288,6 @@ class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolNode<AutoResetGD
     {
         try { _core.GetResult(token); }
         finally { TryReturn(); }
-
     }
 
     [DebuggerHidden]

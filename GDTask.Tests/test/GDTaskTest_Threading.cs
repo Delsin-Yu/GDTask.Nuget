@@ -241,7 +241,6 @@ public class GDTaskTest_Threading
         }
     }
 
-
     [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_DelegateT()
     {
@@ -325,7 +324,6 @@ public class GDTaskTest_Threading
         }
     }
 
-
     [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_GDTask()
     {
@@ -402,7 +400,6 @@ public class GDTaskTest_Threading
         {
         }
     }
-
 
     [TestCase, RequireGodotRuntime]
     public static async Task GDTask_RunOnThreadPool_GDTaskT()
@@ -542,7 +539,6 @@ public class GDTaskTest_Threading
         Assertions
             .AssertThat(context == SynchronizationContext.Current);
     }
-
 
     [TestCase, RequireGodotRuntime]
     public static async Task GDTask_ReturnToMainThread_Token()

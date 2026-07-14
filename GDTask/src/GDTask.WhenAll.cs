@@ -212,7 +212,6 @@ public partial struct GDTask
         return new(new WhenAllPromise<T>(tasks), 0);
     }
 
-
     /// <inheritdoc cref="WhenAll{T}(GDTask{T}[])" />
     public static GDTask<T[]> WhenAll<T>(IEnumerable<GDTask<T>> tasks)
     {

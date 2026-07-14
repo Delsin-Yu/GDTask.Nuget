@@ -52,6 +52,4 @@ public class GDTaskTest_Deferred
         
         throw new TestFailedException("Deferred Instructions not canceled");
     }
-
-
 }

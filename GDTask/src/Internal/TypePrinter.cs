@@ -81,7 +81,6 @@ class TypePrinter
             // append brackets
             AppendArrayRecursive(sb, type);
 
-
             static void AppendArrayRecursive(StringBuilder sb, Type type)
             {
                 while (true)
@@ -148,7 +147,6 @@ class TypePrinter
                 sb.Append(')');
                 return;
             }
-
 
             //normal generic
             var typeName = type.Name.AsSpan();

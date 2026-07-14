@@ -107,7 +107,6 @@ public class GDTaskTest_Core
         await GDTask.WaitUntil(() => completed);
     }
 
-
     [TestCase, RequireGodotRuntime]
     public static async Task GDTaskT_SuppressCancellationThrow()
     {

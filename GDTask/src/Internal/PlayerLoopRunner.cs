@@ -127,7 +127,6 @@ sealed class PlayerLoopRunner
                 NEXT_LOOP: ;
             }
 
-
             lock (_runningAndQueueLock)
             {
                 _running = false;

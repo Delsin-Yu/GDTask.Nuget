@@ -310,7 +310,6 @@ namespace GodotTask.Internal
             }
         }
 
-
         public void Dispose()
         {
             IDisposable old = null;
