@@ -1,3 +1,6 @@
+## 3.2.1
+- Fixed `TaskTracker` / `TypePrinter` throwing `ArgumentOutOfRangeException` when formatting async state machines declared in generic containing types (fixes [#57](https://github.com/Delsin-Yu/GDTask.Nuget/issues/57)).
+
 ## 3.2.0
 - Restored public access to `AutoResetGDTaskCompletionSource` and `AutoResetGDTaskCompletionSource<T>` (fixes [#55](https://github.com/Delsin-Yu/GDTask.Nuget/issues/55)).
 - Public surface is `Create()`, `Task`, and `TrySet*` only.

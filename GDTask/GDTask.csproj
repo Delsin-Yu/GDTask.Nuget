@@ -16,7 +16,7 @@
 
         <Title>GDTask</Title>
         <PackageId>GDTask</PackageId>
-        <PackageVersion>3.2.0</PackageVersion>
+        <PackageVersion>3.2.1</PackageVersion>
         <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
         <Description>Provides efficient async/await integration for Godot .NET projects on .NET 6 through .NET 10 with a GodotSharp 4.1.0+ dependency floor</Description>
         <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
