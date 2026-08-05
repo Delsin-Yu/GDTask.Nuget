@@ -15,6 +15,7 @@ class TypePrinter
     {
         TupleTypeSet =
         [
+            typeof(ValueTuple<>),
             typeof(ValueTuple<,>),
             typeof(ValueTuple<,,>),
             typeof(ValueTuple<,,,>),
@@ -43,6 +44,7 @@ class TypePrinter
             { typeof(char), "char" },
             { typeof(string), "string" },
             { typeof(object), "object" },
+            { typeof(void), "void" },
         };
     }
 
@@ -54,7 +56,17 @@ class TypePrinter
 
         if (type is null) return string.Empty;
 
-        if (type is { IsArray: false, IsGenericType: false }) return GetSimpleTypeName(type);
+        // Fast path for plain named types (no arrays, generics, nested paths, or wrappers).
+        if (type is
+            {
+                IsArray: false,
+                IsGenericType: false,
+                IsByRef: false,
+                IsPointer: false,
+                IsNested: false,
+                IsGenericParameter: false
+            })
+            return GetSimpleTypeName(type);
 
         TypeNameBuilder ??= new();
 
@@ -66,9 +78,39 @@ class TypePrinter
 
         static void AppendType(StringBuilder sb, Type type)
         {
+            // Generic parameters report a DeclaringType; never walk it or open generics loop forever.
+            if (type.IsGenericParameter)
+            {
+                sb.Append(type.Name);
+                return;
+            }
+
+            if (type.IsByRef)
+            {
+                AppendType(sb, type.GetElementType()!);
+                sb.Append('&');
+                return;
+            }
+
+            if (type.IsPointer)
+            {
+                AppendType(sb, type.GetElementType()!);
+                sb.Append('*');
+                return;
+            }
+
             if (type.IsArray) AppendArray(sb, type);
             else if (type.IsGenericType) AppendGeneric(sb, type);
+            else if (type.IsNested) AppendNestedSimple(sb, type);
             else sb.Append(GetSimpleTypeName(type));
+        }
+
+        static void AppendNestedSimple(StringBuilder sb, Type type)
+        {
+            // Non-generic nested type: keep the full declaring-type path.
+            AppendType(sb, type.DeclaringType!);
+            sb.Append('.');
+            sb.Append(GetSimpleTypeName(type));
         }
 
         static void AppendArray(StringBuilder sb, Type type)
@@ -106,8 +148,8 @@ class TypePrinter
 
         static void AppendGeneric(StringBuilder sb, Type type)
         {
-
-            var genericArgs = type.GenericTypeArguments;
+            // Prefer GetGenericArguments so open generic definitions still expose type parameters.
+            var genericArgs = type.GetGenericArguments();
             var genericDefinition = type.GetGenericTypeDefinition();
 
             //Nullable
@@ -141,32 +183,67 @@ class TypePrinter
                     // TRest should be a ValueTuple!
                     var nextTuple = genericArgs[7];
 
-                    genericArgs = nextTuple.GenericTypeArguments;
+                    genericArgs = nextTuple.GetGenericArguments();
                 }
 
                 sb.Append(')');
                 return;
             }
 
-            //normal generic
-            var typeName = type.Name.AsSpan();
-            sb.Append(typeName[..typeName.LastIndexOf('`')]);
-            sb.Append('<');
-            AppendParamTypes(sb, genericArgs);
-            sb.Append('>');
+            // Nested compiler-generated state machines inherit outer type arguments but
+            // their Name has no arity marker (`N`). Format declaring types first and only
+            // emit type arguments that belong to the current type level.
+            AppendGenericType(sb, type, genericArgs, genericArgs.Length);
+        }
 
-            static void AppendParamTypes(StringBuilder sb, ReadOnlySpan<Type> genericArgs)
+        static void AppendGenericType(StringBuilder sb, Type type, Type[] genericArgs, int length)
+        {
+            var offset = 0;
+            if (type.IsNested)
             {
-                var n = genericArgs.Length - 1;
+                var declaringType = type.DeclaringType!;
+                offset = declaringType.GetGenericArguments().Length;
 
-                for (var i = 0; i < n; i += 1)
-                {
-                    AppendType(sb, genericArgs[i]);
-                    sb.Append(", ");
-                }
+                if (declaringType.IsGenericType)
+                    AppendGenericType(sb, declaringType, genericArgs, offset);
+                else
+                    AppendType(sb, declaringType);
 
-                AppendType(sb, genericArgs[n]);
+                sb.Append('.');
             }
+
+            var typeName = type.Name.AsSpan();
+            var backtickIndex = typeName.LastIndexOf('`');
+            if (backtickIndex < 0)
+            {
+                // Nested type that only inherits outer generic arguments.
+                sb.Append(typeName);
+                return;
+            }
+
+            sb.Append(typeName[..backtickIndex]);
+
+            var ownArgCount = length - offset;
+            if (ownArgCount <= 0) return;
+
+            sb.Append('<');
+            AppendParamTypes(sb, genericArgs.AsSpan(offset, ownArgCount));
+            sb.Append('>');
+        }
+
+        static void AppendParamTypes(StringBuilder sb, ReadOnlySpan<Type> genericArgs)
+        {
+            if (genericArgs.Length == 0) return;
+
+            var n = genericArgs.Length - 1;
+
+            for (var i = 0; i < n; i += 1)
+            {
+                AppendType(sb, genericArgs[i]);
+                sb.Append(", ");
+            }
+
+            AppendType(sb, genericArgs[n]);
         }
 
         static string GetSimpleTypeName(Type type)
