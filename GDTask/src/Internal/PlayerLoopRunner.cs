@@ -70,7 +70,7 @@ sealed class PlayerLoopRunner
 
             var loopItemSpan = _loopItems.AsSpan();
 
-            for (var i = 0; i < loopItemSpan.Length; i++)
+            iteration: for (var i = 0; i < loopItemSpan.Length; i++)
             {
                 var action = loopItemSpan[i];
 
@@ -107,7 +107,7 @@ sealed class PlayerLoopRunner
                                 loopItemSpan[i] = fromTail;
                                 loopItemSpan[j] = null;
                                 j--;
-                                goto NEXT_LOOP; // next i
+                                continue iteration; // next i
                             }
                         }
                         catch (Exception ex)
@@ -123,8 +123,6 @@ sealed class PlayerLoopRunner
 
                 _tail = i; // loop end
                 break; // LOOP END
-
-                NEXT_LOOP: ;
             }
 
             lock (_runningAndQueueLock)

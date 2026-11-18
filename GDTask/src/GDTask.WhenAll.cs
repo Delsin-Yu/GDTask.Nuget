@@ -26,7 +26,11 @@ public partial struct GDTask
 
     private sealed class WhenAllSharedState
     {
+#if NET9_0_OR_GREATER
+        private readonly Lock _gate = new();
+#else
         private readonly object _gate = new();
+#endif
         private readonly int _taskCount;
         private int _completedCount;
         private List<Exception> _exceptions;

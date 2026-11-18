@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
         <EnableDynamicLoading>true</EnableDynamicLoading>
-        <LangVersion>14</LangVersion>
+        <LangVersion>15</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Nullable>disable</Nullable>
         <CopyAllFiles>true</CopyAllFiles>
