@@ -1,3 +1,6 @@
+## 3.3.0
+- Added `net11.0` as a native target framework alongside net6.0 through net10.0; the package now ships a `lib/net11.0` asset.
+
 ## 3.2.1
 - Fixed `TaskTracker` / `TypePrinter` throwing `ArgumentOutOfRangeException` when formatting async state machines declared in generic containing types (fixes [#57](https://github.com/Delsin-Yu/GDTask.Nuget/issues/57)).
 

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
         <EnableDynamicLoading>true</EnableDynamicLoading>
         <LangVersion>14</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -16,9 +16,9 @@
 
         <Title>GDTask</Title>
         <PackageId>GDTask</PackageId>
-        <PackageVersion>3.2.1</PackageVersion>
+        <PackageVersion>3.3.0</PackageVersion>
         <Authors>DE-YU, Atlinx, Yoshifumi Kawai / Cysharp</Authors>
-        <Description>Provides efficient async/await integration for Godot .NET projects on .NET 6 through .NET 10 with a GodotSharp 4.1.0+ dependency floor</Description>
+        <Description>Provides efficient async/await integration for Godot .NET projects on .NET 6 through .NET 11 with a GodotSharp 4.1.0+ dependency floor</Description>
         <PackageProjectUrl>https://www.nuget.org/packages/GDTask</PackageProjectUrl>
         <PackageIcon>Logo.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
